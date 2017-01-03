@@ -1,0 +1,83 @@
+#login {
+	.fade-scale {
+	  transform: scale(0);
+	  opacity: 0;
+	  -webkit-transition: all .25s linear;
+	  -o-transition: all .25s linear;
+	  transition: all .25s linear;
+	}
+
+	.fade-scale.in {
+	  opacity: 1;
+	  transform: scale(1);
+	}
+	#login-content {
+		opacity: 0.92;
+		border-radius: 60px;
+		background-color: #1b1b1b;
+		color: white;
+	}
+	.modal-container {
+		text-align: center;
+	}
+	.play-icon-container {
+		margin: 60px 0;
+	}
+	.bottom-button-container {
+		margin: 60px 0 30px 0;
+	}
+	.vertical-alignment-helper {
+	    display:table;
+	    height: 100%;
+	    width: 100%;
+	    pointer-events:none;
+	}
+	.vertical-align-center {
+	    /* To center vertically */
+	    display: table-cell;
+	    vertical-align: middle;
+	    pointer-events:none;
+	}
+	.modal-content {
+	    /* Bootstrap sets the size of the modal in the modal-dialog class, we need to inherit it */
+	    width:inherit;
+	    height:inherit;
+	    /* To center horizontally */
+	    margin: 0 auto;
+	    pointer-events:all;
+	}
+
+	#inputUsername, #inputPassword {
+		padding: 30px;
+		border-radius: 140px;
+		background-color: #151515;
+		color: white;
+	    text-align: center;
+		border: solid 2.8px #3b3b44;
+	}
+
+	#sign-up, #facebook-login {
+		padding: 16px;
+		border-radius: 100px;
+		background-color: #262626;
+	}
+
+	.login-button {
+	    position: absolute;
+	    bottom: 0px;
+	    right: 16px;
+	    background-color: #3de689;
+	    padding: 18px 12px 14px 12px;
+	    border-radius: 50px;
+	    border: 1px solid #3de689;
+	}
+
+	.btn.focus, .btn:focus, .btn:hover {
+		background-color: #3de689 !important;
+	    color: white !important;
+	}
+
+	input:-webkit-autofill, input:-webkit-autofill:focus {
+	    -webkit-box-shadow: 0 0 0px 1000px white inset;
+	}
+}

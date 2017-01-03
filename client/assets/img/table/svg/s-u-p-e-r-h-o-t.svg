@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="43px" height="45px" viewBox="0 0 43 45" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 41.2 (35397) - http://www.bohemiancoding.com/sketch -->
+    <title>095267CE-25F4-478B-A4D6-CC5CC6660079</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <linearGradient x1="3.26161879%" y1="100%" x2="91.6728704%" y2="10.1218616%" id="linearGradient-1">
+            <stop stop-color="#FF599E" offset="0%"></stop>
+            <stop stop-color="#FFAB68" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="CASH-GAMES-LANDING" transform="translate(-1068.000000, -496.000000)" fill="url(#linearGradient-1)">
+            <g id="TABLE-VIEW" transform="translate(30.000000, 363.000000)">
+                <g id="Group" transform="translate(0.000000, 110.000000)">
+                    <g id="SUPER-HOT" style="mix-blend-mode: luminosity;" transform="translate(1038.000000, 23.000000)">
+                        <path d="M42.75,23.75 C42.75,21.17125 42.29125,18.70125 41.45,16.415 C40.875,23.15 37.28375,26.61125 33.53125,25 C30.015,23.49 32.385,17.60375 32.56,14.795 C32.855,10.03375 32.545,4.58375 23.89625,0.0525 C27.49,6.9275 24.3125,11.1975 20.97875,11.45875 C17.2825,11.74625 13.89625,8.28125 15.14625,2.65625 C11.09875,5.63875 10.98,10.65875 12.22875,13.90625 C13.53125,17.29125 12.1775,20.10375 9,20.41625 C5.451249,20.76625 3.47875,16.615 5.2975,10 C2.150001,13.70625 0.25,18.50625 0.25,23.75 C0.25,35.48625 9.76375,45 21.5,45 C33.23625,45 42.75,35.48625 42.75,23.75" id="Fill-1"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

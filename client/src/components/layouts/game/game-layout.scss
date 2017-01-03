@@ -1,0 +1,24 @@
+.game-layout {
+	.play-icon-container {
+		margin-top: 26px;
+	}
+	.game-header {
+	    padding: 28px;
+	    background-color: #151515;
+	}
+	.game-type-name {
+	    text-transform: uppercase;
+	    opacity: 0.87;
+	    font-size: 26px;
+	    font-weight: bold;
+	}
+	.opened {
+	    /* font-family: ProximaNova; */
+	    font-size: 30px;
+	    font-weight: 300;
+	    color: #3de689;
+	}
+}
+.padding-right-10 {
+	padding-right: 10px;
+}

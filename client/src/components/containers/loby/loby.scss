@@ -1,0 +1,202 @@
+.loby-container {
+	overflow: hidden;
+}
+.aside {
+    padding-bottom: 2000px;
+    margin-bottom: -2000px;
+}
+aside {
+	background-color: #232323;
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+	box-shadow: 0 2px 4px 0 var(--black-50);
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+}
+.icon-bar {
+    text-align: center;
+    margin-right: -15px;
+    margin-left: -15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.play-icon svg{
+	width: 72px;
+}
+.icon-bar a,.play-icon{
+    padding: 32px 0;
+    display: block;
+    transition: all 0.3s ease;
+}
+.icon-bar a:hover {
+    background-color: #000;
+}
+.home-icone-wrapper {
+    position: relative;
+}
+.active {
+    width: 6px;
+    height: 100%;
+    border-radius: 100px;
+    background-color: #3de689;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.logout-container {
+	width: 100%;
+    height: 132px;
+    position: relative;
+    bottom: -60px;
+    border-radius: 100px;
+    background-color: #3a3a3a;
+}
+main {
+	background-color: black;
+	color: white;
+}
+.photo {
+	height: 160px;
+	width: 160px;
+	margin-left: -15px;
+}
+.user-container {
+	background-color: #1d1d1d;
+    padding-bottom: 1px;
+}
+.user-details {
+	margin-top: 24px;
+}
+.user {
+	padding: 40px 4px;
+}
+.user-name {
+
+	font-size: 20px;
+	letter-spacing: 1px;
+	color: #ffffff;
+}
+.balance {
+	font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 0.9px;
+    color: #ffffff;
+    padding-top: 24px;
+    padding-bottom: 4px;
+}
+.money-search-container {
+	background-color: #1b1b1b;
+	padding: 0 24px;
+}
+.money {
+    padding: 4px 18px;
+    margin: 48px 0;
+    border-radius: 100px;
+    background-color: rgba(255, 255, 255, 0.14);
+    display: flex;
+    align-items: center;
+    .text {
+    	text-transform: uppercase;
+		font-size: 16px;
+		font-weight: 300;
+		letter-spacing: 0.6px;
+		padding: 9px;
+    }
+    .value {
+    	font-weight: 600;
+    }
+}
+.review-icon {
+	padding: 27px 20px;
+}
+.video-container {
+	position: relative;
+    margin-left: -15px;
+	.promo-video {
+		height: 396px;
+		width: 640px;
+	}
+	.video-overlay {
+		position: absolute;
+		bottom: 0;
+	}	
+}
+.search-container .form-group{
+	position: relative;
+}
+#search-input {
+	border-radius: 100px;
+	background-color: #000000;
+	border: solid 2px #3b3b44;
+	color: white;
+	padding: 24px;
+    margin-bottom: 40px;
+}
+.search-icon {
+    position: absolute;
+    right: 24px;
+    bottom: 8px;
+}
+.game-type {
+	margin-top: 60px;
+}
+.game {
+   	height: 246px;
+   	width: 100%;
+    background-color: #232327;
+	margin-bottom: 2.5rem !important;
+	border-radius: 10px;
+	.seven.wide.column {
+	    padding-top: 0px !important;
+	    padding-bottom: 0px !important;
+	}
+}
+.game-title {
+	font-family: ProximaNovaT;
+	font-size: 40px;
+	font-weight: 100;
+	color: #ffffff;
+    padding: 60px 0 48px 0;
+}
+.play-with-friends {
+	font-family: ProximaNova;
+	font-size: 20px;
+	color: #ffffff;
+}
+.cash-game-icon-container {
+	background-image: linear-gradient(42deg, #27bd25, #17eb98);
+    padding: 49px 21px 34px 32px;
+    width: 216px;
+    height: 246px;
+    margin-left: -15px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+.sit-go-game-icon-container {
+    width: 216px;
+    height: 246px;
+    margin-left: -15px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    background-image: linear-gradient(41deg, #547bf3, #38dbfd);
+    padding: 44px 51px;
+}
+.tournament-icon-container {
+    width: 216px;
+    height: 246px;
+    margin-left: -15px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    background-image: linear-gradient(41deg, #5983ff, #fb68f8);
+    padding: 42px 26px 41px 26px;
+}
+.my-tournament-icon-container {
+	width: 216px;
+	height: 246px;
+	margin-left: -15px;
+	border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+	background-image: linear-gradient(41deg, #ff599e, #ffab68);
+	padding: 65px 46px 64px 47px;
+}

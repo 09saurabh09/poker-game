@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="36px" height="44px" viewBox="0 0 36 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 41.2 (35397) - http://www.bohemiancoding.com/sketch -->
+    <title>A023DD87-4E9E-4D08-B655-C752603F01A2</title>
+    <desc>Created with sketchtool.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="LOGIN" transform="translate(-46.000000, -605.000000)" fill="#FFFFFF">
+            <g id="BG">
+                <g id="Group-2">
+                    <g id="LHS">
+                        <path d="M64,605 C54.06,605 46,613.06 46,623 L46,637 C46,640.31 48.690001,643 52,643 L58,643 L58,627 L50,627 L50,623 C50,615.27 56.27,609 64,609 C71.73,609 78,615.27 78,623 L78,627 L70,627 L70,643 L78,643 L78,645 L64,645 L64,649 L76,649 C79.31,649 82,646.310001 82,643 L82,623 C82,613.06 73.94,605 64,605 Z" id="support"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

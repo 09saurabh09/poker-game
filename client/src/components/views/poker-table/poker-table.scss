@@ -1,0 +1,32 @@
+.poker-table {
+	.table-header-container {
+		cursor: pointer;
+	}
+	.table-header-name {
+		font-family: ProximaNova;
+	    font-size: 30px;
+	    font-weight: 600;
+	    padding-left: 15px;
+        text-transform: uppercase;
+	}
+	.borderless {
+		border-collapse: separate;
+    	border-spacing: 0 20px;
+	}
+	.borderless td, .borderless th {
+	    border: none;
+	    vertical-align: middle;
+	}
+	.table-row {
+		border-radius: 12px;
+		background-color: #1f1f1f;
+	}
+	.table-column.text-left {
+		padding-left: 40px;
+	}
+	.lg-text {
+		opacity: 0.87;
+		font-family: ProximaNova;
+		font-size: 30px;
+	}
+}
