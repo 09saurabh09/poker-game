@@ -2,14 +2,14 @@
  *  Created by Vishal Kumar
  */
 
-module.exports = deck;
+module.exports = Deck;
 
 
 
 /**
  * Deck Containg 4 suits and 13 Denomintation
  */
-function deck() {
+function Deck() {
     this.suits = [ 's', 'h', 'd', 'c' ];
     this.ranks = [ '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' ];
     this.cards = [];

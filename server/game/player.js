@@ -1,0 +1,164 @@
+module.exports = Player;
+
+var debug = true;
+function logd(message) {
+    if (debug) {
+        console.log(message);
+    }
+}
+
+
+/**
+ * Player State and value 
+ */
+function Player(options) {
+    this.id = options.id;
+    this.name = options.name;
+    this.chips = options.chips;
+    this.game = null;
+
+    this.firstCard = {};
+    this.secondCard = {};
+    this.bet = 0;
+
+    this.lastAction = "";
+    this.hasActed = false;      // acted for one round (call/check/raise)
+    this.hasDone = false;       // finish acted for one game (fold/allin)
+    this.hasSitOut = false;
+    this.sitOutTime = 0;        //This will be a time stamp
+}
+
+
+/**
+ * Folds the game
+ */
+Player.prototype.fold = function() {
+    logd('Player ' + this.name + ' FOLD');
+
+    this.lastAction = "fold";
+    this.hasDone = true;
+
+    this.moveNext();
+};
+
+
+/**
+ * Puts all your chips to your bet
+ */
+Player.prototype.allin = function() {
+    logd('Player ' + this.name + ' ALL-IN : ' + this.chips);
+
+    this.lastAction = "allin";
+    this.hasDone = true;
+
+    this.addBet(this.chips);
+    this.moveNext();
+};
+
+
+
+/**
+ * Adds some chips to your bet
+ * So that your bet is equal
+ * With the highest bet in the table
+ * If highest bet is 0, will do nothing
+ */
+Player.prototype.callOrCheck = function() {
+    this.hasActed = true;
+
+    var diff = this.game.getHighestBet() - this.bet;
+    this.addBet(diff);
+
+    if (diff > 0) {
+        this.lastAction = "call";
+        logd('Player ' + this.name + ' CALL : ' + diff);
+    } else {
+        this.lastAction = "check";
+        logd('Player ' + this.name + ' CHECK');
+    }
+    this.moveNext();
+};
+
+
+
+/**
+ * Raise your bet
+ * If your bet is not the same with highest bet
+ * Add to your bet altogether with difference
+ * @param amount
+ */
+Player.prototype.raise = function(amount) {
+    this.lastAction = "raise";
+
+    var diff = this.game.getHighestBet() - this.bet;
+    this.addBet(diff + amount);
+
+    logd('Player ' + this.name + ' Raises : ' + (diff + amount));
+
+    this.game.requestPlayerAction(); // other players must act
+    this.hasActed = true;
+    this.moveNext();
+};
+
+
+
+/**
+ * Resets the player state
+ */
+Player.prototype.reset = function() {
+    this.firstCard = {};
+    this.secondCard = {};
+    this.bet = 0;
+
+    this.lastAction = "";
+    this.hasActed = false;
+    this.hasDone = false;
+
+    //At Every time need to check whether the Player have money greater than a given value
+    //Need to update the sitouttime. and check whether its greater than a greater value.
+};
+
+
+
+/**
+ * Removes player's chip
+ * Adds them to player's bet
+ * @param amount
+ */
+Player.prototype.addBet = function(amount) {
+    if (this.chips < amount) {
+        return "error - not enough chips";
+    }
+    this.chips -= amount;
+    this.bet += amount;
+};
+
+Player.prototype.moveNext = function(){
+    this.game.incrementPlayerTurn();
+    this.game.checkForNextRound();
+}
+
+
+/**
+ * When Players what to do sit Out at any Point of time
+ */
+Player.prototype.sitOut = function(){
+    this.hasSitOut = true;
+}
+
+/**
+ * When Players waht to sit back In.
+ */
+Player.prototype.sitIn = function(){
+    this.hasSitOut = false;
+}
+
+Player.prototype.leaveGame = function(){
+
+}
+
+
+
+
+
+
