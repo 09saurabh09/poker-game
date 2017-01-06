@@ -1,6 +1,7 @@
 /**
  *  Created by Vishal Kumar
  */
+ "use strict";
 
 module.exports = Deck;
 
