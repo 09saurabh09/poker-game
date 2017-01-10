@@ -6,7 +6,7 @@
 module.exports = Game;
 
 var Player = require('./player.js');
-var Deck = require('./deck.js');
+var Deck = require('../utils/deck.js');
 var Evaluator = require('../utils/evaluator.js');
 //var PokerEvaluator = require('poker-evaluator');
 
