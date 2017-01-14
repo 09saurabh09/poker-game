@@ -3,6 +3,9 @@
  */
  
 "use strict";
+
+let moment = require("moment");
+
 module.exports = Player;
 
 var debug = true;
@@ -21,8 +24,8 @@ function Player(options) {
     this.name = options.name;
     this.chips = options.chips;
     this.isMaintainChips = options.isMaintainChips // Thyis should be intialised with the game boolean value
-    this.maintainChips = options.maintainChips  // The value to which we need to maintain stack
-    
+    this.maintainChips = options.maintainChips     // The value to which we need to maintain stack
+
     this.game = null;
 
     this.firstCard = {};
@@ -30,10 +33,10 @@ function Player(options) {
     this.bet = 0;
 
     this.lastAction = "";
-    this.hasActed = false;      // acted for one round (call/check/raise)
-    this.hasDone = false;       // finish acted for one game (fold/allin)
+    this.hasActed = false;              // acted for one round (call/check/raise)
+    this.hasDone = false;               // finish acted for one game (fold/allin)
     this.hasSitOut = false;
-    this.sitOutTime = 0;        //This will be a time stamp
+    this.sitOutTime = 0;                //This will be a time stamp
 }
 
 
@@ -156,6 +159,7 @@ Player.prototype.moveNext = function(){
  */
 Player.prototype.sitOut = function(){
     this.hasSitOut = true;
+    this.sitOutTime = moment();
 }
 
 /**
@@ -163,10 +167,15 @@ Player.prototype.sitOut = function(){
  */
 Player.prototype.sitIn = function(){
     this.hasSitOut = false;
+    this.sitOutTime = 0;
 }
 
-Player.prototype.leaveGame = function(){
 
+Player.prototype.leaveGame = function(){
+    //saurabhk -- To Do 
+    //When this leave game for player is being called need to do all the transactions back to the DB.
+    // Adding money back to the user 
+    // Removing Player from the game
 }
 
 
@@ -175,7 +184,7 @@ Player.prototype.leaveGame = function(){
  * Gave over berfore hand
  */
 Player.prototype.addChips = function(amount){
-    //TO Do
+    //To Do
     //saurabnK Here to Cut money from the account transactions
     this.chips += amount; 
 }
