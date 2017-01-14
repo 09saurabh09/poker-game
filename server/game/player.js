@@ -20,6 +20,8 @@ function Player(options) {
     this.id = options.id;
     this.name = options.name;
     this.chips = options.chips;
+    this.isMaintainChips = options.isMaintainChips // Thyis should be intialised with the game boolean value
+    this.maintainChips = options.maintainChips  // The value to which we need to maintain stack
     this.game = null;
 
     this.firstCard = {};
@@ -119,6 +121,10 @@ Player.prototype.reset = function() {
     this.hasActed = false;
     this.hasDone = false;
 
+    if(this.isMaintainChips){
+        this.maintainChipsStack();
+    }
+
     //At Every time need to check whether the Player have money greater than a given value
     //Need to update the sitouttime. and check whether its greater than a greater value.
 };
@@ -162,6 +168,27 @@ Player.prototype.leaveGame = function(){
 
 }
 
+/**
+ * Adding more mondey to the game 
+ * Gave over berfore hand
+ */
+
+Player.prototype.addChips = function(amount){
+    //Here to Cut money from the account
+    this.chips += amount;
+}
+
+
+/**
+ * Maintaining the chips stack after every game
+ */
+Player.prototype.maintainChipsStack = function(){
+    var stackDifference = this.maintainChips - this.chips;
+    if( stackDifference > 0 ){
+        //Here there will be a transactions
+        this.addChips(stackDifference); 
+    }
+}
 
 
 
