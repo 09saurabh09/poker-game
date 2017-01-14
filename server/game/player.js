@@ -22,6 +22,7 @@ function Player(options) {
     this.chips = options.chips;
     this.isMaintainChips = options.isMaintainChips // Thyis should be intialised with the game boolean value
     this.maintainChips = options.maintainChips  // The value to which we need to maintain stack
+    
     this.game = null;
 
     this.firstCard = {};
@@ -168,14 +169,15 @@ Player.prototype.leaveGame = function(){
 
 }
 
+
 /**
  * Adding more mondey to the game 
  * Gave over berfore hand
  */
-
 Player.prototype.addChips = function(amount){
-    //Here to Cut money from the account
-    this.chips += amount;
+    //TO Do
+    //saurabnK Here to Cut money from the account transactions
+    this.chips += amount; 
 }
 
 
@@ -185,7 +187,6 @@ Player.prototype.addChips = function(amount){
 Player.prototype.maintainChipsStack = function(){
     var stackDifference = this.maintainChips - this.chips;
     if( stackDifference > 0 ){
-        //Here there will be a transactions
         this.addChips(stackDifference); 
     }
 }
