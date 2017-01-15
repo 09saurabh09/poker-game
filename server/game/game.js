@@ -6,7 +6,7 @@ module.exports = Game;
 
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
-var Evaluator = require('../utils/evaluator.js');
+var evaluator = require('../utils/evaluator.js');
 
 var debug = true;
 function logd(message) {
@@ -21,7 +21,6 @@ function Game(options) {
     this.maxPlayer = options.maxPlayer;
     this.minAmount = options.minAmount;
     this.maxAmount = options.maxAmount;
-    this.minimumRaise =  0;
 
     this.players = [];          // Array of Player object, represents all players in this game
     this.waitingPlayers = [];   // Array of all the players who will be there in the waiting list
@@ -30,10 +29,36 @@ function Game(options) {
     this.dealerPos = 0;         // to determine the dealer position for each game, incremented by 1 for each end game
     this.turnPos = 0;           // to determine whose turn it is in a playing game
     this.pot = 0;               // accumulated chips in center of the table
+    this.minimumRaise =  0;     // Minimum raise to be have
+    this.currentTotalPlayer = 0;// Total players on the table
     this.communityCards = [];   // array of Card object, five cards in center of the table
     this.deck = new Deck();     // deck of playing cards
 
 }
+
+/**
+ * Intializing All the chair on the table with a null value
+ */
+
+Game.prototype.initVariable = function(){
+    for(var i =0;i<this.maxPlayer;i++){
+        this.players.push(null);
+    }
+};
+
+
+/**
+ * If a table is full add Player to the waiting List
+ */
+Game.prototype.addToWaiting = function(attr){
+    var waitingPlayer = {
+        id : attr.id,
+        name : attr.name
+    };
+    this.waitingPlayers.push(waitingPlayer);
+    logd( waitingPlayer.name + " has been added to the waiting List.");
+};
+
 
 /**
  * Adds new player to the game
@@ -41,13 +66,21 @@ function Game(options) {
  */
 Game.prototype.addPlayer = function(attr) {
     var newPlayer = new Player(attr);
-    if(newPlayer.chips < this.bigBlind){
+    if(this.currentTotalPlayer >= this.maxPlayer){
+        this.addToWaiting(attr);
+        logd("Table is full You have been added to the waiting List");
+    }
+    else if(newPlayer.chips < this.minAmount){
+        logd("Insufficient Chips for player " + newPlayer.name );
+    }
+    else if(newPlayer.chips > this.maxAmount){
         logd("Insufficient Chips for player " + newPlayer.name );
     }
     else{
         logd('Player ' + newPlayer.name + ' added to the game');
         newPlayer.game = this;
         this.players.push(newPlayer);
+        this.currentTotalPlayer += 1;
     }
 };
 
@@ -233,7 +266,7 @@ Game.prototype.showdown = function() {
     }
 
     //Sorting all the players card accordingly
-    var evalHands = Evaluator.sortByRank(this.hands, this.players);
+    var evalHands = evaluator.sortByRank(this.hands, this.players);
 
     logd('Player ' + this.players[0].name + ' wins with ' + evalHands[0].handName);
 };

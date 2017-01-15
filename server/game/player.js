@@ -23,8 +23,9 @@ function Player(options) {
     this.id = options.id;
     this.name = options.name;
     this.chips = options.chips;
-    this.isMaintainChips = options.isMaintainChips // Thyis should be intialised with the game boolean value
-    this.maintainChips = options.maintainChips     // The value to which we need to maintain stack
+    this.isMaintainChips = options.isMaintainChips; // Thyis should be intialised with the game boolean value
+    this.maintainChips = options.maintainChips;     // The value to which we need to maintain stack
+    this.seat = options.seat;                       // Seat on Gmae
 
     this.game = null;
 

@@ -19,6 +19,7 @@ function Deck() {
     this.shuffle();
 }
 
+
 /**
  * Init Function to Intialise the 52 cards from Suits and Denomination.
  */
@@ -55,6 +56,8 @@ Deck.prototype.shuffle = function() {
         this.cards[randomIndex] = temporaryValue;
     }
 };
+
+
 
 Deck.prototype.drawCard = function () {
     return this.cards.pop();
