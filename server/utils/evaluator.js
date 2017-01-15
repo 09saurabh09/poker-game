@@ -1,11 +1,8 @@
 "use strict";
 
-
 var PokerEvaluator = require('poker-evaluator');
 
-module.exports = Evaluator;
-
-Evaluator.prototype.sortByRank = function(hands, players){
+function sortByRank(hands, players){
 	var evalHands = [];
 
     for (i = 0; i < hands.length ; i++ ) {
@@ -25,3 +22,7 @@ Evaluator.prototype.sortByRank = function(hands, players){
 
 	return evalHands;
 }
+
+module.exports = {
+    sortByRank : sortByRank
+};

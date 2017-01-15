@@ -1,14 +1,12 @@
 /**
  * Created by Vishal Kumar
  */
-
 "use strict";
 module.exports = Game;
 
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
 var Evaluator = require('../utils/evaluator.js');
-//var PokerEvaluator = require('poker-evaluator');
 
 var debug = true;
 function logd(message) {
@@ -19,17 +17,22 @@ function logd(message) {
 
 function Game(options) {
     // Game attributes
-    this.BET = options.bet;
-    this.maxPlayer =options.maxPlayer
+    this.bigBlind = options.bigBlind;
+    this.maxPlayer = options.maxPlayer;
+    this.minAmount = options.minAmount;
+    this.maxAmount = options.maxAmount;
+    this.minimumRaise =  0;
 
-    this.players = [];          // array of Player object, represents all players in this game
-    this.round = 'idle';        // current round in a game
+    this.players = [];          // Array of Player object, represents all players in this game
+    this.waitingPlayers = [];   // Array of all the players who will be there in the waiting list
+    this.oldPlayers = [];       // Array of all the players who all have lastly Played the game.  
+    this.round = 'idle';        // current round in a game ['idle', 'deal', 'flop' , 'turn', 'river']
     this.dealerPos = 0;         // to determine the dealer position for each game, incremented by 1 for each end game
     this.turnPos = 0;           // to determine whose turn it is in a playing game
     this.pot = 0;               // accumulated chips in center of the table
     this.communityCards = [];   // array of Card object, five cards in center of the table
     this.deck = new Deck();     // deck of playing cards
-    this.evaluator = new Evaluator();
+
 }
 
 /**
@@ -38,7 +41,7 @@ function Game(options) {
  */
 Game.prototype.addPlayer = function(attr) {
     var newPlayer = new Player(attr);
-    if(newPlayer.chips < this.BET){
+    if(newPlayer.chips < this.bigBlind){
         logd("Insufficient Chips for player " + newPlayer.name );
     }
     else{
@@ -57,7 +60,6 @@ Game.prototype.reset = function() {
     this.communityCards = [];   // clear cards on board
     this.pot = 0;               // clear pots on board
     this.deck = new Deck();     // use new deck of cards
-    this.evaluator = new Evaluator();
     for (var i=0; i<this.players.length; i++) {
         this.players[i].reset();
     }
@@ -91,11 +93,11 @@ Game.prototype.start = function() {
     var bigBlindPos = ( this.dealerPos+2 ) % this.players.length;
 
     // small and big pays blind
-    this.players[smallBlindPos].addBet(1/2 * this.BET);
-    this.players[bigBlindPos].addBet(this.BET);
+    this.players[smallBlindPos].addBet(1/2 * this.bigBlind);
+    this.players[bigBlindPos].addBet(this.bigBlind);
 
-    logd('Player ' + this.players[smallBlindPos].name + ' pays small blind : ' + (1/2 * this.BET));
-    logd('Player ' + this.players[bigBlindPos].name + ' pays big blind : ' + this.BET);
+    logd('Player ' + this.players[smallBlindPos].name + ' pays small blind : ' + (1/2 * this.bigBlind));
+    logd('Player ' + this.players[bigBlindPos].name + ' pays big blind : ' + this.bigBlind);
 
     // determine whose turn it is
     this.turnPos = ( bigBlindPos+1 ) % this.players.length;
