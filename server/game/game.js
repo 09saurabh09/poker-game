@@ -56,17 +56,30 @@ Game.prototype.initVariable = function(){
  */
 Game.prototype.currentGameState = function(){
     console.log("------------------------------------------------------GAME STATE START-----------------------------------------------------------");
+    logd("## Game bigBlind - " +this.bigBlind);
+    logd("## Game maxPlayer - " +this.maxPlayer);
+    logd("## Game minAmount - " +this.minAmount);
+    logd("## Game maxAmount - " +this.maxAmount);
+    logd("## Game dealerPos - " +this.dealerPos);        
+    logd("## Game turnPos - " +this.turnPos);           
+    logd("## Game pot - " +this.pot);            
+    logd("## Game minimumRaise - " +this.minimumRaise);    
+    logd("## Game currentTotalPlayer - " +this.currentTotalPlayer); 
+    logd("## Game Community Cards - " + JSON.stringify(this.communityCards));
+    logd("## Game waitingPlayers - " + JSON.stringify(this.waitingPlayers));
+    logd("## Game oldPlayers - " + JSON.stringify(this.oldPlayers));
     for (var i=0;i<this.maxPlayer;i++){
         if(this.players[i]!=null){
-            logd("Seat-" + (i+1) + " has player " + this.players[i].name + "  chips-" + this.players[i].chips 
+            logd("## Seat-" + (i+1) + " has player " + this.players[i].name + "  chips-" + this.players[i].chips 
                 + "  bet-" + this.players[i].bet + "  cards- " + JSON.stringify(this.players[i].firstCard) + "," 
                 + JSON.stringify(this.players[i].secondCard) + "  lastAct-" + this.players[i].lastAction
                 + "  acted-"+this.players[i].hasActed + "  hasDone-" + this.players[i].hasDone 
+                + "  idle-" + this.players[i].idleForHand 
                 + "  sitout-"+this.players[i].hasSitOut+","+ this.players[i].sitOutTime
                 + "  maintinChips-"+ this.players[i].isMaintainChips + "," + this.players[i].maintainChips);
         }
         else{
-            logd("Seat-> " + (i+1) + " is empty ");
+            logd("## Seat-> " + (i+1) + " is empty ");
         }
     }
     console.log("------------------------------------------------------GAME STATE END-----------------------------------------------------------");
@@ -103,7 +116,14 @@ Game.prototype.addPlayer = function(attr) {
     else if(newPlayer.chips > this.maxAmount){
         logd("Insufficient Chips for player " + newPlayer.name );
     }
-    else if(this.players[ newPlayer.seat - 1 ] == null ){
+    else if (this.round != 'idle' && this.players[ newPlayer.seat - 1 ] == null){
+        logd('Player ' + newPlayer.name + ' added but will will idle for this hand');
+        newPlayer.game = this;
+        newPlayer.idleForHand = true;
+        this.players[ newPlayer.seat - 1 ] = newPlayer;
+        this.currentTotalPlayer += 1;
+    }
+    else if(this.round == 'idle' && this.players[ newPlayer.seat - 1 ] == null ){
         logd('Player ' + newPlayer.name + ' added to the game');
         newPlayer.game = this;
         this.players[ newPlayer.seat - 1 ] = newPlayer;

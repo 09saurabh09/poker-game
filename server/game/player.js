@@ -38,6 +38,7 @@ function Player(options) {
     this.hasDone = false;               // finish acted for one game (fold/allin)
     this.hasSitOut = false;
     this.sitOutTime = 0;                //This will be a time stamp
+    this.idleForHand = false;           //Used by Game Flow if a person join in between game
 }
 
 

@@ -2,7 +2,7 @@ var Game = require('../game/game');
 
 var gameParams = {
 	bigBlind:20,
-	maxPlayer: 6,
+	maxPlayer: 3,
 	minAmount:100,
 	maxAmount:1000,
 };
@@ -22,7 +22,7 @@ var playerParams2 = {
     chips: 400,
     isMaintainChips: true,
     maintainChips: 400,
-    seat : 4
+    seat : 3
 };
 
 var playerParams3 = {
@@ -40,7 +40,7 @@ var playerParams4 = {
     chips: 600,
     isMaintainChips: false,
     maintainChips: 0,
-    seat : 3
+    seat : 4
 };
 
 var playerParams5 = {
@@ -49,7 +49,7 @@ var playerParams5 = {
     chips: 700,
     isMaintainChips: false,
     maintainChips: 0,
-    seat : 5
+    seat : 6
 };
 
 
