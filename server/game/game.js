@@ -125,7 +125,8 @@ Game.prototype.reset = function() {
     this.pot = 0;               // clear pots on board
     this.deck = new Deck();     // use new deck of cards
     for (var i=0; i<this.players.length; i++) {
-        this.players[i].reset();
+        if(this.players[i])
+            this.players[i].reset();
     }
 };
 
@@ -142,11 +143,13 @@ Game.prototype.start = function() {
 
     // deal two cards to each players
     for (var i=0; i<this.players.length; i++) {
-        var c1 = this.deck.drawCard();
-        var c2 = this.deck.drawCard();
-        logd('Player ' + this.players[i].name + ' gets card : ' + c1 + ' & ' + c2);
-        this.players[i].firstCard = c1;
-        this.players[i].secondCard = c2;
+        if(this.players[i]){
+            var c1 = this.deck.drawCard();
+            var c2 = this.deck.drawCard();
+            logd('Player ' + this.players[i].name + ' gets card : ' + c1 + ' & ' + c2);
+            this.players[i].firstCard = c1;
+            this.players[i].secondCard = c2;
+        }
     }
 
     // determine dealer, small blind, big blind

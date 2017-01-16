@@ -60,9 +60,10 @@ game.addPlayer(playerParams1);
 game.addPlayer(playerParams2);
 game.addPlayer(playerParams3);
 game.addPlayer(playerParams4);
+game.start();
 game.addPlayer(playerParams5);
 
-// game.start();
+
 
 // game.getCurrentPlayer().callOrCheck();      // A
 // game.getCurrentPlayer().callOrCheck();      // B
