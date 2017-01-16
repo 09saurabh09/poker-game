@@ -2,7 +2,7 @@ var Game = require('../game/game');
 
 var gameParams = {
 	bigBlind:20,
-	maxPlayer:3,
+	maxPlayer: 6,
 	minAmount:100,
 	maxAmount:1000,
 };
@@ -20,8 +20,8 @@ var playerParams2 = {
 	id: "id2",
     name: "B",
     chips: 400,
-    isMaintainChips: false,
-    maintainChips: 0,
+    isMaintainChips: true,
+    maintainChips: 400,
     seat : 4
 };
 

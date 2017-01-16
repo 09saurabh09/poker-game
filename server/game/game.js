@@ -34,6 +34,10 @@ function Game(options) {
     this.communityCards = [];   // array of Card object, five cards in center of the table
     this.deck = new Deck();     // deck of playing cards
 
+
+    this.initVariable();
+    this.currentGameState();
+
 }
 
 /**
@@ -45,6 +49,29 @@ Game.prototype.initVariable = function(){
         this.players.push(null);
     }
 };
+
+
+/**
+ *  Current Table State for Testing
+ */
+Game.prototype.currentGameState = function(){
+    console.log("------------------------------------------------------GAME STATE START-----------------------------------------------------------");
+    for (var i=0;i<this.maxPlayer;i++){
+        if(this.players[i]!=null){
+            logd("Seat-" + (i+1) + " has player " + this.players[i].name + "  chips-" + this.players[i].chips 
+                + "  bet-" + this.players[i].bet + "  cards- " + JSON.stringify(this.players[i].firstCard) + "," 
+                + JSON.stringify(this.players[i].secondCard) + "  lastAct-" + this.players[i].lastAction
+                + "  acted-"+this.players[i].hasActed + "  hasDone-" + this.players[i].hasDone 
+                + "  sitout-"+this.players[i].hasSitOut+","+ this.players[i].sitOutTime
+                + "  maintinChips-"+ this.players[i].isMaintainChips + "," + this.players[i].maintainChips);
+        }
+        else{
+            logd("Seat-> " + (i+1) + " is empty ");
+        }
+    }
+    console.log("------------------------------------------------------GAME STATE END-----------------------------------------------------------");
+}
+
 
 
 /**
@@ -76,12 +103,16 @@ Game.prototype.addPlayer = function(attr) {
     else if(newPlayer.chips > this.maxAmount){
         logd("Insufficient Chips for player " + newPlayer.name );
     }
-    else{
+    else if(this.players[ newPlayer.seat - 1 ] == null ){
         logd('Player ' + newPlayer.name + ' added to the game');
         newPlayer.game = this;
-        this.players.push(newPlayer);
+        this.players[ newPlayer.seat - 1 ] = newPlayer;
         this.currentTotalPlayer += 1;
     }
+    else{
+        logd("Seat-> " + ( newPlayer.seat  - 1 ) + "  is Already Been Taken");
+    }
+    this.currentGameState();
 };
 
 /**
