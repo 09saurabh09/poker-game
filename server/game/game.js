@@ -377,26 +377,33 @@ Game.prototype.river = function() {
  * Starts the 'showdown' Round
  */
 Game.prototype.showdown = function() {
-    logd('========== SHOWDOWN ==========');
+    logd('====================== SHOWDOWN ======================');
     this.round = 'showdown';
+
+    this.currentGameState();
+
     // gather all hands
-    var hands = [];
-    for (var i=0; i<this.players.length; i++) {
-        hands.push([
-            this.players[i].firstCard,
-            this.players[i].secondCard,
-            this.communityCards[0],
-            this.communityCards[1],
-            this.communityCards[2],
-            this.communityCards[3],
-            this.communityCards[4]
-        ]);
-    }
+    // var hands = [];
+    // for (var i=0; i<this.players.length; i++) {
+    //     if(this.players[i]){
+    //         hands.push([
+    //             this.players[i].firstCard,
+    //             this.players[i].secondCard,
+    //             this.communityCards[0],
+    //             this.communityCards[1],
+    //             this.communityCards[2],
+    //             this.communityCards[3],
+    //             this.communityCards[4]
+    //         ]);
+    //     }
+    // }
 
     //Sorting all the players card accordingly
-    var evalHands = evaluator.sortByRank(this.hands, this.players);
 
-    logd('Player ' + this.players[0].name + ' wins with ' + evalHands[0].handName);
+    logd('====================== Results ======================');
+    var evalHands = evaluator.sortByRank(this.communityCards, this.players);
+
+    logd('Player ' + evalHands[0].player.name + ' wins with ' + evalHands[0].player.handName);
 };
 
 

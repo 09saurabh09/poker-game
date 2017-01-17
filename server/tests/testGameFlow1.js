@@ -63,8 +63,6 @@ game.addPlayer(playerParams4);
 game.addPlayer(playerParams5);
 game.start();
 
-
-
 game.getCurrentPlayer().callOrCheck();      
 game.getCurrentPlayer().callOrCheck();  
 game.getCurrentPlayer().callOrCheck();      
@@ -74,7 +72,13 @@ game.getCurrentPlayer().callOrCheck();
 game.getCurrentPlayer().callOrCheck();      
 game.getCurrentPlayer().callOrCheck();  
 game.getCurrentPlayer().callOrCheck();      
+game.getCurrentPlayer().callOrCheck();   
+game.getCurrentPlayer().callOrCheck();  
 game.getCurrentPlayer().callOrCheck();      
+game.getCurrentPlayer().callOrCheck(); 
+game.getCurrentPlayer().callOrCheck();  
+game.getCurrentPlayer().callOrCheck();      
+game.getCurrentPlayer().callOrCheck();    
 // game.getCurrentPlayer().fold();
 // game.getCurrentPlayer().raise(2000);        // C
 // game.getCurrentPlayer().raise(2000);        // A
