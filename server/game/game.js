@@ -403,7 +403,7 @@ Game.prototype.showdown = function() {
     logd('====================== Results ======================');
     var evalHands = evaluator.sortByRank(this.communityCards, this.players);
 
-    logd('Player ' + evalHands[0].player.name + ' wins with ' + evalHands[0].player.handName);
+    logd('Player ' + evalHands[0].player.name + ' wins with ' + evalHands[0].hand.handName);
 };
 
 
