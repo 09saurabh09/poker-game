@@ -45,6 +45,15 @@ function Game(options) {
 
 
 
+Game.prototype.playerTurn = function(params, gameInstance){
+    // var params = {
+    //     callType : 1,
+    //     amount: 0,
+    //     playerId : id
+    // }; 
+}
+
+
 /**
  * Intializing All the chair on the table with a null value
  */
