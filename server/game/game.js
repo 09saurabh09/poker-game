@@ -255,9 +255,11 @@ Game.prototype.nextPlayer = function(pos){
  */
 Game.prototype.incrementPlayerTurn = function() {
     do {
-        this.turnPos = nextPlayer(this.turnPos);
+        this.turnPos = this.nextPlayer(this.turnPos);
     } while( this.players[this.turnPos].hasDone && this.players[this.turnPos].hasSitOut);
 };
+
+
 
 /**
  * Check if ready to begin new round
@@ -269,13 +271,17 @@ Game.prototype.isEndRound = function() {
     var endOfRound = true;
     //For each player, check
     for(var i=0; i<this.players.length; i++) {
-        var plyr = this.players[i];
-        if (!plyr.hasActed && !plyr.hasDone) {
-            endOfRound = false;
+        if(this.players[i]){
+            var plyr = this.players[i];
+            if (!plyr.hasActed && !plyr.hasDone) {
+                endOfRound = false;
+            }
         }
     }
     return endOfRound;
 };
+
+
 
 /**
  * Play the next round
@@ -300,6 +306,8 @@ Game.prototype.nextRound = function() {
     }
 };
 
+
+
 /**
  * Checks if ready to next round
  * If yes, starts the next round
@@ -312,6 +320,8 @@ Game.prototype.checkForNextRound = function() {
         logd('cannot begin next round');
     }
 };
+
+
 
 /**
  * Starts the 'flop' Round
@@ -329,6 +339,8 @@ Game.prototype.flop = function() {
     this.requestPlayerAction();
 };
 
+
+
 /**
  * Starts the 'turn' Round
  */
@@ -343,6 +355,8 @@ Game.prototype.turn = function() {
     this.requestPlayerAction();
 };
 
+
+
 /**
  * Starts the 'river' Round
  */
@@ -356,6 +370,8 @@ Game.prototype.river = function() {
     // other players must act
     this.requestPlayerAction();
 };
+
+
 
 /**
  * Starts the 'showdown' Round
@@ -383,6 +399,8 @@ Game.prototype.showdown = function() {
     logd('Player ' + this.players[0].name + ' wins with ' + evalHands[0].handName);
 };
 
+
+
 /**
  * Get the highest bet from all players
  * @returns {number} highestBet
@@ -390,23 +408,29 @@ Game.prototype.showdown = function() {
 Game.prototype.getHighestBet = function() {
     var highestBet = -999;
     for(var i=0; i<this.players.length; i++) {
-        if (highestBet < this.players[i].bet) {
+        if (this.players[i] && highestBet < this.players[i].bet) {
             highestBet = this.players[i].bet;
         }
     }
     return highestBet;
 };
 
+
+
 /**
  * Collect all bets from players to the board's pot
  */
 Game.prototype.gatherBets = function() {
     for(var i=0; i<this.players.length; i++) {
-        this.pot += this.players[i].bet;
-        this.players[i].bet = 0;
+        if(this.players[i]){
+            this.pot += this.players[i].bet;
+            this.players[i].bet = 0;
+        }
     }
     logd("Total Pot : " + this.pot)
 };
+
+
 
 /**
  * returns the player whose current turn it is
@@ -416,13 +440,17 @@ Game.prototype.getCurrentPlayer = function() {
     return this.players[this.turnPos];
 };
 
+
+
 /**
  * Sets all players' hasActed to false
  */
 Game.prototype.requestPlayerAction = function() {
     for (var i=0; i<this.players.length; i++) {
-        if (!this.players[i].hasDone) {
-            this.players[i].hasActed = false;
+        if(this.players[i]){
+            if (!this.players[i].hasDone) {
+                this.players[i].hasActed = false;
+            }
         }
     }
 };

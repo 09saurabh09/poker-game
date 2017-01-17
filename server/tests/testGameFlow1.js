@@ -60,13 +60,21 @@ var game = new Game(gameParams);
 game.addPlayer(playerParams2);
 game.addPlayer(playerParams3);
 game.addPlayer(playerParams4);
-game.start();
 game.addPlayer(playerParams5);
+game.start();
 
 
 
-// game.getCurrentPlayer().callOrCheck();      // A
-// game.getCurrentPlayer().callOrCheck();      // B
+game.getCurrentPlayer().callOrCheck();      
+game.getCurrentPlayer().callOrCheck();  
+game.getCurrentPlayer().callOrCheck();      
+game.getCurrentPlayer().callOrCheck();  
+game.getCurrentPlayer().raise(20);      
+game.getCurrentPlayer().callOrCheck();  
+game.getCurrentPlayer().callOrCheck();      
+game.getCurrentPlayer().callOrCheck();  
+game.getCurrentPlayer().callOrCheck();      
+game.getCurrentPlayer().callOrCheck();      
 // game.getCurrentPlayer().fold();
 // game.getCurrentPlayer().raise(2000);        // C
 // game.getCurrentPlayer().raise(2000);        // A
