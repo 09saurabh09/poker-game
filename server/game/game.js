@@ -15,6 +15,8 @@ function logd(message) {
     }
 }
 
+
+
 function Game(options) {
     // Game attributes
     this.bigBlind = options.bigBlind;
@@ -37,18 +39,19 @@ function Game(options) {
 
     this.initVariable();
     this.currentGameState();
+};
 
-}
+
 
 /**
  * Intializing All the chair on the table with a null value
  */
-
 Game.prototype.initVariable = function(){
     for(var i =0;i<this.maxPlayer;i++){
         this.players.push(null);
     }
 };
+
 
 
 /**
@@ -83,7 +86,7 @@ Game.prototype.currentGameState = function(){
         }
     }
     console.log("------------------------------------------------------GAME STATE END-----------------------------------------------------------");
-}
+};
 
 
 
@@ -98,6 +101,7 @@ Game.prototype.addToWaiting = function(attr){
     this.waitingPlayers.push(waitingPlayer);
     logd( waitingPlayer.name + " has been added to the waiting List.");
 };
+
 
 
 /**
@@ -115,6 +119,9 @@ Game.prototype.addPlayer = function(attr) {
     }
     else if(newPlayer.chips > this.maxAmount){
         logd("Insufficient Chips for player " + newPlayer.name );
+    }
+    else if(newPlayer.seat > this.maxPlayer){
+        logd("NO Seat Availabe for Player " + newPlayer.name);
     }
     else if (this.round != 'idle' && this.players[ newPlayer.seat - 1 ] == null){
         logd('Player ' + newPlayer.name + ' added but will will idle for this hand');
@@ -135,6 +142,8 @@ Game.prototype.addPlayer = function(attr) {
     this.currentGameState();
 };
 
+
+
 /**
  * Resets game to the default state
  */
@@ -150,12 +159,14 @@ Game.prototype.reset = function() {
     }
 };
 
+
+
 /**
  * Starts the 'deal' Round
  */
 Game.prototype.start = function() {
     this.reset();
-    if(this.players.length < 2 ){
+    if(this.currentTotalPlayer < 2 ){
         logd("Need More Player to start the Game ");
         return;
     }
@@ -175,9 +186,16 @@ Game.prototype.start = function() {
     // determine dealer, small blind, big blind
     // modulus with total number of players
     // numbers will back to 0 if exceeds the number of players
+    for (var i=0; i<this.maxPlayer; i++ ){
+        var p = ( this.dealerPos + i ) % this.maxPlayer;
+        if(this.players[p] != null){
+            this.dealerPos = p;
+            break;
+        }
+    }
     logd('Player ' + this.players[this.dealerPos].name + ' is the dealer');
-    var smallBlindPos = ( this.dealerPos+1 ) % this.players.length;
-    var bigBlindPos = ( this.dealerPos+2 ) % this.players.length;
+    var smallBlindPos = this.nextPlayer(this.dealerPos);
+    var bigBlindPos =  this.nextPlayer(smallBlindPos);
 
     // small and big pays blind
     this.players[smallBlindPos].addBet(1/2 * this.bigBlind);
@@ -187,13 +205,22 @@ Game.prototype.start = function() {
     logd('Player ' + this.players[bigBlindPos].name + ' pays big blind : ' + this.bigBlind);
 
     // determine whose turn it is
-    this.turnPos = ( bigBlindPos+1 ) % this.players.length;
+    this.turnPos = this.nextPlayer(bigBlindPos);
     logd('Now its player ' + this.players[this.turnPos].name + '\'s turn');
 
     // begin game, start 'deal' Round
     logd('========== Round DEAL ==========');
     this.round = 'deal';
 };
+
+Game.prototype.nextPlayer = function(pos){
+    for (var i=1; i<this.maxPlayer; i++ ){
+        var p = ( pos + i ) % this.maxPlayer;
+        if(this.players[p] != null){
+            return p;
+        }
+    }
+}
 
 Game.prototype.incrementPlayerTurn = function() {
     do {
