@@ -2,7 +2,7 @@ var Game = require('../game/game');
 
 var gameParams = {
 	bigBlind:20,
-	maxPlayer: 3,
+	maxPlayer: 6,
 	minAmount:20*40,
 	maxAmount:20*200,
 };

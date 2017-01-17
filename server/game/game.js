@@ -16,7 +16,9 @@ function logd(message) {
 }
 
 
-
+/**
+ * Constructor with the required Parameter and variables
+ */
 function Game(options) {
     // Game attributes
     this.bigBlind = options.bigBlind;
@@ -47,7 +49,7 @@ function Game(options) {
  * Intializing All the chair on the table with a null value
  */
 Game.prototype.initVariable = function(){
-    for(var i =0;i<this.maxPlayer;i++){
+    for(var i = 0; i < this.maxPlayer; i++){
         this.players.push(null);
     }
 };
@@ -148,16 +150,36 @@ Game.prototype.addPlayer = function(attr) {
  * Resets game to the default state
  */
 Game.prototype.reset = function() {
-    logd('Game reset');
+    logd('^^^^^^Game reset^^^^^^^');
     this.round = 'idle';
     this.communityCards = [];   // clear cards on board
     this.pot = 0;               // clear pots on board
     this.deck = new Deck();     // use new deck of cards
-    for (var i=0; i<this.players.length; i++) {
+    for (var i = 0; i < this.players.length; i++) {
         if(this.players[i])
             this.players[i].reset();
+        if(this.players[i] && this.players[i].idleForHand)
+            this.players[i].idleForHand = false;
     }
 };
+
+
+/**
+ * Check the Conditions before starting a Game
+ */
+Game.prototype.checkForGameRun = function(){
+    if(this.currentTotalPlayer < 2){
+        return false;
+    }
+    var cnt = 0;
+    for(var i = 0; i < this.maxPlayer; i++){
+        if(this.players[i] && this.players[i].hasSitOut == false)
+            cnt++;
+    }
+    if(cnt < 2)
+        return false;
+    return true;
+}
 
 
 
@@ -166,7 +188,7 @@ Game.prototype.reset = function() {
  */
 Game.prototype.start = function() {
     this.reset();
-    if(this.currentTotalPlayer < 2 ){
+    if( !this.checkForGameRun() ){
         logd("Need More Player to start the Game ");
         return;
     }
@@ -213,19 +235,28 @@ Game.prototype.start = function() {
     this.round = 'deal';
 };
 
+
+
+/**
+ * Check which is the next Player int the row
+ */
 Game.prototype.nextPlayer = function(pos){
     for (var i=1; i<this.maxPlayer; i++ ){
         var p = ( pos + i ) % this.maxPlayer;
-        if(this.players[p] != null){
+        if(this.players[p] != null && this.players[p].idleForHand==false){
             return p;
         }
     }
 }
 
+
+/**
+ * Go to the next Player turn 
+ */
 Game.prototype.incrementPlayerTurn = function() {
     do {
-        this.turnPos = ( this.turnPos+1 ) % this.players.length;
-    } while(this.players[this.turnPos].hasDone);
+        this.turnPos = nextPlayer(this.turnPos);
+    } while( this.players[this.turnPos].hasDone && this.players[this.turnPos].hasSitOut);
 };
 
 /**
