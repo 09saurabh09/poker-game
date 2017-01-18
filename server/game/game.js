@@ -92,6 +92,22 @@ Game.prototype.playerTurn = function(params, gameInstance){
             logd("unSetMaintChips has been called for -------- " + this.getCurrentPlayer().id);
             this.getCurrentPlayer().unSetMaintainChips();
             break;
+        case "playerDisconnected":
+            logd("playerDisconnected has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().playerDisconnected();
+            break;
+        case "playerConnected":
+            logd("playerConnected has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().playerConnected();
+            break;
+        case "turnOffAutoMuck":
+            logd("turnOffAutoMuck has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().turnOffAutoMuck();
+            break;
+        case "turnOnAutoMuck":
+            logd("turnOnAutoMuck has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().turnOnAutoMuck();
+            break;
     }   
 
 }

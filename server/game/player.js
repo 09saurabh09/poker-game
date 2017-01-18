@@ -232,6 +232,34 @@ Player.prototype.unSetMaintainChips = function(){
    this.isMaintainChips = false;
 }
 
+/**
+ * To be called when Player got Disconnected 
+ */
+Player.prototype.playerDisconnected = function(){
+    this.connectionStatus = false;
+}
+
+
+/**
+ * To be called when Player got Connected 
+ */
+Player.prototype.playerConnected = function(){
+    this.connectionStatus = true;
+}
+
+/**
+ *
+ */
+Player.prototype.turnOffAutoMuck = function(){
+    this.autoMuck = false;
+}
+
+/**
+ *
+ */
+Player.prototype.turnOnAutoMuck = function(){
+    this.autoMuck = true;
+}
 
 
 

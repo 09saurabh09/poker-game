@@ -104,6 +104,7 @@ game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 
 game.currentGameState();
+
 // game.getCurrentPlayer().fold();
 // game.getCurrentPlayer().raise(2000);        // C
 // game.getCurrentPlayer().raise(2000);        // A
