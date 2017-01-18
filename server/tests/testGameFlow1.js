@@ -63,6 +63,8 @@ game.addPlayer(playerParams4);
 game.addPlayer(playerParams5);
 game.start();
 
+game.playerTurn({callType:"fold"},"abcd");
+
 game.getCurrentPlayer().callOrCheck();      
 game.getCurrentPlayer().callOrCheck();  
 game.getCurrentPlayer().callOrCheck();      

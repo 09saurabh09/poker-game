@@ -194,6 +194,7 @@ Player.prototype.addChips = function(amount){
 }
 
 
+
 /**
  * Maintaining the chips stack after every game
  */
@@ -202,6 +203,33 @@ Player.prototype.maintainChipsStack = function(){
     if( stackDifference > 0 ){
         this.addChips(stackDifference); 
     }
+}
+
+
+
+/**
+ * setMaintainChips Changing the value and making it true
+ */
+Player.prototype.setMaintainChips = function(amount){
+    this.isMaintainChips = true;
+    if(amount > this.game.minAmount && amount < this.game.maxAmount && amount >= this.chips ){
+        logd("For Player "+this.player.name +" maintainStack Changed " + amount);
+        this.maintainChips = amount;
+
+    }
+    else{
+        logd("For Player "+this.player.name +" requested maintainStack cannot be changed " + amount );
+    }
+
+}
+
+
+
+/**
+ * Removing the Maintain Stack Features
+ */
+Player.prototype.unSetMaintainChips = function(){
+   this.isMaintainChips = false;
 }
 
 

@@ -16,6 +16,7 @@ function logd(message) {
 }
 
 
+
 /**
  * Constructor with the required Parameter and variables
  */
@@ -49,10 +50,34 @@ function Game(options) {
  */
 Game.prototype.playerTurn = function(params, gameInstance){
     // var params = {
-    //     callType : 1,
+    //     callType : "fold",
     //     amount: 0,
     //     playerId : id
     // }; 
+    switch(params.callType){
+        case "fold":
+            logd("Fold has been called");
+            break;
+        case "allin":
+            logd("allIn has been called");
+            break;
+        case "callOrCheck":
+            logd("callOrCheck has been called");
+            break;
+        case "raise":
+            logd("callOrCheck has been called");
+            break;
+        case "sitOut":
+            logd("callOrCheck has been called");
+            break;
+        case "sitIn":
+            logd("callOrCheck has been called");
+            break;
+        case "setMaintChips":
+            logd("setMaintChips has been called");
+            break;
+    }   
+
 }
 
 
