@@ -63,25 +63,46 @@ game.addPlayer(playerParams4);
 game.addPlayer(playerParams5);
 game.start();
 
-game.playerTurn({callType:"fold"},"abcd");
+var gameInstance = {};
 
-game.getCurrentPlayer().callOrCheck();      
-game.getCurrentPlayer().callOrCheck();  
-game.getCurrentPlayer().callOrCheck();      
-game.getCurrentPlayer().callOrCheck();  
-game.getCurrentPlayer().raise(20);      
-game.getCurrentPlayer().callOrCheck();  
-game.getCurrentPlayer().callOrCheck();      
-game.getCurrentPlayer().callOrCheck();  
-game.getCurrentPlayer().callOrCheck();      
-game.getCurrentPlayer().callOrCheck();   
-game.getCurrentPlayer().callOrCheck();  
-game.getCurrentPlayer().callOrCheck();      
-game.getCurrentPlayer().callOrCheck(); 
-game.getCurrentPlayer().callOrCheck();  
-game.getCurrentPlayer().callOrCheck();      
-game.getCurrentPlayer().callOrCheck();    
-game.getCurrentPlayer().callOrCheck(); 
+var turnParamsCall = {
+    callType:"callOrCheck",
+    amount:0,
+    playerId:""
+};
+
+var turnParamsRaise = {
+    callType:"raise",
+    amount:20,
+    playerId:""
+};
+
+var turnParamsStack = {
+    callType:"unSetMaintainChips",
+    amount:20,
+    playerId:""
+};
+
+
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsStack,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsRaise,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsCall,gameInstance);
+
 game.currentGameState();
 // game.getCurrentPlayer().fold();
 // game.getCurrentPlayer().raise(2000);        // C

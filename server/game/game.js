@@ -54,27 +54,43 @@ Game.prototype.playerTurn = function(params, gameInstance){
     //     amount: 0,
     //     playerId : id
     // }; 
+
+    if(params.playerId != this.getCurrentPlayer().id){
+        logd("The Turn Positing is different for different Player");
+        //return;
+    }
     switch(params.callType){
         case "fold":
-            logd("Fold has been called");
+            logd("Fold has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().fold();
             break;
         case "allin":
-            logd("allIn has been called");
+            logd("allIn has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().allin();
             break;
         case "callOrCheck":
-            logd("callOrCheck has been called");
+            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().callOrCheck();
             break;
         case "raise":
-            logd("callOrCheck has been called");
+            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().raise(params.amount);
             break;
         case "sitOut":
-            logd("callOrCheck has been called");
+            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().sitOut();
             break;
         case "sitIn":
-            logd("callOrCheck has been called");
+            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().sitIn();
             break;
         case "setMaintChips":
-            logd("setMaintChips has been called");
+            logd("setMaintChips has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().setMaintChips(params.amount);
+            break;
+        case "unSetMaintainChips":
+            logd("unSetMaintChips has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().unSetMaintainChips();
             break;
     }   
 
@@ -115,7 +131,7 @@ Game.prototype.currentGameState = function(){
                 + "  bet-" + this.players[i].bet + "  cards- " + JSON.stringify(this.players[i].firstCard) + "," 
                 + JSON.stringify(this.players[i].secondCard) + "  lastAct-" + this.players[i].lastAction
                 + "  acted-"+this.players[i].hasActed + "  hasDone-" + this.players[i].hasDone 
-                + "  idle-" + this.players[i].idleForHand 
+                + "  idle-" + this.players[i].idleForHand + "  id-" + this.players[i].id
                 + "  sitout-"+this.players[i].hasSitOut+","+ this.players[i].sitOutTime
                 + "  maintinChips-"+ this.players[i].isMaintainChips + "," + this.players[i].maintainChips);
         }
