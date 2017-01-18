@@ -24,7 +24,7 @@ function Player(options) {
     this.name = options.name;
     this.chips = options.chips;
     this.isMaintainChips = options.isMaintainChips; // Thyis should be intialised with the game boolean value
-    this.maintainChips = options.maintainChips;     // The value to which we need to maintain stack
+    this.maintainChips = options.chips;     // The value to which we need to maintain stack
     this.seat = options.seat;                       // Seat on Gmae
 
     this.game = null;
@@ -39,6 +39,8 @@ function Player(options) {
     this.hasSitOut = false;
     this.sitOutTime = 0;                //This will be a time stamp
     this.idleForHand = false;           //Used by Game Flow if a person join in between game
+    this.connectionStatus = true;       //This is for checking whether the player is connected or not
+    this.autoMuck = true;               //Default True for the every Player 
 }
 
 
@@ -201,6 +203,7 @@ Player.prototype.maintainChipsStack = function(){
         this.addChips(stackDifference); 
     }
 }
+
 
 
 

@@ -2,7 +2,7 @@
 
 var PokerEvaluator = require('poker-evaluator');
 
-function sortByRank(communityCards, players){
+function sortByRankHoldem(communityCards, players){
 	var evalHands = [];
 
     //console.log("------------Evaluator---------");
@@ -36,12 +36,17 @@ function sortByRank(communityCards, players){
 		return 1;
 	});
 
-    for(var i = 0; i < evalHands.length; i++){
-        console.log("Player  " + evalHands[i].player.name + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
-    }
 	return evalHands;
 }
 
+
+// function checkForDraw(evalHands){
+//     var ranks = [];
+//     for(var i = 1; i < evalHands.length; i++){
+//         if( evalHands[i].hand.value > )
+//     }
+// }
+
 module.exports = {
-    sortByRank : sortByRank
+    sortByRankHoldem : sortByRankHoldem
 };

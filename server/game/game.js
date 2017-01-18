@@ -44,7 +44,9 @@ function Game(options) {
 };
 
 
-
+/**
+ * 
+ */
 Game.prototype.playerTurn = function(params, gameInstance){
     // var params = {
     //     callType : 1,
@@ -69,7 +71,7 @@ Game.prototype.initVariable = function(){
  *  Current Table State for Testing
  */
 Game.prototype.currentGameState = function(){
-    console.log("------------------------------------------------------GAME STATE START-----------------------------------------------------------");
+    logd("------------------------------------------------------GAME STATE START-----------------------------------------------------------");
     logd("## Game bigBlind - " +this.bigBlind);
     logd("## Game maxPlayer - " +this.maxPlayer);
     logd("## Game minAmount - " +this.minAmount);
@@ -96,7 +98,7 @@ Game.prototype.currentGameState = function(){
             logd("## Seat-> " + (i+1) + " is empty ");
         }
     }
-    console.log("------------------------------------------------------GAME STATE END-----------------------------------------------------------");
+    logd("------------------------------------------------------GAME STATE END-----------------------------------------------------------");
 };
 
 
@@ -391,28 +393,14 @@ Game.prototype.showdown = function() {
 
     this.currentGameState();
 
-    // gather all hands
-    // var hands = [];
-    // for (var i=0; i<this.players.length; i++) {
-    //     if(this.players[i]){
-    //         hands.push([
-    //             this.players[i].firstCard,
-    //             this.players[i].secondCard,
-    //             this.communityCards[0],
-    //             this.communityCards[1],
-    //             this.communityCards[2],
-    //             this.communityCards[3],
-    //             this.communityCards[4]
-    //         ]);
-    //     }
-    // }
-
     //Sorting all the players card accordingly
 
     logd('====================== Results ======================');
-    var evalHands = evaluator.sortByRank(this.communityCards, this.players);
-
+    var evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
     logd('Player ' + evalHands[0].player.name + ' wins with ' + evalHands[0].hand.handName);
+    for(var i = 0; i < evalHands.length; i++){
+        logd("Player  " + evalHands[i].player.name + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
+    }
 };
 
 

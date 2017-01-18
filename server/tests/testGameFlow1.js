@@ -29,7 +29,7 @@ var playerParams3 = {
 	id: "id3",
     name: "C",
     chips: 1500,
-    isMaintainChips: false,
+    isMaintainChips: true,
     maintainChips: 0,
     seat : 2
 };
@@ -79,6 +79,8 @@ game.getCurrentPlayer().callOrCheck();
 game.getCurrentPlayer().callOrCheck();  
 game.getCurrentPlayer().callOrCheck();      
 game.getCurrentPlayer().callOrCheck();    
+game.getCurrentPlayer().callOrCheck(); 
+game.currentGameState();
 // game.getCurrentPlayer().fold();
 // game.getCurrentPlayer().raise(2000);        // C
 // game.getCurrentPlayer().raise(2000);        // A
