@@ -5,6 +5,8 @@ var gameParams = {
 	maxPlayer: 6,
 	minAmount:20*40,
 	maxAmount:20*200,
+    maxSitOutTIme: 30,
+    maxDisconnectionTIme: 10,
 };
 
 var playerParams1 = {

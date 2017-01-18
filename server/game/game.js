@@ -26,6 +26,8 @@ function Game(options) {
     this.maxPlayer = options.maxPlayer;
     this.minAmount = options.minAmount;
     this.maxAmount = options.maxAmount;
+    this.maxSitOutTIme = options.maxSitOutTIme;
+    this.maxDisconnectionTIme = options.maxDisconnectionTIme;
 
     this.players = [];          // Array of Player object, represents all players in this game
     this.waitingPlayers = [];   // Array of all the players who will be there in the waiting list
@@ -109,7 +111,6 @@ Game.prototype.playerTurn = function(params, gameInstance){
             this.getCurrentPlayer().turnOnAutoMuck();
             break;
     }   
-
 }
 
 
@@ -133,6 +134,8 @@ Game.prototype.currentGameState = function(){
     logd("## Game maxPlayer - " +this.maxPlayer);
     logd("## Game minAmount - " +this.minAmount);
     logd("## Game maxAmount - " +this.maxAmount);
+    logd("## Game maxSitOutTIme - " +this.maxSitOutTIme);
+    logd("## Game maxDisconnectionTIme - " +this.maxDisconnectionTIme);
     logd("## Game dealerPos - " +this.dealerPos);        
     logd("## Game turnPos - " +this.turnPos);           
     logd("## Game pot - " +this.pot);            
