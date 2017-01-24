@@ -167,7 +167,6 @@ Player.prototype.moveNext = function(){
  */
 Player.prototype.sitOut = function(){
     this.hasSitOut = true;
-    this.idleForHand = true;
     this.sitOutTime = moment();
 }
 

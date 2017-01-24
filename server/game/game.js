@@ -259,15 +259,23 @@ Game.prototype.checkPlayersConnected = function(){
 Game.prototype.checkPlayersSitout = function(){
     for(var i = 0; i< this.players.length; i++){
         if(this.players[i]){
-            if(this.players[i].hasSitOut == false && this.players[i].idleForHand){
-                this.players[i].idleForHand = false;
+            if( this.players[i].idleForHand ){
+                if(this.players[i].hasSitOut == false){
+                    this.players[i].idleForHand = false;
+                }
+                else{
+                    this.players[i].idleForHand = true;
+                }
             }
-            else if(this.players[i].hasSitOut){
+            if(this.players[i].hasSitOut){
                 var sitOutDuration = moment() - this.players[i].sitOutTime;
                 if(sitOutDuration / (1000*60) >= 30 ){
                     this.players[i].leaveGame();
                     this.players[i]=null;
-                } 
+                }
+                else{
+                    this.players[i].idleForHand =  true;
+                }
             }
         }
     }
