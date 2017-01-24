@@ -7,6 +7,7 @@ module.exports = Game;
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
 var evaluator = require('../utils/evaluator.js');
+var moment = require("moment");
 
 var debug = true;
 function logd(message) {
@@ -27,7 +28,6 @@ function Game(options) {
     this.minAmount = options.minAmount;
     this.maxAmount = options.maxAmount;
     this.maxSitOutTIme = options.maxSitOutTIme;
-    this.maxDisconnectionTIme = options.maxDisconnectionTIme;
 
     this.players = [];          // Array of Player object, represents all players in this game
     this.waitingPlayers = [];   // Array of all the players who will be there in the waiting list
@@ -135,7 +135,6 @@ Game.prototype.currentGameState = function(){
     logd("## Game minAmount - " +this.minAmount);
     logd("## Game maxAmount - " +this.maxAmount);
     logd("## Game maxSitOutTIme - " +this.maxSitOutTIme);
-    logd("## Game maxDisconnectionTIme - " +this.maxDisconnectionTIme);
     logd("## Game dealerPos - " +this.dealerPos);        
     logd("## Game turnPos - " +this.turnPos);           
     logd("## Game pot - " +this.pot);            
@@ -232,8 +231,45 @@ Game.prototype.reset = function() {
         if(this.players[i] && this.players[i].idleForHand)
             this.players[i].idleForHand = false;
     }
+    this.checkPlayersConnected();
+    this.checkPlayersSitout();
 };
 
+
+
+/**
+ * To Check who are all the players got connected.
+ */
+Game.prototype.checkPlayersConnected = function(){
+    for(var i = 0; i < this.players.length; i++){
+        if(this.players[i] && this.players[i].connectionStatus == false){
+            this.players[i].hasSitOut = true;
+            this.players[i].connectionStatus = true;
+        }
+    }
+}
+
+
+
+/**
+ * Check the sitout Status of all the Players
+ */
+Game.prototype.checkPlayersSitout = function(){
+    for(var i = 0; i< this.players.length; i++){
+        if(this.players[i]){
+            if(this.players[i].hasSitOut == false && this.players[i].idleForHand){
+                this.players[i].idleForHand = false;
+            }
+            else if(this.players[i].hasSitOut){
+                var sitOutDuration = moment() - this.players[i].sitOutTime;
+                if(sitOutDuration / (1000*60) >= 30 ){
+                    this.players[i].leaveGame();
+                    this.players[i]=null;
+                } 
+            }
+        }
+    }
+}
 
 /**
  * Check the Conditions before starting a Game
@@ -314,7 +350,7 @@ Game.prototype.start = function() {
 Game.prototype.nextPlayer = function(pos){
     for (var i=1; i<this.maxPlayer; i++ ){
         var p = ( pos + i ) % this.maxPlayer;
-        if(this.players[p] != null && this.players[p].idleForHand==false){
+        if(this.players[p] != null && this.players[p].idleForHand == false && this.players[p].hasSitOut == false){
             return p;
         }
     }
