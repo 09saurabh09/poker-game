@@ -260,6 +260,7 @@ Player.prototype.playerDisconnected = function(){
  */
 Player.prototype.playerConnected = function(){
     this.connectionStatus = true;
+    this.disconnectionTIme = 0;
 }
 
 

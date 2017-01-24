@@ -110,6 +110,10 @@ Game.prototype.playerTurn = function(params, gameInstance){
             logd("turnOnAutoMuck has been called for -------- " + this.getCurrentPlayer().id);
             this.getCurrentPlayer().turnOnAutoMuck();
             break;
+        case "leaveGame":
+            logd("leaveGame has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().leaveGame();
+            break;
     }   
 }
 
@@ -228,8 +232,6 @@ Game.prototype.reset = function() {
     for (var i = 0; i < this.players.length; i++) {
         if(this.players[i])
             this.players[i].reset();
-        if(this.players[i] && this.players[i].idleForHand)
-            this.players[i].idleForHand = false;
     }
     this.checkPlayersConnected();
     this.checkPlayersSitout();
