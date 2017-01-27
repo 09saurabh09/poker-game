@@ -104,6 +104,8 @@ game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsRaise,gameInstance);
 game.playerTurn(turnParamsFold,gameInstance);
+game.playerTurn(turnParamsFold,gameInstance);
+game.playerTurn(turnParamsFold,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);

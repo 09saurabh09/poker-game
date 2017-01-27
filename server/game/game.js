@@ -400,9 +400,7 @@ Game.prototype.nextPlayer = function(pos){
  * Go to the next Player turn 
  */
 Game.prototype.incrementPlayerTurn = function() {
-    do {
-        this.turnPos = this.nextPlayer(this.turnPos);
-    } while( this.players[this.turnPos].hasDone && this.players[this.turnPos].hasSitOut);
+    this.turnPos = this.nextPlayer(this.turnPos);
 };
 
 
@@ -455,6 +453,9 @@ Game.prototype.nextRound = function() {
         this.start();
     }
     this.currentGameState();
+    if(this.checkPlayerLeft()  <  2){
+        this.showdown();
+    }
 };
 
 
@@ -531,15 +532,31 @@ Game.prototype.showdown = function() {
     logd('====================== SHOWDOWN ======================');
     this.round = 'showdown';
 
-    this.currentGameState();
-
-    //Sorting all the players card accordingly
-
-    logd('====================== Results ======================');
-    var evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
-    logd('Player ' + evalHands[0].player.name + ' wins with ' + evalHands[0].hand.handName);
-    for(var i = 0; i < evalHands.length; i++){
-        logd("Player  " + evalHands[i].player.name + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
+    if(this.checkPlayerLeft()  <  2){
+        if(this.checkPlayerLeft() == 0){
+            logd("All Have Folded or left Game No one won");
+        }
+        else{
+            for(var i = 0; i <this.players.length; i++ ){
+                if(this.players[i] && this.players[i].hasDone == false ){
+                    if(this.players[i].autoMuck==true){
+                        logd("Player " + this.players[i].name + " has won the game.");
+                    }
+                    else{
+                        logd("Player  " + this.players[i].name+ " has won with cards " + this.players[i].firstCard + ", " + this.players[i].secondCard);  
+                    }
+                }
+            }
+        }
+    }
+    else{
+        //Sorting all the players card accordingly
+        logd('====================== Results ======================');
+        var evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
+        logd('Player ' + evalHands[0].player.name + ' wins with ' + evalHands[0].hand.handName);
+        for(var i = 0; i < evalHands.length; i++){
+            logd("Player  " + evalHands[i].player.name + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
+        }
     }
 };
 
@@ -649,3 +666,36 @@ Game.prototype.requestPlayerAction = function() {
         }
     }
 };
+
+
+
+/**
+ * Check the Minimum Raise
+ */
+Game.prototype.mininumunRaise = function(){
+
+}
+
+
+
+/**
+ * Check the Maximum Raise
+ */
+Game.prototype.maximumRaise = function(){
+
+}
+
+
+
+/**
+ * Check if Only one Player left then end the Game.
+ */
+Game.prototype.checkPlayerLeft = function(){
+    var totalPlaying = 0;
+    for(var i = 0; i <this.players.length; i++ ){
+        if(this.players[i] && this.players[i].hasDone == false ){
+            totalPlaying++;
+        }
+    }
+    return totalPlaying;
+}
