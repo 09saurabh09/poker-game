@@ -7,6 +7,7 @@ var gameParams = {
 	maxAmount:20*200,
     maxSitOutTIme: 30,
     maxDisconnectionTIme: 10,
+    annyomousGame:false
 };
 
 var playerParams1 = {

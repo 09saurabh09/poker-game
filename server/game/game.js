@@ -28,6 +28,7 @@ function Game(options) {
     this.minAmount = options.minAmount;
     this.maxAmount = options.maxAmount;
     this.maxSitOutTIme = options.maxSitOutTIme;
+    this.annyomousGame = options.annyomousGame;
 
     this.players = [];          // Array of Player object, represents all players in this game
     this.waitingPlayers = [];   // Array of all the players who will be there in the waiting list
@@ -673,7 +674,7 @@ Game.prototype.requestPlayerAction = function() {
  * Check the Minimum Raise
  */
 Game.prototype.mininumunRaise = function(){
-
+    //To Do
 }
 
 
@@ -682,9 +683,24 @@ Game.prototype.mininumunRaise = function(){
  * Check the Maximum Raise
  */
 Game.prototype.maximumRaise = function(){
-
+    //To Do
 }
 
+
+/**
+ * Show off the Card
+ */
+Game.prototype.showCard = function(){
+    //To Do
+}
+
+
+/**
+ * Comission from the game
+ */
+Game.prototype.rakeForGame = function(){
+    //To Do
+}
 
 
 /**
