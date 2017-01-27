@@ -648,6 +648,7 @@ Game.prototype.managePots = function(){
             }
         }
         sidePot.stakeHolders = stakeHolder;
+        sidePot.rakeMoney = 0;
         this.gamePots.push(sidePot);    
     }
 
@@ -714,7 +715,15 @@ Game.prototype.showCard = function(){
  * Comission from the game
  */
 Game.prototype.rakeForGame = function(){
-    
+    this.rakeMoney = 0;
+    for(var i = 0; i <this.gamePots.length; i++ ){
+        if( this.gamePots[i].stakeHolders.length <=Y ){
+            this.gamePots[i].rakeMoney = (this.gamePots[i].amount * this.rakeX) / 100;
+        }
+        else{
+            this.gamePots[i].rakeMoney = (this.gamePots[i].amount * this.rakeZ) / 100;
+        }
+    }
 }
 
 
