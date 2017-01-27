@@ -76,9 +76,15 @@ Game.prototype.playerTurn = function(params, gameInstance){
             this.getCurrentPlayer().callOrCheck();
             break;
         case "raise":
-            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
-            this.getCurrentPlayer().raise(params.amount);
-            break;
+            if( params.amount < this.mininumunRaise()){
+                logd("Raise Amount is less than minimum Value");
+                break;
+            }
+            else{
+                logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
+                this.getCurrentPlayer().raise(params.amount);
+                break;
+            }
         case "sitOut":
             logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
             this.getCurrentPlayer().sitOut();
@@ -674,7 +680,12 @@ Game.prototype.requestPlayerAction = function() {
  * Check the Minimum Raise
  */
 Game.prototype.mininumunRaise = function(){
-    //To Do
+    if(this.round == "deal"){
+        return 2*this.bigBlind;
+    }
+    else{
+        return this.bigBlind;
+    }
 }
 
 
@@ -683,7 +694,7 @@ Game.prototype.mininumunRaise = function(){
  * Check the Maximum Raise
  */
 Game.prototype.maximumRaise = function(){
-    //To Do
+    return -1;
 }
 
 

@@ -267,7 +267,7 @@ Player.prototype.playerConnected = function(){
 
 
 /**
- *
+ * Player can turn off Auto Muck
  */
 Player.prototype.turnOffAutoMuck = function(){
     this.autoMuck = false;
@@ -276,13 +276,8 @@ Player.prototype.turnOffAutoMuck = function(){
 
 
 /**
- *
+ * Player can turn on Auto Muck
  */
 Player.prototype.turnOnAutoMuck = function(){
     this.autoMuck = true;
 }
-
-
-
-
-
