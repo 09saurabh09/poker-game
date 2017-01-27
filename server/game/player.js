@@ -33,6 +33,7 @@ function Player(options) {
     this.secondCard = {};
     this.bet = 0;
     this.totalBet = 0;
+    this.showCards = false;
 
     this.lastAction = "";
     this.hasActed = false;              // acted for one round (call/check/raise)
@@ -131,6 +132,7 @@ Player.prototype.reset = function() {
     this.lastAction = "";
     this.hasActed = false;
     this.hasDone = false;
+    this.showCards = false;
 
     if(this.isMaintainChips){
         this.maintainChipsStack();

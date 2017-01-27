@@ -29,6 +29,10 @@ function Game(options) {
     this.maxAmount = options.maxAmount;
     this.maxSitOutTIme = options.maxSitOutTIme;
     this.annyomousGame = options.annyomousGame;
+    this.runTimeType = options.runTimeType;
+    this.rakeX = options.rakeX;
+    this.rakeY = options.rakeY;
+    this.rakeZ = options.rakeZ;
 
     this.players = [];          // Array of Player object, represents all players in this game
     this.waitingPlayers = [];   // Array of all the players who will be there in the waiting list
@@ -710,7 +714,7 @@ Game.prototype.showCard = function(){
  * Comission from the game
  */
 Game.prototype.rakeForGame = function(){
-    //To Do
+    
 }
 
 

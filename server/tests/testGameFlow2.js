@@ -12,7 +12,11 @@ var gameParams = {
 	maxAmount:20*200,
     maxSitOutTIme: 30,
     maxDisconnectionTIme: 10,
-    annyomousGame:false
+    annyomousGame:false,
+    runTimeType:1,
+    rakeX, 5,
+    rakeY, 5,
+    rakeZ, 2
 };
 
 var playerParams1 = {
