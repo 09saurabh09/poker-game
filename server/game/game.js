@@ -35,14 +35,14 @@ function Game(options) {
     this.round = 'idle';        // current round in a game ['idle', 'deal', 'flop' , 'turn', 'river']
     this.dealerPos = 0;         // to determine the dealer position for each game, incremented by 1 for each end game
     this.turnPos = 0;           // to determine whose turn it is in a playing game
-    this.pot = 0;               // accumulated chips in center of the table
+    this.totalPot = 0;               // accumulated chips in center of the table
     this.minimumRaise =  0;     // Minimum raise to be have
     this.currentTotalPlayer = 0;// Total players on the table
     this.communityCards = [];   // array of Card object, five cards in center of the table
     this.deck = new Deck();     // deck of playing cards
+    this.gamePots = [];          // The Vairable to store all the game pots 
 
-
-    this.initVariable();
+    this.initPlayers();
     this.currentGameState();
 };
 
@@ -121,11 +121,29 @@ Game.prototype.playerTurn = function(params, gameInstance){
 /**
  * Intializing All the chair on the table with a null value
  */
-Game.prototype.initVariable = function(){
+Game.prototype.initPlayers = function(){
     for(var i = 0; i < this.maxPlayer; i++){
         this.players.push(null);
     }
 };
+
+
+
+/**
+ * Intializing the Game Pot with the Share holder as all Players
+ */
+Game.prototype.initGamePots = function(){
+    var mainPot = {};
+    var stakeHolder = [];
+    for(var i = 0; i < this.maxPlayer; i++){
+        if(this.players[i]){
+            stakeHolder.push(this.players[i].id);
+        }
+    }
+    mainPot.stakeHolders = stakeHolder;
+    mainPot.amount = 0;
+    this.gamePots.push(mainPot);
+}
 
 
 
@@ -141,7 +159,8 @@ Game.prototype.currentGameState = function(){
     logd("## Game maxSitOutTIme - " +this.maxSitOutTIme);
     logd("## Game dealerPos - " +this.dealerPos);        
     logd("## Game turnPos - " +this.turnPos);           
-    logd("## Game pot - " +this.pot);            
+    logd("## Game totalpot - " +this.totalPot);
+    logd("## Game gamePots - " + JSON.stringify(this.gamePots));
     logd("## Game minimumRaise - " +this.minimumRaise);    
     logd("## Game currentTotalPlayer - " +this.currentTotalPlayer); 
     logd("## Game Community Cards - " + JSON.stringify(this.communityCards));
@@ -149,11 +168,18 @@ Game.prototype.currentGameState = function(){
     logd("## Game oldPlayers - " + JSON.stringify(this.oldPlayers));
     for (var i=0;i<this.maxPlayer;i++){
         if(this.players[i]!=null){
-            logd("## Seat-" + (i+1) + " has player " + this.players[i].name + "  chips-" + this.players[i].chips 
-                + "  bet-" + this.players[i].bet + "  cards- " + JSON.stringify(this.players[i].firstCard) + "," 
-                + JSON.stringify(this.players[i].secondCard) + "  lastAct-" + this.players[i].lastAction
-                + "  acted-"+this.players[i].hasActed + "  hasDone-" + this.players[i].hasDone 
-                + "  idle-" + this.players[i].idleForHand + "  id-" + this.players[i].id
+            logd("## Seat-" + (i+1) 
+                + "  has player " + this.players[i].name 
+                + "  chips-" + this.players[i].chips 
+                + "  bet-" + this.players[i].bet 
+                + "  totalBet-" + this.players[i].totalBet
+                + "  cards- " + JSON.stringify(this.players[i].firstCard) + "," 
+                + JSON.stringify(this.players[i].secondCard) 
+                + "  lastAct-" + this.players[i].lastAction
+                + "  acted-"+this.players[i].hasActed 
+                + "  hasDone-" + this.players[i].hasDone 
+                + "  idle-" + this.players[i].idleForHand 
+                + "  id-" + this.players[i].id
                 + "  sitout-"+this.players[i].hasSitOut+","+ this.players[i].sitOutTime
                 + "  maintinChips-"+ this.players[i].isMaintainChips + "," + this.players[i].maintainChips);
         }
@@ -215,7 +241,7 @@ Game.prototype.addPlayer = function(attr) {
     else{
         logd("Seat-> " + ( newPlayer.seat  - 1 ) + "  is Already Been Taken");
     }
-    this.currentGameState();
+    //this.currentGameState();
 };
 
 
@@ -227,14 +253,17 @@ Game.prototype.reset = function() {
     logd('^^^^^^Game reset^^^^^^^');
     this.round = 'idle';
     this.communityCards = [];   // clear cards on board
-    this.pot = 0;               // clear pots on board
+    this.totalPot = 0;               // clear pots on board
     this.deck = new Deck();     // use new deck of cards
+    this.gamePots = [];
     for (var i = 0; i < this.players.length; i++) {
         if(this.players[i])
             this.players[i].reset();
     }
+
     this.checkPlayersConnected();
     this.checkPlayersSitout();
+    //this.initGamePots();
 };
 
 
@@ -360,7 +389,7 @@ Game.prototype.start = function() {
 Game.prototype.nextPlayer = function(pos){
     for (var i=1; i<this.maxPlayer; i++ ){
         var p = ( pos + i ) % this.maxPlayer;
-        if(this.players[p] != null && this.players[p].idleForHand == false && this.players[p].hasSitOut == false){
+        if(this.players[p] != null && this.players[p].idleForHand == false && this.players[p].hasSitOut == false && this.players[p].hasDone == false){
             return p;
         }
     }
@@ -408,19 +437,24 @@ Game.prototype.nextRound = function() {
         this.start();
     } else if (this.round === 'deal') {
         this.gatherBets();
+        this.managePots();
         this.flop();
     } else if (this.round === 'flop') {
         this.gatherBets();
+        this.managePots();
         this.turn();
     } else if (this.round === 'turn') {
         this.gatherBets();
+        this.managePots();
         this.river();
     } else if (this.round === 'river') {
         this.gatherBets();
+        this.managePots();
         this.showdown();
     } else {
         this.start();
     }
+    this.currentGameState();
 };
 
 
@@ -531,14 +565,65 @@ Game.prototype.getHighestBet = function() {
  * Collect all bets from players to the board's pot
  */
 Game.prototype.gatherBets = function() {
+    this.totalPot = 0;
     for(var i=0; i<this.players.length; i++) {
         if(this.players[i]){
-            this.pot += this.players[i].bet;
-            this.players[i].bet = 0;
+            this.players[i].totalBet = this.players[i].bet;
+            this.totalPot += this.players[i].totalBet;
+            //this.players[i].bet = 0;
         }
     }
-    logd("Total Pot : " + this.pot)
+    logd("Total Pot : " + this.totalPot)
 };
+
+
+
+/**
+ * Maintaing the GamePots after Each Round
+ */
+Game.prototype.managePots = function(){
+    var extraPot = [];
+    this.gamePots = [];
+    extraPot.push(0);
+    var differentPot = {}; 
+    for(var i = 0; i <this.players.length; i++){
+        if( this.players[i] ){
+            if( this.players[i].lastAction != "fold" && this.players[i].totalBet > 0 )
+                differentPot[this.players[i].totalBet] = 1;
+        }
+    }
+    for(var i in differentPot){
+        extraPot.push(i);
+    }
+    extraPot = extraPot.sort();
+
+    for(var i = 1; i < extraPot.length; i++){
+        var sidePot = {};
+        var stakeHolder = [];
+        var potContribution = extraPot[i] - extraPot[i-1];
+        sidePot.amount = 0;
+        for(var j = 0; j < this.players.length ; j++ ){
+            if(this.players[j] && this.players[j].totalBet >= potContribution && this.players[j].lastAction != "fold"){
+                sidePot.amount += potContribution;
+                this.players[j].totalBet -= potContribution;
+                stakeHolder.push(this.players[j].id);
+            }
+            else if(this.players[j] && this.players[j].lastAction =="fold"){
+                if(this.players[j].totalBet >= potContribution){
+                    sidePot.amount += potContribution;
+                    this.players[j].totalBet -= potContribution;
+                }
+                else{
+                    sidePot.amount += this.players[j].totalBet;
+                    this.players[j].totalBet = 0;
+                }
+            }
+        }
+        sidePot.stakeHolders = stakeHolder;
+        this.gamePots.push(sidePot);    
+    }
+
+}
 
 
 

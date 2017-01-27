@@ -32,6 +32,7 @@ function Player(options) {
     this.firstCard = {};
     this.secondCard = {};
     this.bet = 0;
+    this.totalBet = 0;
 
     this.lastAction = "";
     this.hasActed = false;              // acted for one round (call/check/raise)
@@ -125,6 +126,7 @@ Player.prototype.reset = function() {
     this.firstCard = {};
     this.secondCard = {};
     this.bet = 0;
+    this.totalBet = 0;
 
     this.lastAction = "";
     this.hasActed = false;
