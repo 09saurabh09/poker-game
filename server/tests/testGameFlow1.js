@@ -9,9 +9,9 @@ var gameParams = {
     maxDisconnectionTIme: 10,
     annyomousGame:false,
     runTimeType:2,
-    rakeX, 5,
-    rakeY, 5,
-    rakeZ, 2
+    rakeX: 5,
+    rakeY: 5,
+    rakeZ: 2
 };
 
 var playerParams1 = {

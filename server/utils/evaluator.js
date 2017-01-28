@@ -5,9 +5,6 @@ var PokerEvaluator = require('poker-evaluator');
 function sortByRankHoldem(communityCards, players){
 	var evalHands = [];
 
-    //console.log("------------Evaluator---------");
-    //console.log(JSON.stringify(communityCards));
-
     for (var i = 0; i < players.length ; i++ ) {
     	var playerHand = {};
         var hand = [];
@@ -39,14 +36,66 @@ function sortByRankHoldem(communityCards, players){
 	return evalHands;
 }
 
+function sortByRankOmaha(communityCards, players){
+    var evalHands = [];
 
-// function checkForDraw(evalHands){
-//     var ranks = [];
-//     for(var i = 1; i < evalHands.length; i++){
-//         if( evalHands[i].hand.value > )
-//     }
-// }
+    for (var i = 0; i < players.length ; i++ ) {
+        var playerHand = {};
+        var hand = [];
+        if(players[i]){
+            var playerBestCard = bestHandInOmaha(communityCards, players[i]);
+            playerHand.player = players[i];
+            playerHand.cards = playerBestCard.cards
+            playerHand.hand = playerBestCard.hand;
+            evalHands.push(playerHand);
+        }
+    }
+
+    evalHands = evalHands.sort(function(a,b){
+        if(a.hand.value > b.hand.value)
+            return -1;
+        else if (a.hand == b.hand)
+            return 0;
+        return 1;
+    });
+    return evalHands;
+}
+
+
+function bestHandInOmaha(communityCards, player){
+    var evalHands = [];
+    for(var i = 0; i < 3; i++ ){
+        for(var j = i + 1; j < 4 ; j++ ){
+            var playerHand = {}
+            var hand=[];
+            hand.push(
+                player.cards[i],
+                player.cards[j],
+                communityCards[0],
+                communityCards[1],
+                communityCards[2],
+                communityCards[3],
+                communityCards[4]
+            );
+            playerHand.cards = hand;
+            playerHand.hand = PokerEvaluator.evalHand(hand);
+            evalHands.push(playerHand);
+        }
+    }
+
+    evalHands = evalHands.sort(function(a,b){
+        if(a.hand.value > b.hand.value)
+            return -1;
+        else if (a.hand == b.hand)
+            return 0;
+        return 1;
+    });
+    return evalHands;
+
+}
+
 
 module.exports = {
-    sortByRankHoldem : sortByRankHoldem
+    sortByRankHoldem : sortByRankHoldem,
+    sortByRankOmaha : sortByRankOmaha
 };
