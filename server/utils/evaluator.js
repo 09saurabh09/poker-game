@@ -2,6 +2,11 @@
 
 var PokerEvaluator = require('poker-evaluator');
 
+
+/**
+ * To sort By rank in HoldemGame
+ * Require community card and players details who Played the game
+ */
 function sortByRankHoldem(communityCards, players){
 	var evalHands = [];
 
@@ -37,6 +42,12 @@ function sortByRankHoldem(communityCards, players){
 	return evalHands;
 }
 
+
+
+/**
+ * To sort By rank in Omaha
+ * Require community card and players details who Played the game
+ */
 function sortByRankOmaha(communityCards, players){
     var evalHands = [];
 
@@ -63,6 +74,11 @@ function sortByRankOmaha(communityCards, players){
 }
 
 
+
+/**
+ * To find the best hand for the Player by including one of his two cards.
+ * Require community card and player detail.
+ */
 function bestHandInOmaha(communityCards, player){
     var evalHands = [];
     for(var i = 0; i < 3; i++ ){
@@ -92,9 +108,13 @@ function bestHandInOmaha(communityCards, player){
         return 1;
     });
     return evalHands;
-
 }
 
+
+
+/**
+ *  In case of Draw and all the cards with the same ranks clubbed together
+ */
 function resultsAfterRank(evalHands){
     ranks = [];
     ranks.push([evalHands[0]]);
@@ -112,6 +132,10 @@ function resultsAfterRank(evalHands){
 }
 
 
+
+/**
+ * Exporting all the function
+ */
 module.exports = {
     sortByRankHoldem : sortByRankHoldem,
     sortByRankOmaha : sortByRankOmaha,
