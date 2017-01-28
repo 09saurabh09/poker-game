@@ -20,6 +20,7 @@ function sortByRankHoldem(communityCards, players){
             );
             //console.log(hand);
             playerHand.player = players[i];
+            playerHand.cards = hand;
             playerHand.hand = PokerEvaluator.evalHand(hand);
             evalHands.push(playerHand);
         }
@@ -45,7 +46,7 @@ function sortByRankOmaha(communityCards, players){
         if(players[i]){
             var playerBestCard = bestHandInOmaha(communityCards, players[i]);
             playerHand.player = players[i];
-            playerHand.cards = playerBestCard.cards
+            playerHand.cards = playerBestCard.cards;
             playerHand.hand = playerBestCard.hand;
             evalHands.push(playerHand);
         }
@@ -94,8 +95,26 @@ function bestHandInOmaha(communityCards, player){
 
 }
 
+function resultsAfterRank(evalHands){
+    ranks = [];
+    ranks.push([evalHands[0]]);
+    rank = 0;
+    for(int i = 1; i <evalHands.length; i++ ){
+        if(evalHands[i].hand.value == evalHands[i-1].hand.values ){
+            ranks[rank].push(evalHands[i]);
+        }
+        else {
+            rank++;
+            ranks.push([evalHands[i]]);
+        }
+    }
+    return ranks;
+}
+
 
 module.exports = {
     sortByRankHoldem : sortByRankHoldem,
-    sortByRankOmaha : sortByRankOmaha
+    sortByRankOmaha : sortByRankOmaha,
+    resultsAfterRank: resultsAfterRank
 };
+
