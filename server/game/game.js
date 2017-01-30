@@ -703,6 +703,14 @@ Game.prototype.mininumunRaise = function(){
  */
 Game.prototype.maximumRaise = function(){
     return this.getCurrentPlayer().chips;
+
+    //Maximum logic for omaha
+    // if(this.getCurrentPlayer().chips  <  this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck()){
+    //     return this.getCurrentPlayer().chips;
+    // }
+    // else{
+    //     return this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck();
+    // }
 }
 
 
