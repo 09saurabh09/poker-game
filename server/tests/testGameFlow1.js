@@ -1,5 +1,9 @@
 var Game = require('../game/game');
 
+for(var i=0;i<15;i++){
+    console.log("\n");
+}
+
 var gameParams = {
 	bigBlind:20,
 	maxPlayer: 6,
@@ -80,7 +84,7 @@ var turnParamsCall = {
 
 var turnParamsRaise = {
     callType:"raise",
-    amount:20,
+    amount:50,
     playerId:""
 };
 
@@ -93,22 +97,25 @@ var turnParamsStack = {
 
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsStack,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsRaise,gameInstance);
 game.playerTurn(turnParamsRaise,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsRaise,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
 
 game.currentGameState();
 

@@ -119,7 +119,7 @@ function resultsAfterRank(evalHands){
     ranks = [];
     ranks.push([evalHands[0]]);
     rank = 0;
-    for(int i = 1; i <evalHands.length; i++ ){
+    for(var i = 1; i <evalHands.length; i++ ){
         if(evalHands[i].hand.value == evalHands[i-1].hand.values ){
             ranks[rank].push(evalHands[i]);
         }
