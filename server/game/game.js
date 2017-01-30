@@ -7,6 +7,7 @@ module.exports = Game;
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
 var evaluator = require('../utils/evaluator.js');
+var moment = require("moment");
 
 var debug = true;
 function logd(message) {
@@ -26,6 +27,12 @@ function Game(options) {
     this.maxPlayer = options.maxPlayer;
     this.minAmount = options.minAmount;
     this.maxAmount = options.maxAmount;
+    this.maxSitOutTIme = options.maxSitOutTIme;
+    this.annyomousGame = options.annyomousGame;
+    this.runTimeType = options.runTimeType;
+    this.rakeX = options.rakeX;
+    this.rakeY = options.rakeY;
+    this.rakeZ = options.rakeZ;
 
     this.players = [];          // Array of Player object, represents all players in this game
     this.waitingPlayers = [];   // Array of all the players who will be there in the waiting list
@@ -33,14 +40,14 @@ function Game(options) {
     this.round = 'idle';        // current round in a game ['idle', 'deal', 'flop' , 'turn', 'river']
     this.dealerPos = 0;         // to determine the dealer position for each game, incremented by 1 for each end game
     this.turnPos = 0;           // to determine whose turn it is in a playing game
-    this.pot = 0;               // accumulated chips in center of the table
+    this.totalPot = 0;               // accumulated chips in center of the table
     this.minimumRaise =  0;     // Minimum raise to be have
     this.currentTotalPlayer = 0;// Total players on the table
     this.communityCards = [];   // array of Card object, five cards in center of the table
     this.deck = new Deck();     // deck of playing cards
+    this.gamePots = [];          // The Vairable to store all the game pots 
 
-
-    this.initVariable();
+    this.initPlayers();
     this.currentGameState();
 };
 
@@ -73,9 +80,15 @@ Game.prototype.playerTurn = function(params, gameInstance){
             this.getCurrentPlayer().callOrCheck();
             break;
         case "raise":
-            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
-            this.getCurrentPlayer().raise(params.amount);
-            break;
+            if( params.amount < this.mininumunRaise()){
+                logd("Raise Amount is less than minimum Value");
+                break;
+            }
+            else{
+                logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
+                this.getCurrentPlayer().raise(params.amount);
+                break;
+            }
         case "sitOut":
             logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
             this.getCurrentPlayer().sitOut();
@@ -92,19 +105,56 @@ Game.prototype.playerTurn = function(params, gameInstance){
             logd("unSetMaintChips has been called for -------- " + this.getCurrentPlayer().id);
             this.getCurrentPlayer().unSetMaintainChips();
             break;
+        case "playerDisconnected":
+            logd("playerDisconnected has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().playerDisconnected();
+            break;
+        case "playerConnected":
+            logd("playerConnected has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().playerConnected();
+            break;
+        case "turnOffAutoMuck":
+            logd("turnOffAutoMuck has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().turnOffAutoMuck();
+            break;
+        case "turnOnAutoMuck":
+            logd("turnOnAutoMuck has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().turnOnAutoMuck();
+            break;
+        case "leaveGame":
+            logd("leaveGame has been called for -------- " + this.getCurrentPlayer().id);
+            this.getCurrentPlayer().leaveGame();
+            break;
     }   
-
 }
 
 
 /**
  * Intializing All the chair on the table with a null value
  */
-Game.prototype.initVariable = function(){
+Game.prototype.initPlayers = function(){
     for(var i = 0; i < this.maxPlayer; i++){
         this.players.push(null);
     }
 };
+
+
+
+/**
+ * Intializing the Game Pot with the Share holder as all Players
+ */
+Game.prototype.initGamePots = function(){
+    var mainPot = {};
+    var stakeHolder = [];
+    for(var i = 0; i < this.maxPlayer; i++){
+        if(this.players[i]){
+            stakeHolder.push(this.players[i].id);
+        }
+    }
+    mainPot.stakeHolders = stakeHolder;
+    mainPot.amount = 0;
+    this.gamePots.push(mainPot);
+}
 
 
 
@@ -117,9 +167,11 @@ Game.prototype.currentGameState = function(){
     logd("## Game maxPlayer - " +this.maxPlayer);
     logd("## Game minAmount - " +this.minAmount);
     logd("## Game maxAmount - " +this.maxAmount);
+    logd("## Game maxSitOutTIme - " +this.maxSitOutTIme);
     logd("## Game dealerPos - " +this.dealerPos);        
     logd("## Game turnPos - " +this.turnPos);           
-    logd("## Game pot - " +this.pot);            
+    logd("## Game totalpot - " +this.totalPot);
+    logd("## Game gamePots - " + JSON.stringify(this.gamePots));
     logd("## Game minimumRaise - " +this.minimumRaise);    
     logd("## Game currentTotalPlayer - " +this.currentTotalPlayer); 
     logd("## Game Community Cards - " + JSON.stringify(this.communityCards));
@@ -127,11 +179,18 @@ Game.prototype.currentGameState = function(){
     logd("## Game oldPlayers - " + JSON.stringify(this.oldPlayers));
     for (var i=0;i<this.maxPlayer;i++){
         if(this.players[i]!=null){
-            logd("## Seat-" + (i+1) + " has player " + this.players[i].name + "  chips-" + this.players[i].chips 
-                + "  bet-" + this.players[i].bet + "  cards- " + JSON.stringify(this.players[i].firstCard) + "," 
-                + JSON.stringify(this.players[i].secondCard) + "  lastAct-" + this.players[i].lastAction
-                + "  acted-"+this.players[i].hasActed + "  hasDone-" + this.players[i].hasDone 
-                + "  idle-" + this.players[i].idleForHand + "  id-" + this.players[i].id
+            logd("## Seat-" + (i+1) 
+                + "  has player " + this.players[i].name 
+                + "  chips-" + this.players[i].chips 
+                + "  bet-" + this.players[i].bet 
+                + "  totalBet-" + this.players[i].totalBet
+                + "  cards- " + JSON.stringify(this.players[i].firstCard) + "," 
+                + JSON.stringify(this.players[i].secondCard) 
+                + "  lastAct-" + this.players[i].lastAction
+                + "  acted-"+this.players[i].hasActed 
+                + "  hasDone-" + this.players[i].hasDone 
+                + "  idle-" + this.players[i].idleForHand 
+                + "  id-" + this.players[i].id
                 + "  sitout-"+this.players[i].hasSitOut+","+ this.players[i].sitOutTime
                 + "  maintinChips-"+ this.players[i].isMaintainChips + "," + this.players[i].maintainChips);
         }
@@ -193,7 +252,7 @@ Game.prototype.addPlayer = function(attr) {
     else{
         logd("Seat-> " + ( newPlayer.seat  - 1 ) + "  is Already Been Taken");
     }
-    this.currentGameState();
+    //this.currentGameState();
 };
 
 
@@ -205,16 +264,62 @@ Game.prototype.reset = function() {
     logd('^^^^^^Game reset^^^^^^^');
     this.round = 'idle';
     this.communityCards = [];   // clear cards on board
-    this.pot = 0;               // clear pots on board
+    this.totalPot = 0;               // clear pots on board
     this.deck = new Deck();     // use new deck of cards
+    this.gamePots = [];
     for (var i = 0; i < this.players.length; i++) {
         if(this.players[i])
             this.players[i].reset();
-        if(this.players[i] && this.players[i].idleForHand)
-            this.players[i].idleForHand = false;
     }
+
+    this.checkPlayersConnected();
+    this.checkPlayersSitout();
+    //this.initGamePots();
 };
 
+
+
+/**
+ * To Check who are all the players got connected.
+ */
+Game.prototype.checkPlayersConnected = function(){
+    for(var i = 0; i < this.players.length; i++){
+        if(this.players[i] && this.players[i].connectionStatus == false){
+            this.players[i].hasSitOut = true;
+            this.players[i].connectionStatus = true;
+        }
+    }
+}
+
+
+
+/**
+ * Check the sitout Status of all the Players
+ */
+Game.prototype.checkPlayersSitout = function(){
+    for(var i = 0; i< this.players.length; i++){
+        if(this.players[i]){
+            if( this.players[i].idleForHand ){
+                if(this.players[i].hasSitOut == false){
+                    this.players[i].idleForHand = false;
+                }
+                else{
+                    this.players[i].idleForHand = true;
+                }
+            }
+            if(this.players[i].hasSitOut){
+                var sitOutDuration = moment() - this.players[i].sitOutTime;
+                if(sitOutDuration / (1000*60) >= 30 ){
+                    this.players[i].leaveGame();
+                    this.players[i]=null;
+                }
+                else{
+                    this.players[i].idleForHand =  true;
+                }
+            }
+        }
+    }
+}
 
 /**
  * Check the Conditions before starting a Game
@@ -295,7 +400,7 @@ Game.prototype.start = function() {
 Game.prototype.nextPlayer = function(pos){
     for (var i=1; i<this.maxPlayer; i++ ){
         var p = ( pos + i ) % this.maxPlayer;
-        if(this.players[p] != null && this.players[p].idleForHand==false){
+        if(this.players[p] != null && this.players[p].idleForHand == false && this.players[p].hasSitOut == false && this.players[p].hasDone == false){
             return p;
         }
     }
@@ -306,9 +411,7 @@ Game.prototype.nextPlayer = function(pos){
  * Go to the next Player turn 
  */
 Game.prototype.incrementPlayerTurn = function() {
-    do {
-        this.turnPos = this.nextPlayer(this.turnPos);
-    } while( this.players[this.turnPos].hasDone && this.players[this.turnPos].hasSitOut);
+    this.turnPos = this.nextPlayer(this.turnPos);
 };
 
 
@@ -343,18 +446,26 @@ Game.prototype.nextRound = function() {
         this.start();
     } else if (this.round === 'deal') {
         this.gatherBets();
+        this.managePots();
         this.flop();
     } else if (this.round === 'flop') {
         this.gatherBets();
+        this.managePots();
         this.turn();
     } else if (this.round === 'turn') {
         this.gatherBets();
+        this.managePots();
         this.river();
     } else if (this.round === 'river') {
         this.gatherBets();
+        this.managePots();
         this.showdown();
     } else {
         this.start();
+    }
+    this.currentGameState();
+    if(this.checkPlayerLeft()  <  2){
+        this.showdown();
     }
 };
 
@@ -432,15 +543,31 @@ Game.prototype.showdown = function() {
     logd('====================== SHOWDOWN ======================');
     this.round = 'showdown';
 
-    this.currentGameState();
-
-    //Sorting all the players card accordingly
-
-    logd('====================== Results ======================');
-    var evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
-    logd('Player ' + evalHands[0].player.name + ' wins with ' + evalHands[0].hand.handName);
-    for(var i = 0; i < evalHands.length; i++){
-        logd("Player  " + evalHands[i].player.name + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
+    if(this.checkPlayerLeft()  <  2){
+        if(this.checkPlayerLeft() == 0){
+            logd("All Have Folded or left Game No one won");
+        }
+        else{
+            for(var i = 0; i <this.players.length; i++ ){
+                if(this.players[i] && this.players[i].hasDone == false ){
+                    if(this.players[i].autoMuck==true){
+                        logd("Player " + this.players[i].name + " has won the game.");
+                    }
+                    else{
+                        logd("Player  " + this.players[i].name+ " has won with cards " + this.players[i].firstCard + ", " + this.players[i].secondCard);  
+                    }
+                }
+            }
+        }
+    }
+    else{
+        //Sorting all the players card accordingly
+        logd('====================== Results ======================');
+        var evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
+        logd('Player ' + evalHands[0].player.name + ' wins with ' + evalHands[0].hand.handName);
+        for(var i = 0; i < evalHands.length; i++){
+            logd("Player  " + evalHands[i].player.name + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
+        }
     }
 };
 
@@ -466,14 +593,66 @@ Game.prototype.getHighestBet = function() {
  * Collect all bets from players to the board's pot
  */
 Game.prototype.gatherBets = function() {
+    this.totalPot = 0;
     for(var i=0; i<this.players.length; i++) {
         if(this.players[i]){
-            this.pot += this.players[i].bet;
-            this.players[i].bet = 0;
+            this.players[i].totalBet = this.players[i].bet;
+            this.totalPot += this.players[i].totalBet;
+            //this.players[i].bet = 0;
         }
     }
-    logd("Total Pot : " + this.pot)
+    logd("Total Pot : " + this.totalPot)
 };
+
+
+
+/**
+ * Maintaing the GamePots after Each Round
+ */
+Game.prototype.managePots = function(){
+    var extraPot = [];
+    this.gamePots = [];
+    extraPot.push(0);
+    var differentPot = {}; 
+    for(var i = 0; i <this.players.length; i++){
+        if( this.players[i] ){
+            if( this.players[i].lastAction != "fold" && this.players[i].totalBet > 0 )
+                differentPot[this.players[i].totalBet] = 1;
+        }
+    }
+    for(var i in differentPot){
+        extraPot.push(i);
+    }
+    extraPot = extraPot.sort();
+
+    for(var i = 1; i < extraPot.length; i++){
+        var sidePot = {};
+        var stakeHolder = [];
+        var potContribution = extraPot[i] - extraPot[i-1];
+        sidePot.amount = 0;
+        for(var j = 0; j < this.players.length ; j++ ){
+            if(this.players[j] && this.players[j].totalBet >= potContribution && this.players[j].lastAction != "fold"){
+                sidePot.amount += potContribution;
+                this.players[j].totalBet -= potContribution;
+                stakeHolder.push(this.players[j].id);
+            }
+            else if(this.players[j] && this.players[j].lastAction =="fold"){
+                if(this.players[j].totalBet >= potContribution){
+                    sidePot.amount += potContribution;
+                    this.players[j].totalBet -= potContribution;
+                }
+                else{
+                    sidePot.amount += this.players[j].totalBet;
+                    this.players[j].totalBet = 0;
+                }
+            }
+        }
+        sidePot.stakeHolders = stakeHolder;
+        sidePot.rakeMoney = 0;
+        this.gamePots.push(sidePot);    
+    }
+
+}
 
 
 
@@ -499,3 +678,64 @@ Game.prototype.requestPlayerAction = function() {
         }
     }
 };
+
+
+
+/**
+ * Check the Minimum Raise
+ */
+Game.prototype.mininumunRaise = function(){
+    if(this.round == "deal"){
+        return 2*this.bigBlind;
+    }
+    else{
+        return this.bigBlind;
+    }
+}
+
+
+
+/**
+ * Check the Maximum Raise
+ */
+Game.prototype.maximumRaise = function(){
+    return -1;
+}
+
+
+/**
+ * Show off the Card
+ */
+Game.prototype.showCard = function(){
+    //To Do
+}
+
+
+/**
+ * Comission from the game
+ */
+Game.prototype.rakeForGame = function(){
+    this.rakeMoney = 0;
+    for(var i = 0; i <this.gamePots.length; i++ ){
+        if( this.gamePots[i].stakeHolders.length <=Y ){
+            this.gamePots[i].rakeMoney = (this.gamePots[i].amount * this.rakeX) / 100;
+        }
+        else{
+            this.gamePots[i].rakeMoney = (this.gamePots[i].amount * this.rakeZ) / 100;
+        }
+    }
+}
+
+
+/**
+ * Check if Only one Player left then end the Game.
+ */
+Game.prototype.checkPlayerLeft = function(){
+    var totalPlaying = 0;
+    for(var i = 0; i <this.players.length; i++ ){
+        if(this.players[i] && this.players[i].hasDone == false ){
+            totalPlaying++;
+        }
+    }
+    return totalPlaying;
+}

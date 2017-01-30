@@ -4,7 +4,7 @@
  
 "use strict";
 
-let moment = require("moment");
+var moment = require("moment");
 
 module.exports = Player;
 
@@ -24,7 +24,7 @@ function Player(options) {
     this.name = options.name;
     this.chips = options.chips;
     this.isMaintainChips = options.isMaintainChips; // Thyis should be intialised with the game boolean value
-    this.maintainChips = options.chips;     // The value to which we need to maintain stack
+    this.maintainChips = options.chips;             // The value to which we need to maintain stack
     this.seat = options.seat;                       // Seat on Gmae
 
     this.game = null;
@@ -32,15 +32,18 @@ function Player(options) {
     this.firstCard = {};
     this.secondCard = {};
     this.bet = 0;
+    this.totalBet = 0;
+    this.showCards = false;
 
     this.lastAction = "";
     this.hasActed = false;              // acted for one round (call/check/raise)
     this.hasDone = false;               // finish acted for one game (fold/allin)
-    this.hasSitOut = false;
-    this.sitOutTime = 0;                //This will be a time stamp
-    this.idleForHand = false;           //Used by Game Flow if a person join in between game
-    this.connectionStatus = true;       //This is for checking whether the player is connected or not
-    this.autoMuck = true;               //Default True for the every Player 
+    this.hasSitOut = false;             // Whether the persone is disconnected or not
+    this.sitOutTime = 0;                // This will be a time stamp
+    this.idleForHand = false;           // Used by Game Flow if a person join in between game
+    this.connectionStatus = true;       // This is for checking whether the player is connected or not
+    this.disconnectionTIme = 0;         // TIme since the person has been Disconnected
+    this.autoMuck = true;               // Default True for the every Player 
 }
 
 
@@ -124,10 +127,12 @@ Player.prototype.reset = function() {
     this.firstCard = {};
     this.secondCard = {};
     this.bet = 0;
+    this.totalBet = 0;
 
     this.lastAction = "";
     this.hasActed = false;
     this.hasDone = false;
+    this.showCards = false;
 
     if(this.isMaintainChips){
         this.maintainChipsStack();
@@ -152,10 +157,13 @@ Player.prototype.addBet = function(amount) {
     this.bet += amount;
 };
 
+
+
 Player.prototype.moveNext = function(){
     this.game.incrementPlayerTurn();
     this.game.checkForNextRound();
 }
+
 
 
 /**
@@ -166,6 +174,8 @@ Player.prototype.sitOut = function(){
     this.sitOutTime = moment();
 }
 
+
+
 /**
  * When Players waht to sit back In.
  */
@@ -175,12 +185,16 @@ Player.prototype.sitIn = function(){
 }
 
 
+/**
+ * When Player will leave Game
+ */
 Player.prototype.leaveGame = function(){
     //saurabhk -- To Do 
     //When this leave game for player is being called need to do all the transactions back to the DB.
     // Adding money back to the user 
     // Removing Player from the game
 }
+
 
 
 /**
@@ -234,6 +248,38 @@ Player.prototype.unSetMaintainChips = function(){
 
 
 
+/**
+ * To be called when Player got Disconnected 
+ */
+Player.prototype.playerDisconnected = function(){
+    this.connectionStatus = false;
+    this.disconnectionTIme =moment();
+}
 
 
 
+/**
+ * To be called when Player got Connected 
+ */
+Player.prototype.playerConnected = function(){
+    this.connectionStatus = true;
+    this.disconnectionTIme = 0;
+}
+
+
+
+/**
+ * Player can turn off Auto Muck
+ */
+Player.prototype.turnOffAutoMuck = function(){
+    this.autoMuck = false;
+}
+
+
+
+/**
+ * Player can turn on Auto Muck
+ */
+Player.prototype.turnOnAutoMuck = function(){
+    this.autoMuck = true;
+}

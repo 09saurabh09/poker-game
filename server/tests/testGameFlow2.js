@@ -1,5 +1,10 @@
 var Game = require('../game/game');
 
+
+for(var i=0;i<15;i++){
+    console.log("\n");
+}
+
 var gameParams = {
 	bigBlind:20,
 	maxPlayer: 6,
@@ -8,7 +13,7 @@ var gameParams = {
     maxSitOutTIme: 30,
     maxDisconnectionTIme: 10,
     annyomousGame:false,
-    runTimeType:2,
+    runTimeType:1,
     rakeX, 5,
     rakeY, 5,
     rakeZ, 2
@@ -90,6 +95,12 @@ var turnParamsStack = {
     playerId:""
 };
 
+var turnParamsFold = {
+    callType:"fold",
+    amount:0,
+    playerId:""
+}
+
 
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsStack,gameInstance);
@@ -97,6 +108,9 @@ game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsRaise,gameInstance);
+game.playerTurn(turnParamsFold,gameInstance);
+game.playerTurn(turnParamsFold,gameInstance);
+game.playerTurn(turnParamsFold,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
@@ -108,9 +122,6 @@ game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-
-game.currentGameState();
 
 // game.getCurrentPlayer().fold();
 // game.getCurrentPlayer().raise(2000);        // C
