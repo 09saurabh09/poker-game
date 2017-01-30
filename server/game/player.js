@@ -99,8 +99,6 @@ Player.prototype.callOrCheck = function() {
 
 
 
-
-
 /**
  * Get the Value of call for the player
  */

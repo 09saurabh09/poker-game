@@ -84,7 +84,7 @@ var turnParamsCall = {
 
 var turnParamsRaise = {
     callType:"raise",
-    amount:50,
+    amount:50000,
     playerId:""
 };
 
@@ -98,11 +98,11 @@ var turnParamsStack = {
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsStack,gameInstance);
 game.playerTurn(turnParamsRaise,gameInstance);
-game.playerTurn(turnParamsRaise,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsRaise,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
 // game.playerTurn(turnParamsRaise,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);

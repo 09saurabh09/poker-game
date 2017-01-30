@@ -81,16 +81,15 @@ Game.prototype.playerTurn = function(params, gameInstance){
             this.getCurrentPlayer().callOrCheck();
             break;
         case "raise":
-            if( params.amount < this.mininumunRaise()){
-                logd("Raise Amount is less than minimum Value " + this.mininumunRaise() + " " + params.amount);
-                break;
+            if( params.amount < this.mininumunRaise() || params.amount > this.maximumRaise()){
+                logd("Raise Amount  is not in range min ------ " + this.mininumunRaise() + " max " + this.maximumRaise());
             }
             else{
-                logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                logd("Raise has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
                 this.lastRaise = params.amount;
                 this.getCurrentPlayer().raise(params.amount);
-                break;
             }
+            break;
         case "sitOut":
             logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().sitOut();
@@ -703,7 +702,7 @@ Game.prototype.mininumunRaise = function(){
  * Check the Maximum Raise
  */
 Game.prototype.maximumRaise = function(){
-    return -1;
+    return this.getCurrentPlayer().chips;
 }
 
 
