@@ -96,24 +96,28 @@ var turnParamsStack = {
 
 
 game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsStack,gameInstance);
-game.playerTurn(turnParamsRaise,gameInstance);
-game.playerTurn(turnParamsRaise,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsRaise,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsStack,gameInstance);
+// game.playerTurn(turnParamsRaise,gameInstance);
+// game.playerTurn(turnParamsRaise,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsRaise,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);
 

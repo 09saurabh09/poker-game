@@ -451,6 +451,9 @@ Game.prototype.nextRound = function() {
         this.gatherBets();
         this.managePots();
         this.flop();
+        if(this.lastRaise == 0 ){
+            this.turnPos = this.nextPlayer(this.dealerPos);
+        }
     } else if (this.round === 'flop') {
         this.gatherBets();
         this.managePots();
