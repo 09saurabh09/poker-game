@@ -365,16 +365,9 @@ Game.prototype.start = function() {
         }
     }
 
-    // determine dealer, small blind, big blind
-    // modulus with total number of players
-    // numbers will back to 0 if exceeds the number of players
-    for (var i=0; i<this.maxPlayer; i++ ){
-        var p = ( this.dealerPos + i ) % this.maxPlayer;
-        if(this.players[p] != null){
-            this.dealerPos = p;
-            break;
-        }
-    }
+    this.dealerPosition();
+    
+    //Setting the value for smal Blind and big blind.
     logd('Player ' + this.players[this.dealerPos].name + ' is the dealer');
     var smallBlindPos = this.nextPlayer(this.dealerPos);
     var bigBlindPos =  this.nextPlayer(smallBlindPos);
@@ -724,6 +717,22 @@ Game.prototype.showCard = function(){
     //To Do
 }
 
+
+
+/**
+ * choosing Dealer Position
+ */
+Game.prototype.dealerPosition = function(){
+    //Will Increamene teverytime when the game will reset
+    logd("Chossing the dealer postions ");
+    for (var i=0; i<this.maxPlayer; i++ ){
+        var p = ( this.dealerPos + i ) % this.maxPlayer;
+        if(this.players[p] != null){
+            this.dealerPos = p;
+            break;
+        }
+    }
+}
 
 /**
  * Comission from the game
