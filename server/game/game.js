@@ -45,7 +45,8 @@ function Game(options) {
     this.currentTotalPlayer = 0;// Total players on the table
     this.communityCards = [];   // array of Card object, five cards in center of the table
     this.deck = new Deck();     // deck of playing cards
-    this.gamePots = [];          // The Vairable to store all the game pots 
+    this.gamePots = [];         // The Vairable to store all the game pots 
+    this.lastRaise = 0;         // Maintaing what was the last raise. 
 
     this.initPlayers();
     this.currentGameState();
@@ -68,61 +69,61 @@ Game.prototype.playerTurn = function(params, gameInstance){
     }
     switch(params.callType){
         case "fold":
-            logd("Fold has been called for -------- " + this.getCurrentPlayer().id);
+            logd("Fold has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().fold();
             break;
         case "allin":
-            logd("allIn has been called for -------- " + this.getCurrentPlayer().id);
+            logd("allIn has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().allin();
             break;
         case "callOrCheck":
-            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
+            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().callOrCheck();
             break;
         case "raise":
-            if( params.amount < this.mininumunRaise()){
-                logd("Raise Amount is less than minimum Value");
-                break;
+            if( params.amount < this.mininumunRaise() || params.amount > this.maximumRaise()){
+                logd("Raise Amount  is not in range min ------ " + this.mininumunRaise() + " max " + this.maximumRaise());
             }
             else{
-                logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
+                logd("Raise has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.lastRaise = params.amount;
                 this.getCurrentPlayer().raise(params.amount);
-                break;
             }
+            break;
         case "sitOut":
-            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
+            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().sitOut();
             break;
         case "sitIn":
-            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id);
+            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().sitIn();
             break;
         case "setMaintChips":
-            logd("setMaintChips has been called for -------- " + this.getCurrentPlayer().id);
+            logd("setMaintChips has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().setMaintChips(params.amount);
             break;
         case "unSetMaintainChips":
-            logd("unSetMaintChips has been called for -------- " + this.getCurrentPlayer().id);
+            logd("unSetMaintChips has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().unSetMaintainChips();
             break;
         case "playerDisconnected":
-            logd("playerDisconnected has been called for -------- " + this.getCurrentPlayer().id);
+            logd("playerDisconnected has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().playerDisconnected();
             break;
         case "playerConnected":
-            logd("playerConnected has been called for -------- " + this.getCurrentPlayer().id);
+            logd("playerConnected has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().playerConnected();
             break;
         case "turnOffAutoMuck":
-            logd("turnOffAutoMuck has been called for -------- " + this.getCurrentPlayer().id);
+            logd("turnOffAutoMuck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().turnOffAutoMuck();
             break;
         case "turnOnAutoMuck":
-            logd("turnOnAutoMuck has been called for -------- " + this.getCurrentPlayer().id);
+            logd("turnOnAutoMuck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().turnOnAutoMuck();
             break;
         case "leaveGame":
-            logd("leaveGame has been called for -------- " + this.getCurrentPlayer().id);
+            logd("leaveGame has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().leaveGame();
             break;
     }   
@@ -267,6 +268,8 @@ Game.prototype.reset = function() {
     this.totalPot = 0;               // clear pots on board
     this.deck = new Deck();     // use new deck of cards
     this.gamePots = [];
+    this.lastRaise = 0;
+
     for (var i = 0; i < this.players.length; i++) {
         if(this.players[i])
             this.players[i].reset();
@@ -362,16 +365,9 @@ Game.prototype.start = function() {
         }
     }
 
-    // determine dealer, small blind, big blind
-    // modulus with total number of players
-    // numbers will back to 0 if exceeds the number of players
-    for (var i=0; i<this.maxPlayer; i++ ){
-        var p = ( this.dealerPos + i ) % this.maxPlayer;
-        if(this.players[p] != null){
-            this.dealerPos = p;
-            break;
-        }
-    }
+    this.dealerPosition();
+    
+    //Setting the value for smal Blind and big blind.
     logd('Player ' + this.players[this.dealerPos].name + ' is the dealer');
     var smallBlindPos = this.nextPlayer(this.dealerPos);
     var bigBlindPos =  this.nextPlayer(smallBlindPos);
@@ -448,6 +444,9 @@ Game.prototype.nextRound = function() {
         this.gatherBets();
         this.managePots();
         this.flop();
+        if(this.lastRaise == 0 ){
+            this.turnPos = this.nextPlayer(this.dealerPos);
+        }
     } else if (this.round === 'flop') {
         this.gatherBets();
         this.managePots();
@@ -685,11 +684,11 @@ Game.prototype.requestPlayerAction = function() {
  * Check the Minimum Raise
  */
 Game.prototype.mininumunRaise = function(){
-    if(this.round == "deal"){
+    if(this.lastRaise == 0){
         return 2*this.bigBlind;
     }
     else{
-        return this.bigBlind;
+        return this.lastRaise + this.getCurrentPlayer().getCallOrCheck();
     }
 }
 
@@ -699,7 +698,15 @@ Game.prototype.mininumunRaise = function(){
  * Check the Maximum Raise
  */
 Game.prototype.maximumRaise = function(){
-    return -1;
+    return this.getCurrentPlayer().chips;
+
+    //Maximum logic for omaha
+    // if(this.getCurrentPlayer().chips  <  this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck()){
+    //     return this.getCurrentPlayer().chips;
+    // }
+    // else{
+    //     return this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck();
+    // }
 }
 
 
@@ -710,6 +717,22 @@ Game.prototype.showCard = function(){
     //To Do
 }
 
+
+
+/**
+ * choosing Dealer Position
+ */
+Game.prototype.dealerPosition = function(){
+    //Will Increamene teverytime when the game will reset
+    logd("Chossing the dealer postions ");
+    for (var i=0; i<this.maxPlayer; i++ ){
+        var p = ( this.dealerPos + i ) % this.maxPlayer;
+        if(this.players[p] != null){
+            this.dealerPos = p;
+            break;
+        }
+    }
+}
 
 /**
  * Comission from the game

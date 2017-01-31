@@ -100,6 +100,16 @@ Player.prototype.callOrCheck = function() {
 
 
 /**
+ * Get the Value of call for the player
+ */
+Player.prototype.getCallOrCheck = function(){
+    var diff = this.game.getHighestBet() - this.bet;
+    return diff;
+};
+
+
+
+/**
  * Raise your bet
  * If your bet is not the same with highest bet
  * Add to your bet altogether with difference
