@@ -24,7 +24,7 @@ function sortByRankHoldem(communityCards, players){
                 communityCards[4]
             );
             //console.log(hand);
-            playerHand.player = players[i];
+            playerHand.playerInfo = players[i].name;
             playerHand.cards = hand;
             playerHand.hand = PokerEvaluator.evalHand(hand);
             evalHands.push(playerHand);
@@ -56,7 +56,7 @@ function sortByRankOmaha(communityCards, players){
         var hand = [];
         if(players[i]){
             var playerBestCard = bestHandInOmaha(communityCards, players[i]);
-            playerHand.player = players[i];
+            playerHand.playerInfo = players[i].name;
             playerHand.cards = playerBestCard.cards;
             playerHand.hand = playerBestCard.hand;
             evalHands.push(playerHand);
@@ -116,11 +116,11 @@ function bestHandInOmaha(communityCards, player){
  *  In case of Draw and all the cards with the same ranks clubbed together
  */
 function resultsAfterRank(evalHands){
-    ranks = [];
+    var ranks = [];
     ranks.push([evalHands[0]]);
-    rank = 0;
+    var rank = 0;
     for(var i = 1; i <evalHands.length; i++ ){
-        if(evalHands[i].hand.value == evalHands[i-1].hand.values ){
+        if(evalHands[i].hand.value == evalHands[i-1].hand.value ){
             ranks[rank].push(evalHands[i]);
         }
         else {
