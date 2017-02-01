@@ -14,7 +14,7 @@ module.exports = {
 
     },
 
-    playerTurn: function (params, currentUser) {
+    playerTurn: function (params, socket) {
         let tableId = params.tableId;
         PokerTable.findOne({
             where: {
@@ -22,7 +22,21 @@ module.exports = {
             }
         }).then(function (table) {
             let game = new Game(table.gameState);
-            game.playerTurn(params, currentUser);
+            game.playerTurn(params, socket.user);
+        }).catch(function (err) {
+
+        })
+    },
+
+    joinTable: function(params, socket) {
+        let tableId = params.tableId;
+        PokerTable.findOne({
+            where: {
+                id: tableId
+            }
+        }).then(function (table) {
+            let game = new Game(table.gameState);
+            game.addPlayer(params, socket.user);
         }).catch(function (err) {
 
         })

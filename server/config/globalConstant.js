@@ -23,6 +23,7 @@ DB_CREDENTIALS.REDIS_PORT = env.REDIS_PORT;
 
 // Create DB connection, do not change position as it require above variables
 var database = require('../config/database');
+let io = require('../socket/socketRoute');
 
 // Set endpoints
 
@@ -31,6 +32,7 @@ global.DB_MODELS = database;
 global.PROMISE = Promise;
 global._ = lodash;
 global.async = async;
+global.SOCKET_IO = io;
 
 global.GlobalConstant = {};
 GlobalConstant.tokenSecret = env.TOKEN_SECRET;
