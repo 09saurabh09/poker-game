@@ -42,7 +42,8 @@ function Game(options) {
     this.turnPos = 0;           // to determine whose turn it is in a playing game
     this.totalPot = 0;          // accumulated chips in center of the table
     this.minRaise =  0;         // Minimum raise to be have
-    this.maxRaise =0            // Maximum raise for the next player
+    this.maxRaise = 0            // Maximum raise for the next player
+    this.callValue = 0;         // Call Value to be stored for next Player
     this.currentTotalPlayer = 0;// Total players on the table
     this.communityCards = [];   // array of Card object, five cards in center of the table
     this.deck = new Deck();     // deck of playing cards
@@ -56,15 +57,13 @@ function Game(options) {
 
 
 /**
- * 
+ *  var params = {
+        callType : "fold",
+        amount: 0,
+        playerId : id
+    }; 
  */
 Game.prototype.playerTurn = function(params, gameInstance){
-    // var params = {
-    //     callType : "fold",
-    //     amount: 0,
-    //     playerId : id
-    // }; 
-
     if(gameInstance){
         for(var i in gameInstance){
             this[i] = gameInstance[i];
@@ -134,7 +133,21 @@ Game.prototype.playerTurn = function(params, gameInstance){
             logd("leaveGame has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().leaveGame();
             break;
-    }   
+    }
+    this.updateGameInstance();
+}
+
+
+
+/**
+ * To store the Call/MinimummRaise/MaximumRaise for the next player
+ */
+Game.prototype.updateGameInstance = function(){
+    this.mininumunRaise();
+    this.maximumRaise();
+    this.nextCall();
+    //this.currentGameState();
+    //Code to store Game State
 }
 
 
@@ -179,6 +192,9 @@ Game.prototype.currentGameState = function(){
     logd("## Game maxAmount - " +this.maxAmount);
     logd("## Game maxSitOutTIme - " +this.maxSitOutTIme);
     logd("## Game dealerPos - " +this.dealerPos);        
+    logd("## Game minRaise - " +this.minRaise);        
+    logd("## Game maxRaise - " +this.maxRaise);        
+    logd("## Game callValue - " +this.callValue);        
     logd("## Game turnPos - " +this.turnPos);           
     logd("## Game totalpot - " +this.totalPot);
     logd("## Game gamePots - " + JSON.stringify(this.gamePots));
@@ -278,6 +294,9 @@ Game.prototype.reset = function() {
     this.deck = new Deck();     // use new deck of cards
     this.gamePots = [];
     this.lastRaise = 0;
+    this.minRaise = 0;         
+    this.maxRaise = 0            
+    this.callValue = 0;         
 
     for (var i = 0; i < this.players.length; i++) {
         if(this.players[i])
@@ -696,15 +715,24 @@ Game.prototype.requestPlayerAction = function() {
 
 
 /**
+ * Call for the next Player
+ */
+Game.prototype.nextCall = function(){
+    this.callValue = this.getCurrentPlayer().getCallOrCheck();
+}
+
+
+/**
  * Check the Minimum Raise
  */
 Game.prototype.mininumunRaise = function(){
     if(this.lastRaise == 0){
-        return 2*this.bigBlind;
+        this.minRaise = 2*this.bigBlind;
     }
     else{
-        return this.lastRaise + this.getCurrentPlayer().getCallOrCheck();
+       this.minRaise = this.lastRaise + this.getCurrentPlayer().getCallOrCheck();
     }
+    return this.minRaise;
 }
 
 
@@ -713,15 +741,17 @@ Game.prototype.mininumunRaise = function(){
  * Check the Maximum Raise
  */
 Game.prototype.maximumRaise = function(){
-    return this.getCurrentPlayer().chips;
+    this.maxRaise = this.getCurrentPlayer().chips;
 
     //Maximum logic for omaha
     // if(this.getCurrentPlayer().chips  <  this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck()){
-    //     return this.getCurrentPlayer().chips;
+    //     this.maxRaise = this.getCurrentPlayer().chips;
     // }
     // else{
-    //     return this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck();
+    //     this.maxRaise = this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck();
     // }
+
+    return this.maxRaise;
 }
 
 
