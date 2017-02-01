@@ -40,8 +40,9 @@ function Game(options) {
     this.round = 'idle';        // current round in a game ['idle', 'deal', 'flop' , 'turn', 'river']
     this.dealerPos = 0;         // to determine the dealer position for each game, incremented by 1 for each end game
     this.turnPos = 0;           // to determine whose turn it is in a playing game
-    this.totalPot = 0;               // accumulated chips in center of the table
-    this.minimumRaise =  0;     // Minimum raise to be have
+    this.totalPot = 0;          // accumulated chips in center of the table
+    this.minRaise =  0;         // Minimum raise to be have
+    this.maxRaise =0            // Maximum raise for the next player
     this.currentTotalPlayer = 0;// Total players on the table
     this.communityCards = [];   // array of Card object, five cards in center of the table
     this.deck = new Deck();     // deck of playing cards
@@ -63,6 +64,12 @@ Game.prototype.playerTurn = function(params, gameInstance){
     //     amount: 0,
     //     playerId : id
     // }; 
+
+    if(gameInstance){
+        for(var i in gameInstance){
+            this[i] = gameInstance[i];
+        }
+    }
 
     if(params.playerId != this.getCurrentPlayer().id){
         logd("The Turn Positing is different for different Player");
