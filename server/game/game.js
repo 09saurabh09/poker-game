@@ -53,6 +53,7 @@ function Game(options) {
 };
 
 
+
 /**
  * 
  */
@@ -128,6 +129,7 @@ Game.prototype.playerTurn = function(params, gameInstance){
             break;
     }   
 }
+
 
 
 /**
@@ -323,6 +325,8 @@ Game.prototype.checkPlayersSitout = function(){
         }
     }
 }
+
+
 
 /**
  * Check the Conditions before starting a Game
@@ -563,10 +567,15 @@ Game.prototype.showdown = function() {
         //Sorting all the players card accordingly
         logd('====================== Results ======================');
         var evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
-        logd('Player ' + evalHands[0].player.name + ' wins with ' + evalHands[0].hand.handName);
         for(var i = 0; i < evalHands.length; i++){
-            logd("Player  " + evalHands[i].player.name + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
+            logd("Player  " + evalHands[i].playerInfo + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
         }
+        var ranks = evaluator.resultsAfterRank(evalHands);
+        for(var i = 0; i < ranks.length; i++ ){
+            logd("*********" + JSON.stringify(ranks[i]) + '\n');
+        }
+        this.rakeForGame();
+        this.winnersPerPot(ranks);
     }
 };
 
@@ -650,7 +659,6 @@ Game.prototype.managePots = function(){
         sidePot.rakeMoney = 0;
         this.gamePots.push(sidePot);    
     }
-
 }
 
 
@@ -710,6 +718,21 @@ Game.prototype.maximumRaise = function(){
 }
 
 
+
+/**
+ * Deciding Winner for every Pot and Transfering Money to Wineer
+ */
+Game.prototype.winnersPerPot = function (ranks){
+    for(var i = 0; i < this.gamePots.length; i++ ){
+        var winners = [];
+        for(var j = 0; j < ranks.length; j++ ){
+
+        }
+    }
+}
+
+
+
 /**
  * Show off the Card
  */
@@ -734,13 +757,15 @@ Game.prototype.dealerPosition = function(){
     }
 }
 
+
+
 /**
  * Comission from the game
  */
 Game.prototype.rakeForGame = function(){
     this.rakeMoney = 0;
     for(var i = 0; i <this.gamePots.length; i++ ){
-        if( this.gamePots[i].stakeHolders.length <=Y ){
+        if( this.gamePots[i].stakeHolders.length <= this.rakeY ){
             this.gamePots[i].rakeMoney = (this.gamePots[i].amount * this.rakeX) / 100;
         }
         else{
@@ -748,6 +773,7 @@ Game.prototype.rakeForGame = function(){
         }
     }
 }
+
 
 
 /**
