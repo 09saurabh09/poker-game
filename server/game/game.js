@@ -49,6 +49,7 @@ function Game(options) {
     this.deck = new Deck();     // deck of playing cards
     this.gamePots = [];         // The Vairable to store all the game pots 
     this.lastRaise = 0;         // Maintaing what was the last raise. 
+    this.rakeEarning = 0;       // Options for the rake earning per For Game
 
     this.initPlayers();
     this.currentGameState();
@@ -197,6 +198,7 @@ Game.prototype.currentGameState = function(){
     logd("## Game callValue - " +this.callValue);        
     logd("## Game turnPos - " +this.turnPos);           
     logd("## Game totalpot - " +this.totalPot);
+    logd("## Game rakeEarning - " +this.rakeEarning);
     logd("## Game gamePots - " + JSON.stringify(this.gamePots));
     logd("## Game minimumRaise - " +this.minimumRaise);    
     logd("## Game currentTotalPlayer - " +this.currentTotalPlayer); 
@@ -775,10 +777,8 @@ Game.prototype.winnersPerPot = function (ranks){
                 }
             }
         }
-        logd("Winner Ranks - "+ winnerRank);
         for(var j = 0; j < this.gamePots[i].stakeHolders.length; j++){
             for(var l = 0; l < ranks[winnerRank].length; l++){
-                console.log("Rankssss  " + ranks[winnerRank][l].playerInfo + "   " + this.gamePots[i].stakeHolders[j] );
                 if(ranks[winnerRank][l].playerInfo == this.gamePots[i].stakeHolders[j] ){
                     winners.push(ranks[winnerRank][l].playerInfo);
                 }
@@ -795,6 +795,30 @@ Game.prototype.winnersPerPot = function (ranks){
  */
 Game.prototype.handOverPot = function(){
     console.log("Handing over the pot to the winners");
+    for(var i =0; i < this.gamePots.length; i++ ){
+        if(this.gamePots[i].winners.length == 1){
+            this.rakeEarning += this.gamePots[i].rakeMoney;
+            for(var j = 0; j < this.players.length; j++){
+                if(this.players[j] && this.players[j].id == this.gamePots[i].winners[0]){
+                    logd("Here");
+                    this.players[j].addChips(this.gamePots[i].amount -  this.gamePots[i].rakeMoney);
+                }
+            }
+        }
+        else{
+            var noOfWinners = this.gamePots[i].winners.length;
+            var amountPerWinner = this.gamePots[i].amount / noOfWinners;
+            for(var j = 0; j < this.players.length; j++){
+                if(this.players[j] && this.gamePots[i].winners.indexOf(this.players[j].id) != -1){
+                    this.players[j].addChips(amountPerWinner);
+                    noOfWinners--;
+                }
+            }
+            if(noOfWinners != 0 ){
+                logd("Something went wrong while handing over the pot money");
+            }
+        }
+    }
 }
 
 
