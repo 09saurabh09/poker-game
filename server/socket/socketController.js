@@ -22,7 +22,14 @@ module.exports = {
             }
         }).then(function (table) {
             let game = new Game(table.gameState);
-            game.playerTurn(params, socket.user);
+            game.playerTurn(params, socket.user)
+                .then(function(gameState){
+                    let {commonGameState} = gameService.divideGameState(gameState);
+                    SOCKET_IO.to(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(commonGameState);
+                })
+                .catch(function() {
+
+                })
         }).catch(function (err) {
 
         })

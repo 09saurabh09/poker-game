@@ -38,3 +38,5 @@ global.SOCKET_IO = io;
 
 global.GlobalConstant = {};
 GlobalConstant.tokenSecret = env.TOKEN_SECRET;
+GlobalConstant.chatRoomPrefix = "pokerChatRoom";
+GlobalConstant.gameRoomPrefix = "pokerGameRoom";

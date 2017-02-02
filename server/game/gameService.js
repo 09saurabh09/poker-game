@@ -38,5 +38,37 @@ module.exports = {
             }
 
         });
+    },
+
+    divideGameState: function(gameState) {
+        // Sit with Amar and Vishal to figure it out
+
+        return {commonGameState, IndividualGameStates};
+    },
+
+    updateGameState: function (tableInstance, newGameState, turnCheck) {
+        let gameStateQuery = `UPDATE "PokerTables" SET "gameState"= ${newGameState}`;
+        new PROMISE(function (resolve, reject) {
+            if (turnCheck) {
+                tableInstance.reload().then(function () {
+                    // Do turn validation
+                    resolve();
+                });
+            } else {
+                resolve();
+            }
+
+        }).then(function() {
+            DB_MODELS.sequelize.query(updateCurrentBalanceQuery)
+                .then(function(table) {
+
+                })
+                .catch(function(err) {
+                    
+                })
+        }).catch(function() {
+
+        })
+
     }
 } 

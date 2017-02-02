@@ -1,13 +1,24 @@
 /**
  * Created by saurabhk on 28/12/16.
  */
+
+/**
+ * Naming of socket events: 
+ * To avoid event name clash we will follow naming convention similar to REST routes like
+ * entity-action e.g. player-turn, player-add
+ */
+
+
 "use strict";
 var io = require('socket.io')();
 let jwt = require("jsonwebtoken");
 
 let socketController = require("./socketController");
 
-io.use(function (socket, next) {
+// Namespace for authorized events
+let gameAuthorizedIO = io.of('/poker-game-authorized');
+
+gameAuthorizedIO.use(function (socket, next) {
     // make sure the handshake data looks good as before
     // if error do this:
     // next(new Error('not authorized');
@@ -23,23 +34,44 @@ io.use(function (socket, next) {
     });
 });
 
-io.on('connection', function (socket) {
-    console.log("Client connected");
-    
+gameAuthorizedIO.on('connection', function (socket) {
+    console.log("Player connected to game");
+
     // Socket event for player turn
-    socket.on('turn', function (params) {
+    socket.on('player-turn', function (params) {
         socketController.playerTurn(params, socket);
     });
 
-    socket.on('joinTable', function(params) {
-        socket.join(params.tableUniqueId);
+    socket.on('table-join', function (params) {
+        socket.join(GlobalConstant.gameRoomPrefix + params.tableUniqueId);
+        socket.join(GlobalConstant.gameRoomPrefix + params.tableUniqueId);
         socketController.joinTable(params, socket);
-    })
+    });
 
     socket.on('disconnect', function () {
 
         var i = allClients.indexOf(socket);
         allClients.splice(i, 1);
+    });
+});
+
+
+// *******************************************************************************************************************************
+
+// Namespace for unauthorized events
+let gameUnauthorizedIO = io.of('/poker-game-unauthorized');
+
+gameUnauthorizedIO.on('connection', function (socket) {
+    console.log('User connected for game chat');
+
+    socket.on('game-subscribe-chat', function (params) {
+        let tableUniqueId = params.tableUniqueId;
+        socket.join(GlobalConstant.chatRoomPrefix + tableUniqueId);
+    });
+
+    socket.on('game-subscribe-gameState', function (params) {
+        let tableUniqueId = params.tableUniqueId;
+        socket.join(GlobalConstant.gameRoomPrefix + tableUniqueId);
     });
 });
 
