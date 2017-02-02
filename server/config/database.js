@@ -65,6 +65,8 @@ Object.keys(db).forEach(function(modelName) {
     }
 });
 
+console.log(`INFO ::: Model names: \n ${Object.keys(db).join("\n")}`);
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

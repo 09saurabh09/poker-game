@@ -22,6 +22,7 @@ io.use(function (socket, next) {
         }
     });
 });
+
 io.on('connection', function (socket) {
     console.log("Client connected");
     
