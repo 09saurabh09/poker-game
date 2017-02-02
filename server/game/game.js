@@ -602,6 +602,7 @@ Game.prototype.showdown = function() {
         }
         this.rakeForGame();
         this.winnersPerPot(ranks);
+        this.handOverPot();
     }
 };
 
@@ -762,10 +763,38 @@ Game.prototype.maximumRaise = function(){
 Game.prototype.winnersPerPot = function (ranks){
     for(var i = 0; i < this.gamePots.length; i++ ){
         var winners = [];
-        for(var j = 0; j < ranks.length; j++ ){
-
+        var winnerRank = 10000;
+        for(var j = 0; j < this.gamePots[i].stakeHolders.length; j++){
+            for(var k = 0; k < ranks.length; k++){
+                for(var l = 0; l < ranks[k].length; l++){
+                    if(ranks[k][l].playerInfo == this.gamePots[i].stakeHolders[j]){
+                        if(k < winnerRank){
+                            winnerRank = k;
+                        }
+                    }
+                }
+            }
         }
+        logd("Winner Ranks - "+ winnerRank);
+        for(var j = 0; j < this.gamePots[i].stakeHolders.length; j++){
+            for(var l = 0; l < ranks[winnerRank].length; l++){
+                console.log("Rankssss  " + ranks[winnerRank][l].playerInfo + "   " + this.gamePots[i].stakeHolders[j] );
+                if(ranks[winnerRank][l].playerInfo == this.gamePots[i].stakeHolders[j] ){
+                    winners.push(ranks[winnerRank][l].playerInfo);
+                }
+            }
+        }
+        this.gamePots[i].winners = winners;
     }
+}
+
+
+
+/**
+ * Handover pots to whoever is the winner
+ */
+Game.prototype.handOverPot = function(){
+    console.log("Handing over the pot to the winners");
 }
 
 
