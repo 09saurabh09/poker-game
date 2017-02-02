@@ -24,7 +24,7 @@ function sortByRankHoldem(communityCards, players){
                 communityCards[4]
             );
             //console.log(hand);
-            playerHand.playerInfo = players[i].name;
+            playerHand.playerInfo = players[i].id;
             playerHand.cards = hand;
             playerHand.hand = PokerEvaluator.evalHand(hand);
             evalHands.push(playerHand);
@@ -56,7 +56,7 @@ function sortByRankOmaha(communityCards, players){
         var hand = [];
         if(players[i]){
             var playerBestCard = bestHandInOmaha(communityCards, players[i]);
-            playerHand.playerInfo = players[i].name;
+            playerHand.playerInfo = players[i].id;
             playerHand.cards = playerBestCard.cards;
             playerHand.hand = playerBestCard.hand;
             evalHands.push(playerHand);

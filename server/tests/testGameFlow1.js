@@ -67,6 +67,7 @@ var playerParams5 = {
 
 var game = new Game(gameParams);
 
+
 //game.addPlayer(playerParams1);
 game.addPlayer(playerParams2);
 game.addPlayer(playerParams3);
@@ -74,7 +75,10 @@ game.addPlayer(playerParams4);
 game.addPlayer(playerParams5);
 game.start();
 
-var gameInstance = {};
+var gameInstance = {
+    dealerPos:4
+};
+var gameInstance = null;
 
 var turnParamsCall = {
     callType:"callOrCheck",

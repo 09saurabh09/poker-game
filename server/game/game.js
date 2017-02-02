@@ -40,13 +40,16 @@ function Game(options) {
     this.round = 'idle';        // current round in a game ['idle', 'deal', 'flop' , 'turn', 'river']
     this.dealerPos = 0;         // to determine the dealer position for each game, incremented by 1 for each end game
     this.turnPos = 0;           // to determine whose turn it is in a playing game
-    this.totalPot = 0;               // accumulated chips in center of the table
-    this.minimumRaise =  0;     // Minimum raise to be have
+    this.totalPot = 0;          // accumulated chips in center of the table
+    this.minRaise =  0;         // Minimum raise to be have
+    this.maxRaise = 0            // Maximum raise for the next player
+    this.callValue = 0;         // Call Value to be stored for next Player
     this.currentTotalPlayer = 0;// Total players on the table
     this.communityCards = [];   // array of Card object, five cards in center of the table
     this.deck = new Deck();     // deck of playing cards
     this.gamePots = [];         // The Vairable to store all the game pots 
     this.lastRaise = 0;         // Maintaing what was the last raise. 
+    this.rakeEarning = 0;       // Options for the rake earning per For Game
 
     this.initPlayers();
     this.currentGameState();
@@ -55,14 +58,18 @@ function Game(options) {
 
 
 /**
- * 
+ *  var params = {
+        callType : "fold",
+        amount: 0,
+        playerId : id
+    }; 
  */
 Game.prototype.playerTurn = function(params, gameInstance){
-    // var params = {
-    //     callType : "fold",
-    //     amount: 0,
-    //     playerId : id
-    // }; 
+    if(gameInstance){
+        for(var i in gameInstance){
+            this[i] = gameInstance[i];
+        }
+    }
 
     if(params.playerId != this.getCurrentPlayer().id){
         logd("The Turn Positing is different for different Player");
@@ -127,7 +134,21 @@ Game.prototype.playerTurn = function(params, gameInstance){
             logd("leaveGame has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
             this.getCurrentPlayer().leaveGame();
             break;
-    }   
+    }
+    this.updateGameInstance();
+}
+
+
+
+/**
+ * To store the Call/MinimummRaise/MaximumRaise for the next player
+ */
+Game.prototype.updateGameInstance = function(){
+    this.mininumunRaise();
+    this.maximumRaise();
+    this.nextCall();
+    //this.currentGameState();
+    //Code to store Game State
 }
 
 
@@ -172,8 +193,12 @@ Game.prototype.currentGameState = function(){
     logd("## Game maxAmount - " +this.maxAmount);
     logd("## Game maxSitOutTIme - " +this.maxSitOutTIme);
     logd("## Game dealerPos - " +this.dealerPos);        
+    logd("## Game minRaise - " +this.minRaise);        
+    logd("## Game maxRaise - " +this.maxRaise);        
+    logd("## Game callValue - " +this.callValue);        
     logd("## Game turnPos - " +this.turnPos);           
     logd("## Game totalpot - " +this.totalPot);
+    logd("## Game rakeEarning - " +this.rakeEarning);
     logd("## Game gamePots - " + JSON.stringify(this.gamePots));
     logd("## Game minimumRaise - " +this.minimumRaise);    
     logd("## Game currentTotalPlayer - " +this.currentTotalPlayer); 
@@ -271,6 +296,9 @@ Game.prototype.reset = function() {
     this.deck = new Deck();     // use new deck of cards
     this.gamePots = [];
     this.lastRaise = 0;
+    this.minRaise = 0;         
+    this.maxRaise = 0            
+    this.callValue = 0;         
 
     for (var i = 0; i < this.players.length; i++) {
         if(this.players[i])
@@ -576,6 +604,7 @@ Game.prototype.showdown = function() {
         }
         this.rakeForGame();
         this.winnersPerPot(ranks);
+        this.handOverPot();
     }
 };
 
@@ -689,15 +718,24 @@ Game.prototype.requestPlayerAction = function() {
 
 
 /**
+ * Call for the next Player
+ */
+Game.prototype.nextCall = function(){
+    this.callValue = this.getCurrentPlayer().getCallOrCheck();
+}
+
+
+/**
  * Check the Minimum Raise
  */
 Game.prototype.mininumunRaise = function(){
     if(this.lastRaise == 0){
-        return 2*this.bigBlind;
+        this.minRaise = 2*this.bigBlind;
     }
     else{
-        return this.lastRaise + this.getCurrentPlayer().getCallOrCheck();
+       this.minRaise = this.lastRaise + this.getCurrentPlayer().getCallOrCheck();
     }
+    return this.minRaise;
 }
 
 
@@ -706,15 +744,17 @@ Game.prototype.mininumunRaise = function(){
  * Check the Maximum Raise
  */
 Game.prototype.maximumRaise = function(){
-    return this.getCurrentPlayer().chips;
+    this.maxRaise = this.getCurrentPlayer().chips;
 
     //Maximum logic for omaha
     // if(this.getCurrentPlayer().chips  <  this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck()){
-    //     return this.getCurrentPlayer().chips;
+    //     this.maxRaise = this.getCurrentPlayer().chips;
     // }
     // else{
-    //     return this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck();
+    //     this.maxRaise = this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck();
     // }
+
+    return this.maxRaise;
 }
 
 
@@ -725,8 +765,58 @@ Game.prototype.maximumRaise = function(){
 Game.prototype.winnersPerPot = function (ranks){
     for(var i = 0; i < this.gamePots.length; i++ ){
         var winners = [];
-        for(var j = 0; j < ranks.length; j++ ){
+        var winnerRank = 10000;
+        for(var j = 0; j < this.gamePots[i].stakeHolders.length; j++){
+            for(var k = 0; k < ranks.length; k++){
+                for(var l = 0; l < ranks[k].length; l++){
+                    if(ranks[k][l].playerInfo == this.gamePots[i].stakeHolders[j]){
+                        if(k < winnerRank){
+                            winnerRank = k;
+                        }
+                    }
+                }
+            }
+        }
+        for(var j = 0; j < this.gamePots[i].stakeHolders.length; j++){
+            for(var l = 0; l < ranks[winnerRank].length; l++){
+                if(ranks[winnerRank][l].playerInfo == this.gamePots[i].stakeHolders[j] ){
+                    winners.push(ranks[winnerRank][l].playerInfo);
+                }
+            }
+        }
+        this.gamePots[i].winners = winners;
+    }
+}
 
+
+
+/**
+ * Handover pots to whoever is the winner
+ */
+Game.prototype.handOverPot = function(){
+    console.log("Handing over the pot to the winners");
+    for(var i =0; i < this.gamePots.length; i++ ){
+        if(this.gamePots[i].winners.length == 1){
+            this.rakeEarning += this.gamePots[i].rakeMoney;
+            for(var j = 0; j < this.players.length; j++){
+                if(this.players[j] && this.players[j].id == this.gamePots[i].winners[0]){
+                    logd("Here");
+                    this.players[j].addChips(this.gamePots[i].amount -  this.gamePots[i].rakeMoney);
+                }
+            }
+        }
+        else{
+            var noOfWinners = this.gamePots[i].winners.length;
+            var amountPerWinner = this.gamePots[i].amount / noOfWinners;
+            for(var j = 0; j < this.players.length; j++){
+                if(this.players[j] && this.gamePots[i].winners.indexOf(this.players[j].id) != -1){
+                    this.players[j].addChips(amountPerWinner);
+                    noOfWinners--;
+                }
+            }
+            if(noOfWinners != 0 ){
+                logd("Something went wrong while handing over the pot money");
+            }
         }
     }
 }
