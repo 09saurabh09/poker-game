@@ -9,7 +9,7 @@ var debug = require('debug')('poker:server');
 var http = require('http');
 var redis = require('socket.io-redis');
 var database = require('../server/config/database');
-var io = require('../server/socket/socketRoute');
+// var io = require('../server/socket/socketRoute');
 /**
  * Get port from environment and store in Express.
  */
@@ -25,8 +25,8 @@ var server = http.createServer(app);
 
 // Add socket io
 // var io = require('socket.io')(server);
-io.attach(server);
-io.adapter(redis({ host: DB_CREDENTIALS.REDIS_HOST, port: DB_CREDENTIALS.REDIS_PORT }));
+SOCKET_IO.attach(server);
+SOCKET_IO.adapter(redis({ host: DB_CREDENTIALS.REDIS_HOST, port: DB_CREDENTIALS.REDIS_PORT }));
 
 /**
  * Listen on provided port, on all network interfaces.

@@ -24,11 +24,16 @@ io.use(function (socket, next) {
 });
 io.on('connection', function (socket) {
     console.log("Client connected");
-    console.log(socket.handshake.decoded_token.email, 'connected');
+    
     // Socket event for player turn
     socket.on('turn', function (params) {
-        socketController.playerTurn(params, socket.user);
+        socketController.playerTurn(params, socket);
     });
+
+    socket.on('joinTable', function(params) {
+        socket.join(params.tableUniqueId);
+        socketController.joinTable(params, socket);
+    })
 
     socket.on('disconnect', function () {
 
