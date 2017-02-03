@@ -40,10 +40,10 @@ module.exports = {
         });
     },
 
-    divideGameState: function(gameState) {
+    divideGameState: function (gameState) {
         // Sit with Amar and Vishal to figure it out
 
-        return {commonGameState, IndividualGameStates};
+        return { commonGameState, IndividualGameStates };
     },
 
     updateGameState: function (tableInstance, newGameState, turnCheck) {
@@ -58,17 +58,34 @@ module.exports = {
                 resolve();
             }
 
-        }).then(function() {
+        }).then(function () {
             DB_MODELS.sequelize.query(updateCurrentBalanceQuery)
-                .then(function(table) {
+                .then(function (table) {
 
                 })
-                .catch(function(err) {
-                    
+                .catch(function (err) {
+
                 })
-        }).catch(function() {
+        }).catch(function () {
 
         })
 
+    },
+
+    gameOver: function () {
+        let pots = [{ "amount": 480, "stakeHolders": [1, 2, 3], "rakeMoney": 24 },
+        { "amount": 500, "stakeHolders": [1, 2], "rakeMoney": 50 },
+        { "amount": 1000, "stakeHolders": [1, 2, 3, 4], "rakeMoney": 100 }];
+        var job = GAME_QUEUE.create('gameOverMoneyTransaction', pots)
+            .attempts(5)
+            .backoff({ type: 'exponential' })
+            .save(function (err) {
+                if (err) {
+                    console.log(`ERROR ::: Unable to enqueue transaction job`);
+                    // Manually add to DB so that can be picked up by cron
+                } else {
+                    console.log(`SUCCESS ::: Transaction job has been successfully queued with id: ${job.id}`);
+                }
+            });
     }
 } 

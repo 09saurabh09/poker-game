@@ -49,7 +49,12 @@ gameAuthorizedIO.on('connection', function (socket) {
 
     socket.on('table-leave', function (params) {
         socketController.leaveTable(params, socket);
-    })
+    });
+
+    socket.on('chat-message', function (params) {
+        // Not required, just for testing
+        socketController.testQ(params, socket);
+    });
 
     socket.on('disconnect', function () {
 

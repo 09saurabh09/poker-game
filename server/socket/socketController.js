@@ -103,5 +103,9 @@ module.exports = {
         }).catch(function (err) {
             console.log(`ERROR ::: Unable to leave table with id ${tableId}, error: ${err.message}`)
         })
+    },
+
+    testQ: function() {
+        gameService.gameOver();
     }
 }
