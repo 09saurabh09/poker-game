@@ -21,47 +21,50 @@ function logd(message) {
 /**
  * Constructor with the required Parameter and variables
  */
-function Game(options) {
+function Game(gameState) {
     // Game attributes
-    this.bigBlind = options.bigBlind;
-    this.maxPlayer = options.maxPlayer;
-    this.minAmount = options.minAmount;
-    this.maxAmount = options.maxAmount;
-    this.maxSitOutTIme = options.maxSitOutTIme;
-    this.annyomousGame = options.annyomousGame;
-    this.runTimeType = options.runTimeType;
-    this.rakeX = options.rakeX;
-    this.rakeY = options.rakeY;
-    this.rakeZ = options.rakeZ;
+    this.bigBlind = gameState.bigBlind;
+    this.maxPlayer = gameState.maxPlayer;
+    this.minAmount = gameState.minAmount;
+    this.maxAmount = gameState.maxAmount;
+    this.maxSitOutTIme = gameState.maxSitOutTIme;
+    this.annyomousGame = gameState.annyomousGame;
+    this.runTimeType = gameState.runTimeType;
+    this.rakeX = gameState.rakeX;
+    this.rakeY = gameState.rakeY;
+    this.rakeZ = gameState.rakeZ;
 
-    this.players = [];          // Array of Player object, represents all players in this game
-    this.waitingPlayers = [];   // Array of all the players who will be there in the waiting list
-    this.oldPlayers = [];       // Array of all the players who all have lastly Played the game.  
-    this.round = 'idle';        // current round in a game ['idle', 'deal', 'flop' , 'turn', 'river']
-    this.dealerPos = 0;         // to determine the dealer position for each game, incremented by 1 for each end game
-    this.turnPos = 0;           // to determine whose turn it is in a playing game
-    this.totalPot = 0;          // accumulated chips in center of the table
-    this.minRaise =  0;         // Minimum raise to be have
-    this.maxRaise = 0            // Maximum raise for the next player
-    this.callValue = 0;         // Call Value to be stored for next Player
-    this.currentTotalPlayer = 0;// Total players on the table
-    this.communityCards = [];   // array of Card object, five cards in center of the table
-    this.deck = new Deck();     // deck of playing cards
-    this.gamePots = [];         // The Vairable to store all the game pots 
-    this.lastRaise = 0;         // Maintaing what was the last raise. 
-    this.rakeEarning = 0;       // Options for the rake earning per For Game
+    this.players = gameState.players || [];                     // Array of Player object, represents all players in this game
+    this.waitingPlayers = gameState.waitingPlayers || [];       // Array of all the players who will be there in the waiting list
+    this.oldPlayers = gameState.oldPlayers || [];               // Array of all the players who all have lastly Played the game.  
+    this.round = gameState.round || 'idle';                     // current round in a game ['idle', 'deal', 'flop' , 'turn', 'river']
+    this.dealerPos = gameState.dealerPos || 0;                  // to determine the dealer position for each game, incremented by 1 for each end game
+    this.turnPos = gameState.turnPos || 0;                      // to determine whose turn it is in a playing game
+    this.totalPot = gameState.totalPot || 0;                    // accumulated chips in center of the table
+    this.minRaise = gameState.minRaise || 0;                    // Minimum raise to be have
+    this.maxRaise = gameState.maxRaise || 0;                    // Maximum raise for the next player
+    this.callValue = gameState.callValue || 0;                  // Call Value to be stored for next Player
+    this.currentTotalPlayer = gameState.currentTotalPlayer || 0;// Total players on the table
+    this.communityCards = gameState.communityCards || [];       // array of Card object, five cards in center of the table
+    this.deck = gameState.deck || new Deck();                   // deck of playing cards
+    this.gamePots = gameState.gamePots || [];                   // The Vairable to store all the game pots 
+    this.lastRaise = gameState.lastRaise || 0;                  // Maintaing what was the last raise. 
+    this.rakeEarning = gameState.rakeEarning || 0;              // Options for the rake earning per For Game
 
-    this.initPlayers();
-    this.currentGameState();
+    if(this.players.length == 0){
+        this.initPlayers();
+    }
 };
 
 
 
 /**
  *  var params = {
-        callType : "fold",
+        callType: "player"
+        call : "fold",
         amount: 0,
-        playerId : id
+        playerId : id,
+        playerInfo : playerInfo,
     }; 
  */
 Game.prototype.playerTurn = function(params, gameInstance){
@@ -70,70 +73,92 @@ Game.prototype.playerTurn = function(params, gameInstance){
             this[i] = gameInstance[i];
         }
     }
-
-    if(params.playerId != this.getCurrentPlayer().id){
-        logd("The Turn Positing is different for different Player");
-        //return;
+    if(params.callType == "player"){
+        if(params.playerId != this.getCurrentPlayer().id){
+            logd("The Turn Positing is different for different Player");
+            //return;
+        }
+        switch(params.call){
+            case "fold":
+                logd("Fold has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().fold();
+                break;
+            case "allin":
+                logd("allIn has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().allin();
+                break;
+            case "callOrCheck":
+                logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().callOrCheck();
+                break;
+            case "raise":
+                if( params.amount < this.mininumunRaise() || params.amount > this.maximumRaise()){
+                    logd("Raise Amount  is not in range min ------ " + this.mininumunRaise() + " max " + this.maximumRaise());
+                }
+                else{
+                    logd("Raise has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                    this.lastRaise = params.amount;
+                    this.getCurrentPlayer().raise(params.amount);
+                }
+                break;
+            case "sitOut":
+                logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().sitOut();
+                break;
+            case "sitIn":
+                logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().sitIn();
+                break;
+            case "setMaintChips":
+                logd("setMaintChips has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().setMaintChips(params.amount);
+                break;
+            case "unSetMaintainChips":
+                logd("unSetMaintChips has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().unSetMaintainChips();
+                break;
+            case "playerDisconnected":
+                logd("playerDisconnected has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().playerDisconnected();
+                break;
+            case "playerConnected":
+                logd("playerConnected has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().playerConnected();
+                break;
+            case "turnOffAutoMuck":
+                logd("turnOffAutoMuck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().turnOffAutoMuck();
+                break;
+            case "turnOnAutoMuck":
+                logd("turnOnAutoMuck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().turnOnAutoMuck();
+                break;
+            case "leaveGame":
+                logd("leaveGame has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().leaveGame();
+                break;
+            default:
+                logd("Call is not correct " + params.call);
+                break;
+        }
     }
-    switch(params.callType){
-        case "fold":
-            logd("Fold has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-            this.getCurrentPlayer().fold();
-            break;
-        case "allin":
-            logd("allIn has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-            this.getCurrentPlayer().allin();
-            break;
-        case "callOrCheck":
-            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-            this.getCurrentPlayer().callOrCheck();
-            break;
-        case "raise":
-            if( params.amount < this.mininumunRaise() || params.amount > this.maximumRaise()){
-                logd("Raise Amount  is not in range min ------ " + this.mininumunRaise() + " max " + this.maximumRaise());
-            }
-            else{
-                logd("Raise has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.lastRaise = params.amount;
-                this.getCurrentPlayer().raise(params.amount);
-            }
-            break;
-        case "sitOut":
-            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-            this.getCurrentPlayer().sitOut();
-            break;
-        case "sitIn":
-            logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-            this.getCurrentPlayer().sitIn();
-            break;
-        case "setMaintChips":
-            logd("setMaintChips has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-            this.getCurrentPlayer().setMaintChips(params.amount);
-            break;
-        case "unSetMaintainChips":
-            logd("unSetMaintChips has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-            this.getCurrentPlayer().unSetMaintainChips();
-            break;
-        case "playerDisconnected":
-            logd("playerDisconnected has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-            this.getCurrentPlayer().playerDisconnected();
-            break;
-        case "playerConnected":
-            logd("playerConnected has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-            this.getCurrentPlayer().playerConnected();
-            break;
-        case "turnOffAutoMuck":
-            logd("turnOffAutoMuck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-            this.getCurrentPlayer().turnOffAutoMuck();
-            break;
-        case "turnOnAutoMuck":
-            logd("turnOnAutoMuck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-            this.getCurrentPlayer().turnOnAutoMuck();
-            break;
-        case "leaveGame":
-            logd("leaveGame has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-            this.getCurrentPlayer().leaveGame();
-            break;
+    else if(params.callType == "game"){
+        switch(params.call){
+            case "addPlayer":
+                logd("Add Player has been called for -------- " + params.playerInfo.id);
+                this.addPlayer(playerInfo);
+                break;
+            case "addToWaiting":
+                logd("waitingPlayer has been called for -------- " + params.playerInfo.id);
+                this.addToWaiting(playerInfo);
+                break;
+            default:
+                logd("Call is not correct " + params.call);
+                break;
+        }
+    }
+    else{
+        logd("Incorrect CallType " + params.callType);
     }
     this.updateGameInstance();
 }
