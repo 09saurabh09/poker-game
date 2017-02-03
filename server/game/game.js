@@ -133,10 +133,6 @@ Game.prototype.playerTurn = function(params, gameInstance){
                 logd("turnOnAutoMuck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
                 this.getCurrentPlayer().turnOnAutoMuck();
                 break;
-            case "leaveGame":
-                logd("leaveGame has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.removeFromGame(this.turnPos);
-                break;
             default:
                 logd("Call is not correct " + params.call);
                 break;
@@ -151,6 +147,17 @@ Game.prototype.playerTurn = function(params, gameInstance){
             case "addToWaiting":
                 logd("waitingPlayer has been called for -------- " + params.playerInfo.id);
                 this.addToWaiting(playerInfo);
+                break;
+            case "leaveGame":
+                logd("leaveGame has been called for -------- " + params.playerInfo.id);
+                var pos=0;
+                for(var i = 0; i < this.players.length; i++ ){
+                    if(this.players[i].id == params.playerInfo.id){
+                        pos = i;
+                        break;
+                    }
+                }
+                this.removeFromGame(pos);
                 break;
             default:
                 logd("Call is not correct " + params.call);
@@ -384,7 +391,7 @@ Game.prototype.checkPlayersSitout = function(){
 /**
  * Check for the Waiting Players notifiy them
  */
-function.prototype.checkWaitingPlayers = function(){
+Game.prototype.checkWaitingPlayers = function(){
     if(this.currentTotalPlayer < this.maxPlayer ){
         //Notifiy to the players in the parallel.
     }
@@ -394,7 +401,7 @@ function.prototype.checkWaitingPlayers = function(){
 /**
  * Check whether its a valid Old Players of not
  */
-function.prototype.validOldPlayer = function(){
+Game.prototype.validOldPlayer = function(){
 
 }
 
@@ -402,7 +409,7 @@ function.prototype.validOldPlayer = function(){
 /**
  * Update the List of old Players
  */
-function.prototype.updateOldPlayerList = function(){
+Game.prototype.updateOldPlayerList = function(){
     for(var i = 0; i < oldPlayers.length; i++){
         var sitOutDuration = moment() - this.oldPlayers[i].leaveTime;
         if(sitOutDuration / (1000*60) >= 30 ){
@@ -418,7 +425,7 @@ function.prototype.updateOldPlayerList = function(){
 /**
  * Remove the Person Fromt he game
  */
-function.prototype.removeFromGame = function(pos){
+Game.prototype.removeFromGame = function(pos){
     var player = {};
     player.id = this.players[pos].id;
     player.leaveTime= moment();
