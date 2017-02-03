@@ -81,19 +81,22 @@ var gameInstance = {
 var gameInstance = null;
 
 var turnParamsCall = {
-    callType:"callOrCheck",
+    callType:"player",
+    call:"callOrCheck",
     amount:0,
     playerId:""
 };
 
 var turnParamsRaise = {
-    callType:"raise",
+    callType:"player",
+    call:"raise",
     amount:50,
     playerId:""
 };
 
 var turnParamsStack = {
-    callType:"unSetMaintainChips",
+    callType:"player",
+    call:"unSetMaintainChips",
     amount:20,
     playerId:""
 };

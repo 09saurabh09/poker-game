@@ -135,7 +135,7 @@ Game.prototype.playerTurn = function(params, gameInstance){
                 break;
             case "leaveGame":
                 logd("leaveGame has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.getCurrentPlayer().leaveGame();
+                this.removeFromGame(this.turnPos);
                 break;
             default:
                 logd("Call is not correct " + params.call);
@@ -332,6 +332,7 @@ Game.prototype.reset = function() {
 
     this.checkPlayersConnected();
     this.checkPlayersSitout();
+    this.checkWaitingPlayers();
     //this.initGamePots();
 };
 
@@ -368,8 +369,7 @@ Game.prototype.checkPlayersSitout = function(){
             if(this.players[i].hasSitOut){
                 var sitOutDuration = moment() - this.players[i].sitOutTime;
                 if(sitOutDuration / (1000*60) >= 30 ){
-                    this.players[i].leaveGame();
-                    this.players[i]=null;
+                    this.removeFromGame(i);
                 }
                 else{
                     this.players[i].idleForHand =  true;
@@ -377,6 +377,55 @@ Game.prototype.checkPlayersSitout = function(){
             }
         }
     }
+}
+
+
+
+/**
+ * Check for the Waiting Players notifiy them
+ */
+function.prototype.checkWaitingPlayers = function(){
+    if(this.currentTotalPlayer < this.maxPlayer ){
+        //Notifiy to the players in the parallel.
+    }
+}
+
+
+/**
+ * Check whether its a valid Old Players of not
+ */
+function.prototype.validOldPlayer = function(){
+
+}
+
+
+/**
+ * Update the List of old Players
+ */
+function.prototype.updateOldPlayerList = function(){
+    for(var i = 0; i < oldPlayers.length; i++){
+        var sitOutDuration = moment() - this.oldPlayers[i].leaveTime;
+        if(sitOutDuration / (1000*60) >= 30 ){
+            this.oldPlayers.splice(i,1);
+            i--;
+        }
+    }
+}
+
+
+
+
+/**
+ * Remove the Person Fromt he game
+ */
+function.prototype.removeFromGame = function(pos){
+    var player = {};
+    player.id = this.players[pos].id;
+    player.leaveTime= moment();
+    this.oldPlayers.push(player); 
+    this.players[i].leaveGame();
+    this.players[i]=null;
+    this.currentTotalPlayer--;
 }
 
 
@@ -404,7 +453,6 @@ Game.prototype.checkForGameRun = function(){
  * Starts the 'deal' Round
  */
 Game.prototype.start = function() {
-    this.reset();
     if( !this.checkForGameRun() ){
         logd("Need More Player to start the Game ");
         return;
@@ -631,6 +679,7 @@ Game.prototype.showdown = function() {
         this.winnersPerPot(ranks);
         this.handOverPot();
     }
+    this.reset();
 };
 
 
@@ -825,7 +874,6 @@ Game.prototype.handOverPot = function(){
             this.rakeEarning += this.gamePots[i].rakeMoney;
             for(var j = 0; j < this.players.length; j++){
                 if(this.players[j] && this.players[j].id == this.gamePots[i].winners[0]){
-                    logd("Here");
                     this.players[j].addChips(this.gamePots[i].amount -  this.gamePots[i].rakeMoney);
                 }
             }
