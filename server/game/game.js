@@ -296,23 +296,26 @@ Game.prototype.addPlayer = function(attr) {
     else if(newPlayer.seat > this.maxPlayer){
         logd("NO Seat Availabe for Player " + newPlayer.name);
     }
-    else if (this.round != 'idle' && this.players[ newPlayer.seat - 1 ] == null){
+    else if (this.round != 'idle' && this.players[ newPlayer.seat - 1 ] == null && this.validOldPlayer(newPlayer)){
         logd('Player ' + newPlayer.name + ' added but will will idle for this hand');
         newPlayer.game = this;
         newPlayer.idleForHand = true;
         this.players[ newPlayer.seat - 1 ] = newPlayer;
         this.currentTotalPlayer += 1;
     }
-    else if(this.round == 'idle' && this.players[ newPlayer.seat - 1 ] == null ){
+    else if(this.round == 'idle' && this.players[ newPlayer.seat - 1 ] == null && this.validOldPlayer(newPlayer)){
         logd('Player ' + newPlayer.name + ' added to the game');
         newPlayer.game = this;
         this.players[ newPlayer.seat - 1 ] = newPlayer;
         this.currentTotalPlayer += 1;
     }
+    else if(!this.validOldPlayer(newPlayer)){
+        logd('Player ' + newPlayer.name + ' Cannot be added the game');
+    }
     else{
         logd("Seat-> " + ( newPlayer.seat  - 1 ) + "  is Already Been Taken");
     }
-    //this.currentGameState();
+    this.currentGameState();
 };
 
 
@@ -398,12 +401,21 @@ Game.prototype.checkWaitingPlayers = function(){
 }
 
 
+
 /**
  * Check whether its a valid Old Players of not
  */
-Game.prototype.validOldPlayer = function(){
-
+Game.prototype.validOldPlayer = function(params){
+    for(var i = 0; i<this.oldPlayers.length; i++){
+        if(this.oldPlayers[i].id == params.id){
+            if(params.chips < this.oldPlayers[i].money){
+                return false;
+            }
+        }
+    }
+    return true;
 }
+
 
 
 /**
@@ -421,14 +433,14 @@ Game.prototype.updateOldPlayerList = function(){
 
 
 
-
 /**
  * Remove the Person Fromt he game
  */
 Game.prototype.removeFromGame = function(pos){
     var player = {};
     player.id = this.players[pos].id;
-    player.leaveTime= moment();
+    player.leaveTime = moment();
+    player.money = this.players[pos].chips;
     this.oldPlayers.push(player); 
     this.players[i].leaveGame();
     this.players[i]=null;
