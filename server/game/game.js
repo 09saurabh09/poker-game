@@ -386,6 +386,7 @@ Game.prototype.start = function() {
     }
     logd('========== STARTING GAME ==========');
 
+    this.round = 'deal';
     // deal two cards to each players
     for (var i=0; i<this.players.length; i++) {
         if(this.players[i]){
@@ -417,7 +418,6 @@ Game.prototype.start = function() {
 
     // begin game, start 'deal' Round
     logd('========== Round DEAL ==========');
-    this.round = 'deal';
 };
 
 
