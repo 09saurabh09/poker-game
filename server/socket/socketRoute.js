@@ -36,6 +36,7 @@ gameAuthorizedIO.use(function (socket, next) {
 
 gameAuthorizedIO.on('connection', function (socket) {
     console.log("Player connected to game");
+    socketController.playerConnected(socket.user);
 
     // Socket event for player turn
     socket.on('player-turn', function (params) {
@@ -43,10 +44,12 @@ gameAuthorizedIO.on('connection', function (socket) {
     });
 
     socket.on('table-join', function (params) {
-        socket.join(GlobalConstant.gameRoomPrefix + params.tableUniqueId);
-        socket.join(GlobalConstant.gameRoomPrefix + params.tableUniqueId);
         socketController.joinTable(params, socket);
     });
+
+    socket.on('table-leave', function (params) {
+        socketController.leaveTable(params, socket);
+    })
 
     socket.on('disconnect', function () {
 

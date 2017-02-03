@@ -1,7 +1,5 @@
 "use strict";
 
-let bcrypt = require('bcrypt');
-
 module.exports = function (sequelize, DataTypes) {
     var User = sequelize.define("User", {
         name: {
@@ -41,8 +39,11 @@ module.exports = function (sequelize, DataTypes) {
             classMethods: {
                 associate: function (models) {
                     User.belongsToMany(models.Game, {
-                        through: "UserGames"
+                        through: "UserGame"
                     });
+                    User.belongsToMany(models.PokerTable, {
+                        through: "UserPokerTables"
+                    })
                 }
             }
         });
