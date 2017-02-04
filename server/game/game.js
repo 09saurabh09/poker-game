@@ -407,7 +407,7 @@ Game.prototype.checkPlayersSitout = function(){
             }
             if(this.players[i].hasSitOut){
                 var sitOutDuration = moment() - this.players[i].sitOutTime;
-                if(sitOutDuration / (1000*60) >= 30 ){
+                if(sitOutDuration / (1000*60) >= this.maxSitOutTIme ){
                     this.removeFromGame(i);
                 }
                 else{
