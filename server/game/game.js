@@ -254,14 +254,14 @@ Game.prototype.currentGameState = function(){
     logd("## Game maxAmount - " +this.maxAmount);
     logd("## Game maxSitOutTIme - " +this.maxSitOutTIme);
     logd("## Game dealerPos - " +this.dealerPos);        
+    logd("## Game Round - " + this.round);
     logd("## Game minRaise - " +this.minRaise);        
     logd("## Game maxRaise - " +this.maxRaise);        
     logd("## Game callValue - " +this.callValue);        
     logd("## Game turnPos - " +this.turnPos);           
     logd("## Game totalpot - " +this.totalPot);
     logd("## Game rakeEarning - " +this.rakeEarning);
-    logd("## Game gamePots - " + JSON.stringify(this.gamePots));
-    logd("## Game minimumRaise - " +this.minimumRaise);    
+    logd("## Game gamePots - " + JSON.stringify(this.gamePots));   
     logd("## Game currentTotalPlayer - " +this.currentTotalPlayer); 
     logd("## Game Community Cards - " + JSON.stringify(this.communityCards));
     logd("## Game waitingPlayers - " + JSON.stringify(this.waitingPlayers));
@@ -579,7 +579,7 @@ Game.prototype.isEndRound = function() {
     var endOfRound = true;
     //For each player, check
     for(var i=0; i<this.players.length; i++) {
-        if(this.players[i]){
+        if(this.players[i] && !this.players[i].idleForHand){
             var plyr = this.players[i];
             if (!plyr.hasActed && !plyr.hasDone) {
                 endOfRound = false;

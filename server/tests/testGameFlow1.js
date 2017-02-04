@@ -105,8 +105,8 @@ var game = new Game(gameParams);
 //game.playerTurn(playerParams1);
 game.playerTurn(playerParams2, userParams2);
 game.playerTurn(playerParams3, userParams3);
-// game.playerTurn(playerParams4, userParams4);
-// game.playerTurn(playerParams5, userParams5);
+game.playerTurn(playerParams4, userParams4);
+game.playerTurn(playerParams5, userParams5);
 // game.start();
 
 
