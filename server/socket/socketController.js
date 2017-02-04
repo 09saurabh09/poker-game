@@ -3,6 +3,7 @@
 let Game = require("../game/game");
 let gameService = require("../game/gameService");
 let userService = require("../user/userService");
+let eventConfig = require("../game/eventConfig");
 
 let PokerTable = DB_MODELS.PokerTable;
 let UserModel = DB_MODELS.User;
@@ -60,7 +61,7 @@ module.exports = {
                 params.tableInstance = table;
                 game.playerTurn(params, socket.user);
                 let commonGameState = gameService.getCommonGameState(gameState);
-                SOCKET_IO.to(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(commonGameState);
+                SOCKET_IO.to(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
             } else {
               console.log(`ERROR ::: Validation failed, not a turn for player id ${socket.user.id} for table: ${tableId}`)  
             }
@@ -72,6 +73,8 @@ module.exports = {
 
     joinTable: function (params, socket) {
         let tableId = params.tableId;
+        params.callType = "game";
+        params.call = "addPlayer";
         socket.join(GlobalConstant.gameRoomPrefix + params.tableUniqueId);
         socket.join(GlobalConstant.chatRoomPrefix + params.tableUniqueId);
 
@@ -81,8 +84,16 @@ module.exports = {
             }
         }).then(function (table) {
             let game = new Game(table.gameState);
-            game.addPlayer(params, socket.user);
+            game.playerTurn(params, socket.user);
             userService.addTableToUser(socket.user, table);
+            table.set("gameState", game.getRawObject());
+            table.save()
+                .then(function(table) {
+                    console.log("Game state updated for table: ${table.id}");    
+                })
+            let commonGameState = gameService.getCommonGameState(game);
+            console.log("event name", eventConfig.playerJoined);
+            // SOCKET_IO.sockets.in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.playerJoined, commonGameState);
             return null;
 
         }).catch(function (err) {

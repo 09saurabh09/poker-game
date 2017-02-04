@@ -821,6 +821,7 @@ Game.prototype.managePots = function(){
 Game.prototype.getCurrentPlayer = function() {
     //return new Player(this.players[this.turnPos]);
     this.players[this.turnPos] = new Player(this.players[this.turnPos]);
+    this.players[this.turnPos].game = this;
     return this.players[this.turnPos];
 };
 
@@ -1008,4 +1009,13 @@ Game.prototype.checkPlayerLeft = function(){
         }
     }
     return totalPlaying;
+}
+
+Game.prototype.getRawObject = function() {
+    this.players.forEach(function(player) {
+        if(player) {
+            delete player.game;
+        }
+    })
+    return this;
 }

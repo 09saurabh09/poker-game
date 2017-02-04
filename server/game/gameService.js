@@ -48,18 +48,24 @@ module.exports = {
             callValue: gameState.callValue,
             gamePots: gameState.gamePots,
             lastRaise: gameState.lastRaise,
-            players = []
+            currentTotalPlayer: gameState.currentTotalPlayer,
+            players: []
         };
 
         gameState.players.forEach(function (player) {
-            let pl = {
-                chips: player.chips,
-                bet: player.bet,
-                lastAction: player.lastAction,
-                hasDone: player.hasDone,
-                idleForHand: player.idleForHand
+            if (player) {
+                let pl = {
+                    chips: player.chips,
+                    bet: player.bet,
+                    lastAction: player.lastAction,
+                    hasDone: player.hasDone,
+                    idleForHand: player.idleForHand
+                }
+                commonGameState.players.push(pl);
+            } else {
+                commonGameState.players.push(null);
             }
-            commonGameState.push(pl);
+
         });
         return commonGameState;
     },
@@ -105,5 +111,9 @@ module.exports = {
                     console.log(`SUCCESS ::: Transaction job has been successfully queued with id: ${job.id}`);
                 }
             });
+    },
+
+    getGameStateForUser: function (gameState, currentUser) {
+
     }
 } 
