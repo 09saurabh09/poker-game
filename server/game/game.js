@@ -919,7 +919,15 @@ Game.prototype.handOverPot = function(){
  * Show off the Card
  */
 Game.prototype.showCard = function(){
-    //To Do
+    for(var i = 0 ;i< this.gamePots.length; i++ ){
+        for(var j = 0 ; j < this.gamePots[i].winners.length; j++){
+            for(var k = 0; k <this.players.length; k++){
+                if(this.players[k].id == this.gamePots[i].winners[j]){
+                    this.players[k].showCards = true;
+                }
+            }
+        }
+    }
 }
 
 
