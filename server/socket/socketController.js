@@ -54,12 +54,17 @@ module.exports = {
                 id: tableId
             }
         }).then(function (table) {
-            let game = new Game(table.gameState);
-            return game.playerTurn(params, socket.user)
-                .then(function (gameState) {
-                    let {commonGameState} = gameService.divideGameState(gameState);
-                    SOCKET_IO.to(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(commonGameState);
-                })
+            let currentGameState = table.gameState;
+            if (currentGameState.players[currentGameState.turnPos].id == socket.user.id) {
+                let game = new Game(table.gameState);
+                params.tableInstance = table;
+                game.playerTurn(params, socket.user);
+                let commonGameState = gameService.getCommonGameState(gameState);
+                SOCKET_IO.to(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(commonGameState);
+            } else {
+              console.log(`ERROR ::: Validation failed, not a turn for player id ${socket.user.id} for table: ${tableId}`)  
+            }
+
         }).catch(function (err) {
             console.log(`ERROR ::: Unable to make turn for player id ${socket.user.id}, and table: ${tableId}, error: ${err.message}`)
         })
@@ -105,7 +110,7 @@ module.exports = {
         })
     },
 
-    testQ: function() {
+    testQ: function () {
         gameService.gameOver();
     }
 }

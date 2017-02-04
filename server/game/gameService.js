@@ -2,7 +2,7 @@
 
 module.exports = {
     /**
-     * This function will adjust all add money request made during the game
+     * function will adjust all add money request made during the game
      * @param {Object} poker table instance
      */
 
@@ -40,10 +40,28 @@ module.exports = {
         });
     },
 
-    divideGameState: function (gameState) {
-        // Sit with Amar and Vishal to figure it out
+    getCommonGameState: function (gameState) {
+        let commonGameState = {
+            turnPos: gameState.turnPos,
+            minRaise: gameState.minRaise,
+            maxRaise: gameState.maxRaise,
+            callValue: gameState.callValue,
+            gamePots: gameState.gamePots,
+            lastRaise: gameState.lastRaise,
+            players = []
+        };
 
-        return { commonGameState, IndividualGameStates };
+        gameState.players.forEach(function (player) {
+            let pl = {
+                chips: player.chips,
+                bet: player.bet,
+                lastAction: player.lastAction,
+                hasDone: player.hasDone,
+                idleForHand: player.idleForHand
+            }
+            commonGameState.push(pl);
+        });
+        return commonGameState;
     },
 
     updateGameState: function (tableInstance, newGameState, turnCheck) {
