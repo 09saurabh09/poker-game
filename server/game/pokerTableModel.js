@@ -10,82 +10,90 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.UUIDV4,
             defaultValue: DataTypes.UUIDV4
         },
-        gameState: { 
-            type: DataTypes.JSONB, 
-            defaultValue: {} 
+        gameState: {
+            type: DataTypes.JSONB,
+            defaultValue: {}
         },
-        moneyRequest: { 
-            type: DataTypes.JSONB, 
-            defaultValue: {} 
+        moneyRequest: {
+            type: DataTypes.JSONB,
+            defaultValue: {}
         },
-        parentType: { 
-            type: DataTypes.STRING 
+        parentType: {
+            type: DataTypes.STRING
         },
-        tableType: { 
-            type: DataTypes.INTEGER 
+        tableType: {
+            type: DataTypes.INTEGER
         },
-        state: { 
-            type: DataTypes.STRING 
+        state: {
+            type: DataTypes.STRING
         },
         moneyType: {
             type: DataTypes.STRING,
             validate: {
-                 isIn: [pokerTableConfig.moneyType.values], 
+                isIn: [pokerTableConfig.moneyType.values],
             }
         },
         bigBlind: {
             type: DataTypes.FLOAT,
             validate: {
-                 isIn: [pokerTableConfig.bigBlind.values], 
+                isIn: [pokerTableConfig.bigBlind.values],
             }
         },
         gameType: {
             type: DataTypes.STRING,
             validate: {
-                 isIn: [pokerTableConfig.gameType.values], 
+                isIn: [pokerTableConfig.gameType.values],
             }
         },
         accessType: {
             type: DataTypes.STRING,
             validate: {
-                 isIn: [pokerTableConfig.accessType.values], 
+                isIn: [pokerTableConfig.accessType.values],
             }
         },
         runTimeType: {
             type: DataTypes.STRING,
             validate: {
-                 isIn: [pokerTableConfig.runTimeType.values], 
+                isIn: [pokerTableConfig.runTimeType.values],
             }
         },
         maxPlayer: {
             type: DataTypes.INTEGER,
             validate: {
-                 min: [pokerTableConfig.nOfPlayers.min], 
-                 max: [pokerTableConfig.nOfPlayers.max],
+                min: [pokerTableConfig.nOfPlayers.min],
+                max: [pokerTableConfig.nOfPlayers.max],
             }
         },
-        minAmount: { 
-            type: DataTypes.FLOAT 
+        minAmount: {
+            type: DataTypes.FLOAT
         },
-        maxAmount: { 
-            type: DataTypes.FLOAT 
+        maxAmount: {
+            type: DataTypes.FLOAT
         },
-        maxSitOutTIme: { 
-            type: DataTypes.INTEGER 
+        maxSitOutTIme: {
+            type: DataTypes.INTEGER
         },
-        annyomousGame: { 
-            type: DataTypes.BOOLEAN 
+        annyomousGame: {
+            type: DataTypes.BOOLEAN
         },
-        rakeX: { 
-            type: DataTypes.FLOAT 
+        rakeX: {
+            type: DataTypes.FLOAT
         },
-        rakeY: { 
-            type: DataTypes.FLOAT 
+        rakeY: {
+            type: DataTypes.FLOAT
         },
-        rakeZ: { 
-            type: DataTypes.FLOAT 
-        },
-    });
+        rakeZ: {
+            type: DataTypes.FLOAT
+        }
+    }, {
+            classMethods: {
+                associate: function (models) {
+                    PokerTable.belongsToMany(models.User, {
+                        through: "UserPokerTables"
+                    })
+                }
+            }
+        });
 
     return PokerTable;
 };
