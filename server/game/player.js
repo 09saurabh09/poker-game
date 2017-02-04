@@ -27,23 +27,23 @@ function Player(options) {
     this.maintainChips = options.chips;             // The value to which we need to maintain stack
     this.seat = options.seat;                       // Seat on Gmae
 
-    this.game = null;
+    this.game = options.game || null;
 
-    this.firstCard = {};
-    this.secondCard = {};
-    this.bet = 0;
-    this.totalBet = 0;
-    this.showCards = false;
+    this.firstCard = options.firstCard || {};
+    this.secondCard = options.secondCard || {};
+    this.bet = options.bet || 0;
+    this.totalBet = options.totalBet || 0;
+    this.showCards = options.showCards || false;
 
-    this.lastAction = "";
-    this.hasActed = false;              // acted for one round (call/check/raise)
-    this.hasDone = false;               // finish acted for one game (fold/allin)
-    this.hasSitOut = false;             // Whether the persone is disconnected or not
-    this.sitOutTime = 0;                // This will be a time stamp
-    this.idleForHand = false;           // Used by Game Flow if a person join in between game
-    this.connectionStatus = true;       // This is for checking whether the player is connected or not
-    this.disconnectionTIme = 0;         // TIme since the person has been Disconnected
-    this.autoMuck = true;               // Default True for the every Player 
+    this.lastAction =options.lastAction || "";
+    this.hasActed = options.hasActed || false;              // acted for one round (call/check/raise)
+    this.hasDone = options.hasDone || false;               // finish acted for one game (fold/allin)
+    this.hasSitOut = options.hasSitOut || false;             // Whether the persone is disconnected or not
+    this.sitOutTime = options.sitOutTime || 0;                // This will be a time stamp
+    this.idleForHand = options.idleForHand || false;           // Used by Game Flow if a person join in between game
+    this.connectionStatus = options.connectionStatus || true;       // This is for checking whether the player is connected or not
+    this.disconnectionTIme = options.disconnectionTIme || 0;         // TIme since the person has been Disconnected
+    this.autoMuck = options.disconnectionTIme || true;               // Default True for the every Player 
 }
 
 
