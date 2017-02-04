@@ -70,11 +70,11 @@ module.exports = function (sequelize, DataTypes) {
         maxAmount: {
             type: DataTypes.FLOAT
         },
-        maxSitOutTIme: {
+        maxSitOutTime: {
             type: DataTypes.INTEGER
         },
-        annyomousGame: {
-            type: DataTypes.BOOLEAN
+        tableType: {
+            type: DataTypes.STRING
         },
         rakeX: {
             type: DataTypes.FLOAT
@@ -91,6 +91,28 @@ module.exports = function (sequelize, DataTypes) {
                     PokerTable.belongsToMany(models.User, {
                         through: "UserPokerTables"
                     })
+                }
+            },
+
+            hooks: {
+                beforeCreate: function (table, options) {
+                    console.log("creating table");
+                    let gameState = {
+                        "moneyType": table.moneyType,
+                        "bigBlind": table.bigBlind,
+                        "gameType": table.gameType,
+                        "accessType": table.accessType,
+                        "runTimeType": table.runTimeType,
+                        "maxPlayer": table.maxPlayer,
+                        "minAmount": table.minAmount,
+                        "maxAmount": table.maxAmount,
+                        "maxSitOutTime": table.maxSitOutTime,
+                        "tableType": table.tableType,
+                        "rakeX": table.rakeX,
+                        "rakeY": table.rakeY,
+                        "rakeZ": table.rakeZ
+                    }
+                    table.set('gameState', gameState);
                 }
             }
         });
