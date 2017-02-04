@@ -194,6 +194,7 @@ Game.prototype.playerTurn = function(params, user){
         logd("Incorrect CallType " + params.callType);
     }
     this.updateGameInstance();
+    this.currentGameState();
 }
 
 
@@ -344,7 +345,10 @@ Game.prototype.addPlayer = function(attr) {
     else{
         logd("Seat-> " + ( newPlayer.seat  - 1 ) + "  is Already Been Taken");
     }
-    //this.currentGameState();
+    
+    if(this.currentTotalPlayer > 1 && this.round == 'idle'){
+        this.start();
+    }
 };
 
 
@@ -453,7 +457,7 @@ Game.prototype.validOldPlayer = function(params){
 Game.prototype.updateOldPlayerList = function(){
     for(var i = 0; i < oldPlayers.length; i++){
         var sitOutDuration = moment() - this.oldPlayers[i].leaveTime;
-        if(sitOutDuration / (1000*60) >= 30 ){
+        if(sitOutDuration / (1000*60) >= this.maxSitOutTIme ){
             this.oldPlayers.splice(i,1);
             i--;
         }
@@ -1011,6 +1015,11 @@ Game.prototype.checkPlayerLeft = function(){
     return totalPlaying;
 }
 
+
+
+/**
+ * Raw Object to be called by the GameServie
+ */
 Game.prototype.getRawObject = function() {
     this.players.forEach(function(player) {
         if(player) {
