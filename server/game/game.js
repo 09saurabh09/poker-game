@@ -194,6 +194,7 @@ Game.prototype.playerTurn = function(params, user){
         logd("Incorrect CallType " + params.callType);
     }
     this.updateGameInstance();
+    this.currentGameState();
 }
 
 
@@ -253,14 +254,14 @@ Game.prototype.currentGameState = function(){
     logd("## Game maxAmount - " +this.maxAmount);
     logd("## Game maxSitOutTIme - " +this.maxSitOutTIme);
     logd("## Game dealerPos - " +this.dealerPos);        
+    logd("## Game Round - " + this.round);
     logd("## Game minRaise - " +this.minRaise);        
     logd("## Game maxRaise - " +this.maxRaise);        
     logd("## Game callValue - " +this.callValue);        
     logd("## Game turnPos - " +this.turnPos);           
     logd("## Game totalpot - " +this.totalPot);
     logd("## Game rakeEarning - " +this.rakeEarning);
-    logd("## Game gamePots - " + JSON.stringify(this.gamePots));
-    logd("## Game minimumRaise - " +this.minimumRaise);    
+    logd("## Game gamePots - " + JSON.stringify(this.gamePots));   
     logd("## Game currentTotalPlayer - " +this.currentTotalPlayer); 
     logd("## Game Community Cards - " + JSON.stringify(this.communityCards));
     logd("## Game waitingPlayers - " + JSON.stringify(this.waitingPlayers));
@@ -344,7 +345,10 @@ Game.prototype.addPlayer = function(attr) {
     else{
         logd("Seat-> " + ( newPlayer.seat  - 1 ) + "  is Already Been Taken");
     }
-    //this.currentGameState();
+    
+    if(this.currentTotalPlayer > 1 && this.round == 'idle'){
+        this.start();
+    }
 };
 
 
@@ -407,7 +411,7 @@ Game.prototype.checkPlayersSitout = function(){
             }
             if(this.players[i].hasSitOut){
                 var sitOutDuration = moment() - this.players[i].sitOutTime;
-                if(sitOutDuration / (1000*60) >= 30 ){
+                if(sitOutDuration / (1000*60) >= this.maxSitOutTIme ){
                     this.removeFromGame(i);
                 }
                 else{
@@ -453,7 +457,7 @@ Game.prototype.validOldPlayer = function(params){
 Game.prototype.updateOldPlayerList = function(){
     for(var i = 0; i < oldPlayers.length; i++){
         var sitOutDuration = moment() - this.oldPlayers[i].leaveTime;
-        if(sitOutDuration / (1000*60) >= 30 ){
+        if(sitOutDuration / (1000*60) >= this.maxSitOutTIme ){
             this.oldPlayers.splice(i,1);
             i--;
         }
@@ -575,7 +579,7 @@ Game.prototype.isEndRound = function() {
     var endOfRound = true;
     //For each player, check
     for(var i=0; i<this.players.length; i++) {
-        if(this.players[i]){
+        if(this.players[i] && !this.players[i].idleForHand){
             var plyr = this.players[i];
             if (!plyr.hasActed && !plyr.hasDone) {
                 endOfRound = false;
@@ -1011,6 +1015,11 @@ Game.prototype.checkPlayerLeft = function(){
     return totalPlaying;
 }
 
+
+
+/**
+ * Raw Object to be called by the GameServie
+ */
 Game.prototype.getRawObject = function() {
     this.players.forEach(function(player) {
         if(player) {

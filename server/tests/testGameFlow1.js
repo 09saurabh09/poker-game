@@ -107,7 +107,8 @@ game.playerTurn(playerParams2, userParams2);
 game.playerTurn(playerParams3, userParams3);
 game.playerTurn(playerParams4, userParams4);
 game.playerTurn(playerParams5, userParams5);
-game.start();
+// game.start();
+
 
 var gameInstance = {
     dealerPos:4
@@ -135,7 +136,6 @@ var turnParamsStack = {
     playerId:""
 };
 
-
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
@@ -152,11 +152,11 @@ game.playerTurn(turnParamsRaise,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
 game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
-game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);
