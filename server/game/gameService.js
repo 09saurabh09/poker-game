@@ -2,7 +2,7 @@
 
 module.exports = {
     /**
-     * function will adjust all add money request made during the game
+     * function will adjust all add money request made during the game, will be executed after every round
      * @param {Object} poker table instance
      */
 

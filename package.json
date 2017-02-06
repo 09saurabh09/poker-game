@@ -72,6 +72,7 @@
     "babel-polyfill": "^6.3.14",
     "babel-register": "^6.4.3",
     "bcrypt": "^1.0.2",
+    "bluebird": "^3.4.7",
     "body-parser": "~1.15.2",
     "bootstrap": "^3.3.7",
     "classnames": "^2.2.5",

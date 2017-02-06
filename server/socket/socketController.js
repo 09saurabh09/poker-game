@@ -63,7 +63,7 @@ module.exports = {
                 let commonGameState = gameService.getCommonGameState(gameState);
                 SOCKET_IO.to(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
             } else {
-              console.log(`ERROR ::: Validation failed, not a turn for player id ${socket.user.id} for table: ${tableId}`)  
+                console.log(`ERROR ::: Validation failed, not a turn for player id ${socket.user.id} for table: ${tableId}`)
             }
 
         }).catch(function (err) {
@@ -73,32 +73,57 @@ module.exports = {
 
     joinTable: function (params, socket) {
         let tableId = params.tableId;
+        let game, table;
         params.callType = "game";
         params.call = "addPlayer";
-        socket.join(GlobalConstant.gameRoomPrefix + params.tableUniqueId);
-        socket.join(GlobalConstant.chatRoomPrefix + params.tableUniqueId);
 
-        PokerTable.findOne({
+        let pokerTablePromise = PokerTable.findOne({
             where: {
                 id: tableId
             }
-        }).then(function (table) {
-            let game = new Game(table.gameState);
-            game.playerTurn(params, socket.user);
-            userService.addTableToUser(socket.user, table);
-            table.set("gameState", game.getRawObject());
-            table.save()
-                .then(function(table) {
-                    console.log("Game state updated for table: ${table.id}");    
-                })
-            let commonGameState = gameService.getCommonGameState(game);
-            console.log("event name", eventConfig.playerJoined);
-            // SOCKET_IO.sockets.in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.playerJoined, commonGameState);
-            return null;
+        });
+
+        let userPomise = UserModel.findOne({
+            where: {
+                id: socket.user.id
+            }
+        })
+
+        PROMISE.props({
+            user: userPomise,
+            table: pokerTablePromise
+        }).then(function (result) {
+            table = result.table;
+            let user = result.user;
+
+            return DB_MODELS.sequelize.transaction(function (t) {
+                game = new Game(table.gameState);
+                game.playerTurn(params, socket.user);
+                table.set("gameState", game.getRawObject());
+
+                // chain all your queries here. make sure you return them.
+                return table.save({ transaction: t })
+                    .then(function (table) {
+                        return user.decrement('currentBalance', { by: params.playerInfo.chips || 0 }, { transaction: t })
+                            .then(function () {
+                                return user.addPokerTables(table);
+                            })
+                    });
+
+            }).then(function (result) {
+                let commonGameState = gameService.getCommonGameState(game);
+                console.log("event name", eventConfig.playerJoined, GlobalConstant.gameRoomPrefix + table.uniqueId);
+                socket.join(GlobalConstant.gameRoomPrefix + params.tableUniqueId);
+                socket.join(GlobalConstant.chatRoomPrefix + params.tableUniqueId);
+                SOCKET_IO.sockets.in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.playerJoined, commonGameState);
+                // SOCKET_IO.sockets.clients(GlobalConstant.gameRoomPrefix + table.uniqueId);
+                return null;
+            })
 
         }).catch(function (err) {
-            console.log(`ERROR ::: Unable to join table with id ${tableId}, error: ${err.message}`)
+            console.log(`ERROR ::: Unable to join table with id ${tableId}, error: ${err.message}`);
         })
+
     },
 
     leaveTable: function (params, socket) {
