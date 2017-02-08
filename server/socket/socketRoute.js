@@ -35,7 +35,7 @@ gameAuthorizedIO.use(function (socket, next) {
 });
 
 gameAuthorizedIO.on('connection', function (socket) {
-    console.log("Player connected to game");
+    console.log("Player connected to authorized channel");
     socketController.playerConnected(socket.user);
 
     // Socket event for player turn
@@ -58,7 +58,7 @@ gameAuthorizedIO.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function (socket) {
-        console.log(`INFO ::: Player disconnected with id: ${socket.user.id}`);
+        console.log(`INFO ::: Player disconnected with id: ${socket.id}`);
     });
 });
 
@@ -69,7 +69,7 @@ gameAuthorizedIO.on('connection', function (socket) {
 let gameUnauthorizedIO = io.of('/poker-game-unauthorized');
 
 gameUnauthorizedIO.on('connection', function (socket) {
-    console.log('User connected for game chat');
+    console.log('User connected for Unauthorized channel');
 
     socket.on('game-subscribe-chat', function (params) {
         let tableUniqueId = params.tableUniqueId;

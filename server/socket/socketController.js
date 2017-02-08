@@ -112,11 +112,20 @@ module.exports = {
 
             }).then(function (result) {
                 let commonGameState = gameService.getCommonGameState(game);
-                console.log("event name", eventConfig.playerJoined, GlobalConstant.gameRoomPrefix + table.uniqueId);
-                socket.join(GlobalConstant.gameRoomPrefix + params.tableUniqueId);
-                socket.join(GlobalConstant.chatRoomPrefix + params.tableUniqueId);
-                SOCKET_IO.sockets.in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.playerJoined, commonGameState);
-                // SOCKET_IO.sockets.clients(GlobalConstant.gameRoomPrefix + table.uniqueId);
+
+                // let comSocket = SOCKET_IO.of(socket.nsp.name).connected[`${socket.nsp.name}#${socket.client.id}`];
+                // let comSocket = SOCKET_IO.sockets.connected[`${socket.client.id}`];
+                // comSocket.join(room.name);
+                // console.log(socket.nsp.name);
+                // console.log(SOCKET_IO.of(socket.nsp.name).connected);
+                // console.log(comSocket.nsp);
+                // console.log(SOCKET_IO.sockets.adapter.rooms);
+                // console.log(SOCKET_IO.of(socket.nsp.name).adapter.rooms);
+
+                socket.join(GlobalConstant.gameRoomPrefix + table.uniqueId);
+                socket.join(GlobalConstant.chatRoomPrefix + table.uniqueId);
+                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.playerJoined, commonGameState);
+                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.playerJoined, commonGameState);
                 return null;
             })
 
