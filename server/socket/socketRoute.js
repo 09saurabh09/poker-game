@@ -48,6 +48,11 @@ gameAuthorizedIO.on('connection', function (socket) {
         socketController.joinTable(params, socket);
     });
 
+    socket.on('table-add-to-waiting', function (params) {
+        params = JSON.parse(params);
+        socketController.addToWaiting(params, socket);
+    });
+
     socket.on('table-leave', function (params) {
         socketController.leaveTable(params, socket);
     });
@@ -59,6 +64,7 @@ gameAuthorizedIO.on('connection', function (socket) {
 
     socket.on('disconnect', function (socket) {
         console.log(`INFO ::: Player disconnected with id: ${socket.id}`);
+        socketController.playerDisconnected(socket.user);
     });
 });
 

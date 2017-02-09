@@ -11,6 +11,11 @@ let UserPokerTable = DB_MODELS.UserPokerTable;
 
 module.exports = {
     playerConnected: function (currentUser) {
+        let params = {
+            call: "playerConnected",
+            callType: "game"
+        }
+
         UserModel.find({
             where: {
                 id: currentUser.id
@@ -21,15 +26,28 @@ module.exports = {
                     pokerTables.forEach(function (pokerTable) {
                         // console.log(pokerTable.id);
                         let game = new Game(pokerTable.gameState);
-                        // game.playerConnected();
-                    })
+                        game.playerTurn(params, currentUser);
+                        pokerTable.set("gameState", game.getRawObject());
+                        pokerTable.save()
+                            .then(function(table) {
+                                console.log(`SUCCESS ::: Player with id ${currentUser.id}, restored on table id: ${pokerTable.id}`);
+                            })
+                            .catch(function(err) {
+                                console.log(`ERROR ::: Player with id ${currentUser.id}, can't be restored on table id: ${pokerTable.id}, error: ${err.message}`);
+                            })
+                    });
+                    return null;
                 })
         }).catch(function (err) {
             console.log(`ERROR ::: Unable to proceed with post connection events for user: ${currentUser.id}, error: ${err.message}`)
         })
     },
 
-    playerDisconnected: function (playerId) {
+    playerDisconnected: function (currentUser) {
+        let params = {
+            call: "playerDisconnected",
+            callType: "game"
+        }
         UserModel.find({
             where: {
                 id: currentUser.id
@@ -40,7 +58,15 @@ module.exports = {
                     pokerTables.forEach(function (pokerTable) {
                         // console.log(pokerTable.id);
                         let game = new Game(pokerTable.gameState);
-                        // game.playerDisconnected();
+                        game.playerTurn(params, currentUser);
+                        pokerTable.set("gameState", game.getRawObject());
+                        pokerTable.save()
+                            .then(function(table) {
+                                console.log(`SUCCESS ::: Player with id ${currentUser.id}, disconnected on table id: ${pokerTable.id}`);
+                            })
+                            .catch(function(err) {
+                                console.log(`ERROR ::: Player with id ${currentUser.id}, can't be restored on table id: ${pokerTable.id}, error: ${err.message}`);
+                            })
                     })
                 })
         }).catch(function (err) {
@@ -50,6 +76,7 @@ module.exports = {
 
     playerTurn: function (params, socket) {
         let tableId = params.tableId;
+        params.callType = "player";
         PokerTable.findOne({
             where: {
                 id: tableId
@@ -60,8 +87,11 @@ module.exports = {
                 let game = new Game(table.gameState);
                 params.tableInstance = table;
                 game.playerTurn(params, socket.user);
+                table.save();
                 let commonGameState = gameService.getCommonGameState(gameState);
-                SOCKET_IO.to(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
+
+                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
+                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
             } else {
                 console.log(`ERROR ::: Validation failed, not a turn for player id ${socket.user.id} for table: ${tableId}`)
             }
@@ -72,10 +102,11 @@ module.exports = {
     },
 
     joinTable: function (params, socket) {
-        let tableId = params.tableId;
-        let game, table;
         params.callType = "game";
         params.call = "addPlayer";
+
+        let tableId = params.tableId;
+        let game, table;
 
         let pokerTablePromise = PokerTable.findOne({
             where: {
@@ -106,7 +137,7 @@ module.exports = {
                     .then(function (table) {
                         return user.decrement('currentBalance', { by: params.playerInfo.chips || 0 }, { transaction: t })
                             .then(function () {
-                                return user.addPokerTables(table);
+                                return user.addPokerTables(table, { transaction: t });
                             })
                     });
 
@@ -136,26 +167,68 @@ module.exports = {
     },
 
     leaveTable: function (params, socket) {
+        params.call = "leaveGame";
+        params.callType = "game";
+
         let tableId = params.tableId;
-        socket.leave(GlobalConstant.gameRoomPrefix + params.tableUniqueId);
-        socket.leave(GlobalConstant.chatRoomPrefix + params.tableUniqueId);
+        return DB_MODELS.sequelize.transaction(function (t) {
+            // chain all your queries here. make sure you return them.
+            return PokerTable.findOne({
+                where: {
+                    id: tableId
+                }
+            }, { transaction: t }).then(function (table) {
+                game = new Game(table.gameState);
+                game.playerTurn(params, socket.user);
+                table.set("gameState", game.getRawObject());
+                return table.save({ transaction: t })
+                    .then(function (table) {
+                        return user.decrement('currentBalance', { by: params.playerInfo.chips || 0 }, { transaction: t })
+                            .then(function () {
+                                return UserPokerTable.destroy({
+                                    where: {
+                                        PokerTableId: table.id,
+                                        UserId: user.id
+                                    }
+                                }, { transaction: t });
+                            })
+                    });
+            })
 
-        PokerTable.findOne({
-            where: {
-                id: tableId
-            }
-        }).then(function (table) {
-            let game = new Game(table.gameState);
-            // game.playerTurn({callType: "leaveGame"}, socket.user)
-            userService.removeTableFromUser(socket.user, table);
-            return null
 
+        }).then(function (result) {
+            socket.leave(GlobalConstant.gameRoomPrefix + table.uniqueId);
+            socket.leave(GlobalConstant.chatRoomPrefix + table.uniqueId);
         }).catch(function (err) {
-            console.log(`ERROR ::: Unable to leave table with id ${tableId}, error: ${err.message}`)
+            console.log(`ERROR ::: Unable to leave table with id ${tableId}, error: ${err.message}`);
         })
     },
 
     testQ: function () {
         gameService.gameOver();
+    },
+
+    addToWaiting: function (params, socket) {
+        params.callType = "game";
+        params.call = "addToWaiting";
+
+        let tableId = params.tableId;
+        return DB_MODELS.sequelize.transaction(function (t) {
+            // chain all your queries here. make sure you return them.
+            return PokerTable.findOne({
+                where: {
+                    id: tableId
+                }
+            }, { transaction: t }).then(function (table) {
+                game = new Game(table.gameState);
+                game.playerTurn(params, socket.user);
+                table.set("gameState", game.getRawObject());
+                return table.save({ transaction: t })
+            })
+        }).then(function (result) {
+            console.log(`SUCCESS ::: Added to waiting list`);
+        }).catch(function (err) {
+            console.log(`ERROR ::: Unable to leave table with id ${tableId}, error: ${err.message}`);
+        })
     }
 }
