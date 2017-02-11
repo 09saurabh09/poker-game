@@ -46,7 +46,7 @@ function Game(gameState) {
     this.callValue = gameState.callValue || 0;                  // Call Value to be stored for next Player
     this.currentTotalPlayer = gameState.currentTotalPlayer || 0;// Total players on the table
     this.communityCards = gameState.communityCards || [];       // array of Card object, five cards in center of the table
-    this.deck = gameState.deck || new Deck();                   // deck of playing cards
+    this.deck = new Deck(gameState.deck);                       // deck of playing cards
     this.gamePots = gameState.gamePots || [];                   // The Vairable to store all the game pots 
     this.lastRaise = gameState.lastRaise || 0;                  // Maintaing what was the last raise. 
     this.rakeEarning = gameState.rakeEarning || 0;              // Options for the rake earning per For Game

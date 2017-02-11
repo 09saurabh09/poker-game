@@ -10,10 +10,15 @@ module.exports = Deck;
 /**
  * Deck Containg 4 suits and 13 Denomintation
  */
-function Deck() {
+function Deck(params) {
     this.suits = [ 's', 'h', 'd', 'c' ];
     this.ranks = [ '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' ];
-    this.cards = [];
+    if(params){
+        this.cards =  params.cards;
+    }
+    else{
+        this.cards = [];
+    }
 
     this.init();
     this.shuffle();
