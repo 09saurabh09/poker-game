@@ -1,14 +1,14 @@
 "use strict";
 
 module.exports = function (sequelize, DataTypes) {
-    var UserPokerTable = sequelize.define("UserPokerTable", {
+    var UserGame = sequelize.define("UserGame", {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true // Automatically gets converted to SERIAL for postgres
         },
-        // Both UserId and PokerTableId columns are Automatically created by sequalize
-        PokerTableId: {
+        // Both UserId and GameId columns are Automatically created by sequalize
+        GameId: {
             type: Sequelize.INTEGER,
         },
         UserId: {
@@ -18,5 +18,5 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING
         },
     });
-    return UserPokerTable;
+    return UserGame;
 };

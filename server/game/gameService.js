@@ -100,7 +100,7 @@ module.exports = {
         let pots = [{ "amount": 480, "stakeHolders": [1, 2, 3], "rakeMoney": 24 },
         { "amount": 500, "stakeHolders": [1, 2], "rakeMoney": 50 },
         { "amount": 1000, "stakeHolders": [1, 2, 3, 4], "rakeMoney": 100 }];
-        var job = GAME_QUEUE.create('gameOverMoneyTransaction', pots)
+        var job = GAME_QUEUE.create('gameOverMoneyTransaction', {pots: pots})
             .attempts(5)
             .backoff({ type: 'exponential' })
             .save(function (err) {

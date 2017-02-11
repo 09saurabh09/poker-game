@@ -90,7 +90,8 @@ module.exports = function (sequelize, DataTypes) {
                 associate: function (models) {
                     PokerTable.belongsToMany(models.User, {
                         through: "UserPokerTables"
-                    })
+                    });
+                    PokerTable.hasMany(models.Game);
                 }
             },
 

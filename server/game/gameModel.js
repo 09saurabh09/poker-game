@@ -3,20 +3,25 @@
  */
 "use strict";
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     var Game = sequelize.define("Game", {
-        pokerTableId: DataTypes.BIGINT,
-        gameState: DataTypes.JSONB,
-        city: DataTypes.STRING,
-        country: DataTypes.STRING
-    }, {
-        classMethods: {
-            associate: function (models) {
-                Game.belongsToMany(models.User, {
-                    through: "UserGames"
-                });
-            }
+        pokerTableId: DataTypes.INTEGER,
+        finalGameState: DataTypes.JSONB,
+        rake: DataTypes.FLOAT,
+        status: {
+            type: DataTypes.STRING,
+            defaultValue: "initialized"
         }
-    });
+    }, {
+            classMethods: {
+                associate: function (models) {
+                    Game.belongsToMany(models.User, {
+                        through: "UserGames"
+                    });
+
+                    Game.belongsTo(models.PokerTable);
+                }
+            }
+        });
     return Game;
 };

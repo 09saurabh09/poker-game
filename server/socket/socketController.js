@@ -128,6 +128,8 @@ module.exports = {
             let user = result.user;
 
             return DB_MODELS.sequelize.transaction(function (t) {
+                // TODO :: Check whether game is new if yes create entry in Game table
+                
                 game = new Game(table.gameState);
                 game.playerTurn(params, socket.user);
                 table.set("gameState", game.getRawObject());

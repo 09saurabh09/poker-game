@@ -40,7 +40,7 @@ module.exports = function (sequelize, DataTypes) {
             classMethods: {
                 associate: function (models) {
                     User.belongsToMany(models.Game, {
-                        through: "UserGame"
+                        through: "UserGames"
                     });
                     User.belongsToMany(models.PokerTable, {
                         through: "UserPokerTables"
