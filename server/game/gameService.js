@@ -96,7 +96,7 @@ module.exports = {
 
     },
 
-    gameOver: function () {
+    gameOver: function (gameState) {
         let pots = [{ "amount": 480, "stakeHolders": [1, 2, 3], "rakeMoney": 24 },
         { "amount": 500, "stakeHolders": [1, 2], "rakeMoney": 50 },
         { "amount": 1000, "stakeHolders": [1, 2, 3, 4], "rakeMoney": 100 }];

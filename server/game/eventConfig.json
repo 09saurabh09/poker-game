@@ -1,4 +1,5 @@
 {
     "turnCompleted": "turn-completed",
-    "playerJoined": "player-joined"
+    "playerJoined": "player-joined",
+    "chatMessage": "chat-message"
 }

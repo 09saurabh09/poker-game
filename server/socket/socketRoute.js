@@ -14,6 +14,7 @@ var io = require('socket.io')();
 let jwt = require("jsonwebtoken");
 
 let socketController = require("./socketController");
+let eventConfig = require("../game/eventConfig");
 
 // Namespace for authorized events
 let gameAuthorizedIO = io.of('/poker-game-authorized');
@@ -40,6 +41,7 @@ gameAuthorizedIO.on('connection', function (socket) {
 
     // Socket event for player turn
     socket.on('player-turn', function (params) {
+        params = JSON.parse(params);
         socketController.playerTurn(params, socket);
     });
 
@@ -54,12 +56,23 @@ gameAuthorizedIO.on('connection', function (socket) {
     });
 
     socket.on('table-leave', function (params) {
+        params = JSON.parse(params);
         socketController.leaveTable(params, socket);
     });
 
     socket.on('chat-message', function (params) {
+        params = JSON.parse(params);
+        let tableUniqueId = params.tableUniqueId;
+        let message = {
+            sender: socket.user.name,
+            message: params.message,
+        }
+        socket.broadcast.in(GlobalConstant.chatRoomPrefix + tableUniqueId).emit(eventConfig.chatMessage, commonGameState);
+        // SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.chatRoomPrefix + tableUniqueId).emit(eventConfig.chatMessage, commonGameState);
+        SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.chatRoomPrefix + tableUniqueId).emit(eventConfig.chatMessage, commonGameState);
+
         // Not required, just for testing
-        socketController.testQ(params, socket);
+        // socketController.testQ(params, socket);
     });
 
     socket.on('disconnect', function (socket) {
@@ -78,11 +91,13 @@ gameUnauthorizedIO.on('connection', function (socket) {
     console.log('User connected for Unauthorized channel');
 
     socket.on('game-subscribe-chat', function (params) {
+        params = JSON.parse(params);
         let tableUniqueId = params.tableUniqueId;
         socket.join(GlobalConstant.chatRoomPrefix + tableUniqueId);
     });
 
     socket.on('game-subscribe-gameState', function (params) {
+        params = JSON.parse(params);
         let tableUniqueId = params.tableUniqueId;
         socket.join(GlobalConstant.gameRoomPrefix + tableUniqueId);
     });

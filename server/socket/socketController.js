@@ -169,7 +169,7 @@ module.exports = {
     leaveTable: function (params, socket) {
         params.call = "leaveGame";
         params.callType = "game";
-
+        let game;
         let tableId = params.tableId;
         return DB_MODELS.sequelize.transaction(function (t) {
             // chain all your queries here. make sure you return them.
@@ -199,6 +199,12 @@ module.exports = {
         }).then(function (result) {
             socket.leave(GlobalConstant.gameRoomPrefix + table.uniqueId);
             socket.leave(GlobalConstant.chatRoomPrefix + table.uniqueId);
+            let commonGameState = gameService.getCommonGameState(game);
+
+            // Inform others that player has left
+            SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
+            SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
+
         }).catch(function (err) {
             console.log(`ERROR ::: Unable to leave table with id ${tableId}, error: ${err.message}`);
         })

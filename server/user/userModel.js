@@ -24,7 +24,8 @@ module.exports = function (sequelize, DataTypes) {
             defaultValue: DataTypes.UUIDV4
         },
         currentBalance: {
-            type: DataTypes.BIGINT
+            type: DataTypes.BIGINT,
+            defaultValue: 0
         },
         preferences: {
             type: DataTypes.JSONB
