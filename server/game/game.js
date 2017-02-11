@@ -161,6 +161,8 @@ Game.prototype.playerTurn = function(params, user){
                         break;
                     }
                 }
+                this.players[pos] = new Player(this.players[pos]);
+                this.players[pos].game = this;
                 this.removeFromGame(pos);
                 break;
             case "playerDisconnected":
@@ -172,6 +174,8 @@ Game.prototype.playerTurn = function(params, user){
                         break;
                     }
                 }
+                this.players[pos] = new Player(this.players[pos]);
+                this.players[pos].game = this;
                 this.players[pos].playerDisconnected();
                 break;
             case "playerConnected":
@@ -183,6 +187,8 @@ Game.prototype.playerTurn = function(params, user){
                         break;
                     }
                 }
+                this.players[pos] = new Player(this.players[pos]);
+                this.players[pos].game = this;
                 this.players[pos].playerConnected();
                 break;
             default:
