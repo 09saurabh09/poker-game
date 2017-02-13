@@ -1,6 +1,8 @@
 "use strict";
 
 let gameModel = DB_MODELS.Game;
+let PokerTableModel = DB_MODELS.PokerTableModel;
+let eventConfig = require("../game/eventConfig");
 
 module.exports = {
     /**
@@ -34,7 +36,7 @@ module.exports = {
                 }).then(function (result) {
                     resolve(result);
                 }).catch(function (err) {
-                    console.log(`ERROR ::: ${err.message}`);
+                    console.log(`ERROR ::: ${err.message}, stack: ${err.stack}`);
                     reject(err);
                 })
             }
@@ -51,6 +53,10 @@ module.exports = {
             gamePots: gameState.gamePots,
             lastRaise: gameState.lastRaise,
             currentTotalPlayer: gameState.currentTotalPlayer,
+            communityCards: gameState.communityCards,
+            maxPlayer: gameState.maxPlayer,
+            bigBlind: gameState.bigBlind,
+            dealerPos: gameState.dealerPos,
             players: []
         };
 
@@ -115,17 +121,27 @@ module.exports = {
             });
     },
 
-    startGame: function (gameState) {
-        return new PROMISE(function (resolve, reject) {
-            gameModel.create({ pokerTableId: gameState.id })
-                .then(function (game) {
-                    console.log(`SUCCESS ::: Game created with game id ${game.id}, on table ${table.id}`);
-                    resolve(game);
-                })
-                .catch(function (err) {
-                    console.log(`ERROR ::: Unable to create new game, error: ${err.message}`);
-                    reject();
-                })
+    startGame: function (game) {
+        return DB_MODELS.sequelize.transaction(function (t) {
+
+            // chain all your queries here. make sure you return them.
+            return PokerTableModel.findOne({ where: { id: game.tableId } }, { transaction: t })
+                .then(function (table) {
+                    return gameModel.create({ pokerTableId: game.tableId }, { transaction: t })
+                        .then(function (gameInstance) {
+                            table.set("gameState", _.assign(game.getRawObject(), { currentGameId: gameInstance.id }));
+                            return table.save({ transaction: t })
+                        });
+                });
+        })
+        .then(function (result) {
+            // Testing Required
+            SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
+            SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
+
+        })
+        .catch(function (err) {
+
         })
 
     },

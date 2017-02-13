@@ -26,7 +26,7 @@ gameAuthorizedIO.use(function (socket, next) {
     // else just call next
     jwt.verify(socket.handshake.query.token, GlobalConstant.tokenSecret, function (err, user) {
         if (err) {
-            console.log(`ERROR ::: Unable to authorize socket, error: ${err.message}`);
+            console.log(`ERROR ::: Unable to authorize socket, error: ${err.message}, stack: ${err.stack}`);
             return next(new Error('not authorized'));
         } else {
             socket.user = user;

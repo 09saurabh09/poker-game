@@ -14,7 +14,7 @@ module.exports = {
             return user.addPokerTables(table)
 
         }).catch(function (err) {
-            console.log(`ERROR :::  user ${user.id} is unable to join table ${table.id}, error: ${err.message}`);
+            console.log(`ERROR :::  user ${user.id} is unable to join table ${table.id}, error: ${err.message}, stack: ${err.stack}`);
         })
 
     },
@@ -28,7 +28,7 @@ module.exports = {
         }).then(function (affectedRows) {
             console.log(`SUCCESS ::: user ${user.id} has left table ${table.id}`);
         }).catch(function (err) {
-            console.log(`ERROR :::  user ${user.id} is unable to leave table ${table.id}, error: ${err.message}`);
+            console.log(`ERROR :::  user ${user.id} is unable to leave table ${table.id}, error: ${err.message}, stack: ${err.stack}`);
         })
     }
 }

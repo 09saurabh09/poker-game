@@ -23,7 +23,6 @@ function logd(message) {
  */
 function Game(gameState) {
     // Game attributes
-    this.currentGameId = gameState.id;
     this.bigBlind = gameState.bigBlind;
     this.maxPlayer = gameState.maxPlayer;
     this.minAmount = gameState.minAmount;
@@ -34,6 +33,10 @@ function Game(gameState) {
     this.rakeX = gameState.rakeX;
     this.rakeY = gameState.rakeY;
     this.rakeZ = gameState.rakeZ;
+
+    // attributes needed post game
+    this.currentGameId = gameState.currentGameId;
+    this.tableId = gameState.tableId;
 
     this.players = gameState.players || [];                     // Array of Player object, represents all players in this game
     this.waitingPlayers = gameState.waitingPlayers || [];       // Array of all the players who will be there in the waiting list

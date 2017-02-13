@@ -33,13 +33,13 @@ module.exports = {
                                 console.log(`SUCCESS ::: Player with id ${currentUser.id}, restored on table id: ${pokerTable.id}`);
                             })
                             .catch(function(err) {
-                                console.log(`ERROR ::: Player with id ${currentUser.id}, can't be restored on table id: ${pokerTable.id}, error: ${err.message}`);
+                                console.log(`ERROR ::: Player with id ${currentUser.id}, can't be restored on table id: ${pokerTable.id}, error: ${err.message}, stack: ${err.stack}`);
                             })
                     });
                     return null;
                 })
         }).catch(function (err) {
-            console.log(`ERROR ::: Unable to proceed with post connection events for user: ${currentUser.id}, error: ${err.message}`)
+            console.log(`ERROR ::: Unable to proceed with post connection events for user: ${currentUser.id}, error: ${err.message}, stack: ${err.stack}`)
         })
     },
 
@@ -65,12 +65,12 @@ module.exports = {
                                 console.log(`SUCCESS ::: Player with id ${currentUser.id}, disconnected on table id: ${pokerTable.id}`);
                             })
                             .catch(function(err) {
-                                console.log(`ERROR ::: Player with id ${currentUser.id}, can't be restored on table id: ${pokerTable.id}, error: ${err.message}`);
+                                console.log(`ERROR ::: Player with id ${currentUser.id}, can't be restored on table id: ${pokerTable.id}, error: ${err.message}, stack: ${err.stack}`);
                             })
                     })
                 })
         }).catch(function (err) {
-            console.log(`ERROR ::: post player disconnection failure for player: ${playerId}, error: ${err.message}`);
+            console.log(`ERROR ::: post player disconnection failure for player: ${playerId}, error: ${err.message}, stack: ${err.stack}`);
         })
     },
 
@@ -97,7 +97,7 @@ module.exports = {
             }
 
         }).catch(function (err) {
-            console.log(`ERROR ::: Unable to make turn for player id ${socket.user.id}, and table: ${tableId}, error: ${err.message}`)
+            console.log(`ERROR ::: Unable to make turn for player id ${socket.user.id}, and table: ${tableId}, error: ${err.message}, stack: ${err.stack}`)
         })
     },
 
@@ -143,7 +143,6 @@ module.exports = {
 
             }).then(function (result) {
                 let commonGameState = gameService.getCommonGameState(game);
-
                 // let comSocket = SOCKET_IO.of(socket.nsp.name).connected[`${socket.nsp.name}#${socket.client.id}`];
                 // let comSocket = SOCKET_IO.sockets.connected[`${socket.client.id}`];
                 // comSocket.join(room.name);
@@ -161,7 +160,7 @@ module.exports = {
             })
 
         }).catch(function (err) {
-            console.log(`ERROR ::: Unable to join table with id ${tableId}, error: ${err.message}`);
+            console.log(`ERROR ::: Unable to join table with id ${tableId}, error: ${err.message}, stack: ${err.stack}`);
         })
 
     },
@@ -206,7 +205,7 @@ module.exports = {
             SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
 
         }).catch(function (err) {
-            console.log(`ERROR ::: Unable to leave table with id ${tableId}, error: ${err.message}`);
+            console.log(`ERROR ::: Unable to leave table with id ${tableId}, error: ${err.message}, stack: ${err.stack}`);
         })
     },
 
@@ -234,7 +233,7 @@ module.exports = {
         }).then(function (result) {
             console.log(`SUCCESS ::: Added to waiting list`);
         }).catch(function (err) {
-            console.log(`ERROR ::: Unable to leave table with id ${tableId}, error: ${err.message}`);
+            console.log(`ERROR ::: Unable to leave table with id ${tableId}, error: ${err.message}, stack: ${err.stack}`);
         })
     }
 }
