@@ -23,6 +23,7 @@ function logd(message) {
  */
 function Game(gameState) {
     // Game attributes
+    this.currentGameId = gameState.id;
     this.bigBlind = gameState.bigBlind;
     this.maxPlayer = gameState.maxPlayer;
     this.minAmount = gameState.minAmount;

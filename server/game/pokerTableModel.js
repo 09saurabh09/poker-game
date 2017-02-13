@@ -99,6 +99,7 @@ module.exports = function (sequelize, DataTypes) {
                 beforeCreate: function (table, options) {
                     console.log("creating table");
                     let gameState = {
+                        "tableId": table.id,
                         "moneyType": table.moneyType,
                         "bigBlind": table.bigBlind,
                         "gameType": table.gameType,

@@ -1,5 +1,7 @@
 "use strict";
 
+let gameModel = DB_MODELS.Game;
+
 module.exports = {
     /**
      * function will adjust all add money request made during the game, will be executed after every round
@@ -100,7 +102,7 @@ module.exports = {
         let pots = [{ "amount": 480, "stakeHolders": [1, 2, 3], "rakeMoney": 24 },
         { "amount": 500, "stakeHolders": [1, 2], "rakeMoney": 50 },
         { "amount": 1000, "stakeHolders": [1, 2, 3, 4], "rakeMoney": 100 }];
-        var job = GAME_QUEUE.create('gameOverMoneyTransaction', {pots: pots})
+        var job = GAME_QUEUE.create('gameOverMoneyTransaction', { pots: pots, gameId: gameState.currentGameId })
             .attempts(5)
             .backoff({ type: 'exponential' })
             .save(function (err) {
@@ -111,6 +113,21 @@ module.exports = {
                     console.log(`SUCCESS ::: Transaction job has been successfully queued with id: ${job.id}`);
                 }
             });
+    },
+
+    startGame: function (gameState) {
+        return new PROMISE(function (resolve, reject) {
+            gameModel.create({ pokerTableId: gameState.id })
+                .then(function (game) {
+                    console.log(`SUCCESS ::: Game created with game id ${game.id}, on table ${table.id}`);
+                    resolve(game);
+                })
+                .catch(function (err) {
+                    console.log(`ERROR ::: Unable to create new game, error: ${err.message}`);
+                    reject();
+                })
+        })
+
     },
 
     getGameStateForUser: function (gameState, currentUser) {
