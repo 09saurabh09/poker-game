@@ -7,6 +7,7 @@ module.exports = Game;
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
 var evaluator = require('../utils/evaluator.js');
+var gameService = require('./gameService.js');
 var moment = require("moment");
 
 var debug = true;
@@ -356,8 +357,10 @@ Game.prototype.addPlayer = function(attr) {
         logd("Seat-> " + ( newPlayer.seat  - 1 ) + "  is Already Been Taken");
     }
     
+
     if(this.currentTotalPlayer > 1 && this.round == 'idle'){
         this.start();
+        gameService.startGame();
     }
 };
 

@@ -10,18 +10,18 @@ module.exports = Deck;
 /**
  * Deck Containg 4 suits and 13 Denomintation
  */
-function Deck(cards) {
+function Deck(params) {
     this.suits = [ 's', 'h', 'd', 'c' ];
     this.ranks = [ '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' ];
-    if(cards){
-        this.cards =  cards;
+    console.log("*********  CARDS" + JSON.stringify(params) );
+    if(params){
+        this.cards =  params.cards;
     }
     else{
         this.cards = [];
+        this.init();
+        this.shuffle();
     }
-
-    this.init();
-    this.shuffle();
 }
 
 
