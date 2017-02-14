@@ -41,27 +41,27 @@ gameAuthorizedIO.on('connection', function (socket) {
 
     // Socket event for player turn
     socket.on('player-turn', function (params) {
-        params = JSON.parse(params);
+        params = typeof(params) == "string" ? JSON.parse(params) : params;
         socketController.playerTurn(params, socket);
     });
 
     socket.on('table-join', function (params) {
-        params = JSON.parse(params);
+        params = typeof(params) == "string" ? JSON.parse(params) : params;
         socketController.joinTable(params, socket);
     });
 
     socket.on('table-add-to-waiting', function (params) {
-        params = JSON.parse(params);
+        params = typeof(params) == "string" ? JSON.parse(params) : params;
         socketController.addToWaiting(params, socket);
     });
 
     socket.on('table-leave', function (params) {
-        params = JSON.parse(params);
+        params = typeof(params) == "string" ? JSON.parse(params) : params;
         socketController.leaveTable(params, socket);
     });
 
     socket.on('chat-message', function (params) {
-        params = JSON.parse(params);
+        params = typeof(params) == "string" ? JSON.parse(params) : params;
         let tableUniqueId = params.tableUniqueId;
         let message = {
             sender: socket.user.name,
@@ -77,7 +77,7 @@ gameAuthorizedIO.on('connection', function (socket) {
 
     socket.on('disconnect', function (socket) {
         console.log(`INFO ::: Player disconnected with id: ${socket.id}`);
-        socketController.playerDisconnected(socket.user);
+        // socketController.playerDisconnected(socket.user);
     });
 });
 
@@ -91,13 +91,13 @@ gameUnauthorizedIO.on('connection', function (socket) {
     console.log('User connected for Unauthorized channel');
 
     socket.on('game-subscribe-chat', function (params) {
-        params = JSON.parse(params);
+        params = typeof(params) == "string" ? JSON.parse(params) : params;
         let tableUniqueId = params.tableUniqueId;
         socket.join(GlobalConstant.chatRoomPrefix + tableUniqueId);
     });
 
     socket.on('game-subscribe-gameState', function (params) {
-        params = JSON.parse(params);
+        params = typeof(params) == "string" ? JSON.parse(params) : params;
         let tableUniqueId = params.tableUniqueId;
         socket.join(GlobalConstant.gameRoomPrefix + tableUniqueId);
     });

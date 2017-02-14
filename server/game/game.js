@@ -7,7 +7,7 @@ module.exports = Game;
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
 var evaluator = require('../utils/evaluator.js');
-// var gameService = require('./gameService.js');
+var gameService = require('./gameService.js');
 var moment = require("moment");
 
 var debug = true;
@@ -116,6 +116,7 @@ Game.prototype.playerTurn = function(params, user){
                     this.getCurrentPlayer().raise(params.amount);
                 }
                 break;
+                
             case "sitOut":
                 logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
                 this.getCurrentPlayer().sitOut();
@@ -373,7 +374,7 @@ Game.prototype.addPlayer = function(attr) {
 
     if(this.currentTotalPlayer > 1 && this.round == 'idle'){
         this.start();
-        // gameService.startGame();
+        gameService.startGame(this);
     }
 };
 
