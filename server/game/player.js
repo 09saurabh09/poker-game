@@ -199,10 +199,11 @@ Player.prototype.sitIn = function(){
  * When Player will leave Game
  */
 Player.prototype.leaveGame = function(){
-    //saurabhk -- To Do 
-    //When this leave game for player is being called need to do all the transactions back to the DB.
-    // Adding money back to the user 
-    // Removing Player from the game
+    var params = {
+        id:17,
+        chips: 500 
+    }
+    gameService.leaveGame(params);
 }
 
 

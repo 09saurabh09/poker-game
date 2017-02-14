@@ -13,7 +13,7 @@ module.exports = Deck;
 function Deck(params) {
     this.suits = [ 's', 'h', 'd', 'c' ];
     this.ranks = [ '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' ];
-    console.log("*********  CARDS" + JSON.stringify(params) );
+    // /console.log("*********  CARDS" + JSON.stringify(params) );
     if(params){
         this.cards =  params.cards;
     }

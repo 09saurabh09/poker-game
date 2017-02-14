@@ -103,6 +103,18 @@ module.exports = {
         })
 
     },
+    /*
+        { 
+            playersTranscation : [  
+                a: 20,
+                b: -30,
+                c: 100
+            ],
+            rakeEarning: 10,
+            gameState:  this
+        }
+
+    */
 
     gameOver: function (gameState) {
         let pots = [{ "amount": 480, "stakeHolders": [1, 2, 3], "rakeMoney": 24 },
@@ -143,6 +155,15 @@ module.exports = {
         .catch(function (err) {
 
         })
+
+    },
+
+    // params = {
+    //     id:17,
+    //     chips: 500 
+    // }
+
+    leaveGame: function(params) {
 
     },
 
