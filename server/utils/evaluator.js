@@ -15,8 +15,8 @@ function sortByRankHoldem(communityCards, players){
         var hand = [];
         if(players[i]){
             hand.push(
-                players[i].firstCard,
-                players[i].secondCard,
+                players[i].cards[0],
+                players[i].cards[1],
                 communityCards[0],
                 communityCards[1],
                 communityCards[2],

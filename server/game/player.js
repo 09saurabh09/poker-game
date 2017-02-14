@@ -29,8 +29,7 @@ function Player(options) {
 
     this.game = options.game || null;
 
-    this.firstCard = options.firstCard || {};
-    this.secondCard = options.secondCard || {};
+    this.cards = options.cards || [];
     this.bet = options.bet || 0;
     this.totalBet = options.totalBet || 0;
     this.showCards = options.showCards || false;
@@ -134,8 +133,7 @@ Player.prototype.raise = function(amount) {
  * Resets the player state
  */
 Player.prototype.reset = function() {
-    this.firstCard = {};
-    this.secondCard = {};
+    this.cards = [];
     this.bet = 0;
     this.totalBet = 0;
 
