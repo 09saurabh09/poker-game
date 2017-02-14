@@ -88,10 +88,11 @@ module.exports = {
                 params.tableInstance = table;
                 game.playerTurn(params, socket.user);
                 table.save();
-                let commonGameState = gameService.getCommonGameState(gameState);
+                let commonGameState = gameService.getCommonGameState(game);
 
                 SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
                 SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
+                return null;
             } else {
                 console.log(`ERROR ::: Validation failed, not a turn for player id ${socket.user.id} for table: ${tableId}`)
             }
