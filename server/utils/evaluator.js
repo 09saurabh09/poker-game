@@ -13,7 +13,7 @@ function sortByRankHoldem(communityCards, players){
     for (var i = 0; i < players.length ; i++ ) {
     	var playerHand = {};
         var hand = [];
-        if(players[i]){
+        if(players[i] && !players[i].idleForHand ){
             hand.push(
                 players[i].cards[0],
                 players[i].cards[1],
