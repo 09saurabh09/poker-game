@@ -159,12 +159,16 @@ Game.prototype.playerTurn = function(params, user){
                 break;
             case "leaveGame":
                 logd("leaveGame has been called for -------- " + user.id );
-                var pos = 0;
+                var pos = -1;
                 for(var i = 0; i < this.players.length; i++ ){
-                    if(this.players[i].id == user.id){
+                    if(this.players[i] && this.players[i].id == user.id){
                         pos = i;
                         break;
                     }
+                }
+                if(pos == -1){
+                    logd("Player not present " + user.id);
+                    break;
                 }
                 this.players[pos] = new Player(this.players[pos]);
                 this.players[pos].game = this;
@@ -172,12 +176,16 @@ Game.prototype.playerTurn = function(params, user){
                 break;
             case "playerDisconnected":
                 logd("playerDisconnected has been called for -------- " + user.id );
-                var pos = 0;
+                var pos = -1;
                 for(var i = 0; i < this.players.length; i++ ){
-                    if(this.players[i].id == user.id){
+                    if(this.players[i] && this.players[i].id == user.id){
                         pos = i;
                         break;
                     }
+                }
+                if(pos == -1){
+                    logd("Player not present " + user.id);
+                    break;
                 }
                 this.players[pos] = new Player(this.players[pos]);
                 this.players[pos].game = this;
@@ -185,12 +193,16 @@ Game.prototype.playerTurn = function(params, user){
                 break;
             case "playerConnected":
                 logd("playerConnected has been called for -------- " + user.id );
-                var pos = 0;
+                var pos = -1;
                 for(var i = 0; i < this.players.length; i++ ){
-                    if(this.players[i].id == user.id){
+                    if(this.players[i] && this.players[i].id == user.id){
                         pos = i;
                         break;
                     }
+                }
+                if(pos == -1){
+                    logd("Player not present " + user.id);
+                    break;
                 }
                 this.players[pos] = new Player(this.players[pos]);
                 this.players[pos].game = this;
