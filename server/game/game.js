@@ -7,7 +7,7 @@ module.exports = Game;
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
 var evaluator = require('../utils/evaluator.js');
-// var gameService = require('./gameService.js');
+var gameService = require('./gameService.js');
 var moment = require("moment");
 
 var debug = true;
@@ -404,7 +404,7 @@ Game.prototype.addPlayer = function(attr) {
 
     if(this.currentTotalPlayer > 1 && this.round == 'idle'){
         this.start();
-        // gameService.startGame(this);
+        gameService.startGame(this);
     }
 };
 
@@ -433,6 +433,8 @@ Game.prototype.reset = function() {
     this.checkPlayersConnected();
     this.checkPlayersSitout();
     this.checkWaitingPlayers();
+
+    this.start();
     //this.initGamePots();
 };
 
