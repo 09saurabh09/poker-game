@@ -7,7 +7,7 @@ module.exports = Game;
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
 var evaluator = require('../utils/evaluator.js');
-var gameService = require('./gameService.js');
+// var gameService = require('./gameService.js');
 var moment = require("moment");
 
 var debug = true;
@@ -87,6 +87,7 @@ function Game(gameState) {
     }
  */
 Game.prototype.playerTurn = function(params, user){
+    this.reloadAllPlayers();
     if(params.callType == "player"){
         if(params.playerId != this.getCurrentPlayer().id && false){
             logd("The Turn Positing is different for different Player");
@@ -372,7 +373,7 @@ Game.prototype.addPlayer = function(attr) {
 
     if(this.currentTotalPlayer > 1 && this.round == 'idle'){
         this.start();
-        gameService.startGame();
+        // gameService.startGame();
     }
 };
 
@@ -535,6 +536,7 @@ Game.prototype.start = function() {
         return;
     }
     logd('========== STARTING GAME ==========');
+    
 
     this.round = 'deal';
     // deal two cards to each players
@@ -1039,6 +1041,18 @@ Game.prototype.checkPlayerLeft = function(){
     }
     return totalPlaying;
 }
+/**
+ * Intialiase all players
+ */
+Game.prototype.reloadAllPlayers = function(){
+    for(var i = 0; i<this.players.length; i++){
+        if(this.players[i]){
+            this.players[i] = new Player(this.players[i]);
+            this.players[i].game = this;
+        }
+    }
+}
+
 
 
 
