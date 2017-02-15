@@ -87,6 +87,7 @@ function Game(gameState) {
     }
  */
 Game.prototype.playerTurn = function(params, user){
+    let self = this;
     this.reloadAllPlayers();
     if(params.callType == "player"){
         if(params.playerId != this.getCurrentPlayer().id && false){
@@ -138,7 +139,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "leaveGame":
                 logd("leaveGame has been called for -------- " + user.id );
-                var pos = findPlayerPos(user.id);
+                var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     logd("Player not present " + user.id);
                     break;
@@ -148,7 +149,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "playerDisconnected":
                 logd("playerDisconnected has been called for -------- " + user.id );
-                var pos = findPlayerPos(user.id);
+                var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     logd("Player not present " + user.id);
                     break;
@@ -158,7 +159,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "playerConnected":
                 logd("playerConnected has been called for -------- " + user.id );
-                var pos = findPlayerPos(user.id);
+                var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     logd("Player not present " + user.id);
                     break;
@@ -168,7 +169,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "sitOut":
                 logd("sitOut has been called for -------- " + user.id );
-                var pos = findPlayerPos(user.id);
+                var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     logd("Player not present " + user.id);
                     break;
@@ -178,7 +179,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "sitIn":
                 logd("sitIn has been called for -------- " + user.id );
-                var pos = findPlayerPos(user.id);
+                var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     logd("Player not present " + user.id);
                     break;
@@ -188,7 +189,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "setMaintChips":
                 logd("setMaintChips has been called for -------- " + user.id );
-                var pos = findPlayerPos(user.id);
+                var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     logd("Player not present " + user.id);
                     break;
@@ -198,7 +199,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "unSetMaintainChips":
                 logd("unSetMaintainChips has been called for -------- " + user.id );
-                var pos = findPlayerPos(user.id);
+                var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     logd("Player not present " + user.id);
                     break;
@@ -208,7 +209,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "turnOffAutoMuck":
                 logd("turnOffAutoMuck has been called for -------- " + user.id );
-                var pos = findPlayerPos(user.id);
+                var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     logd("Player not present " + user.id);
                     break;
@@ -218,7 +219,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "turnOnAutoMuck":
                 logd("turnOnAutoMuck has been called for -------- " + user.id );
-                var pos = findPlayerPos(user.id);
+                var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     logd("Player not present " + user.id);
                     break;

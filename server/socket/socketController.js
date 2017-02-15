@@ -128,37 +128,39 @@ module.exports = {
             table = result.table;
             let user = result.user;
 
-            return DB_MODELS.sequelize.transaction(function (t) {
-                game = new Game(table.gameState);
-                game.playerTurn(params, socket.user);
-                table.set("gameState", game.getRawObject());
+            if (table && user) {
+                return DB_MODELS.sequelize.transaction(function (t) {
+                    game = new Game(table.gameState);
+                    game.playerTurn(params, socket.user);
+                    table.set("gameState", game.getRawObject());
 
-                // chain all your queries here. make sure you return them.
-                return table.save({ transaction: t })
-                    .then(function (table) {
-                        return user.decrement('currentBalance', { by: params.playerInfo.chips || 0 }, { transaction: t })
-                            .then(function () {
-                                return user.addPokerTables(table, { transaction: t });
-                            })
-                    });
+                    // chain all your queries here. make sure you return them.
+                    return table.save({ transaction: t })
+                        .then(function (table) {
+                            return user.decrement('currentBalance', { by: params.playerInfo.chips || 0 }, { transaction: t })
+                                .then(function () {
+                                    return user.addPokerTables(table, { transaction: t });
+                                })
+                        });
 
-            }).then(function (result) {
-                let commonGameState = gameService.getCommonGameState(game);
-                // let comSocket = SOCKET_IO.of(socket.nsp.name).connected[`${socket.nsp.name}#${socket.client.id}`];
-                // let comSocket = SOCKET_IO.sockets.connected[`${socket.client.id}`];
-                // comSocket.join(room.name);
-                // console.log(socket.nsp.name);
-                // console.log(SOCKET_IO.of(socket.nsp.name).connected);
-                // console.log(comSocket.nsp);
-                // console.log(SOCKET_IO.sockets.adapter.rooms);
-                // console.log(SOCKET_IO.of(socket.nsp.name).adapter.rooms);
+                }).then(function (result) {
+                    let commonGameState = gameService.getCommonGameState(game);
+                    // let comSocket = SOCKET_IO.of(socket.nsp.name).connected[`${socket.nsp.name}#${socket.client.id}`];
+                    // let comSocket = SOCKET_IO.sockets.connected[`${socket.client.id}`];
+                    // comSocket.join(room.name);
+                    // console.log(socket.nsp.name);
+                    // console.log(SOCKET_IO.of(socket.nsp.name).connected);
+                    // console.log(comSocket.nsp);
+                    // console.log(SOCKET_IO.sockets.adapter.rooms);
+                    // console.log(SOCKET_IO.of(socket.nsp.name).adapter.rooms);
 
-                socket.join(GlobalConstant.gameRoomPrefix + table.uniqueId);
-                socket.join(GlobalConstant.chatRoomPrefix + table.uniqueId);
-                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.playerJoined, commonGameState);
-                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.playerJoined, commonGameState);
-                return null;
-            })
+                    socket.join(GlobalConstant.gameRoomPrefix + table.uniqueId);
+                    socket.join(GlobalConstant.chatRoomPrefix + table.uniqueId);
+                    SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.playerJoined, commonGameState);
+                    SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.playerJoined, commonGameState);
+                    return null;
+                })
+            }
 
         }).catch(function (err) {
             console.log(`ERROR ::: Unable to join table with id ${tableId}, error: ${err.message}, stack: ${err.stack}`);

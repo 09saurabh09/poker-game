@@ -59,7 +59,8 @@ module.exports = {
             dealerPos: gameState.dealerPos,
             players: []
         };
-
+        
+        gameState.players = gameState.players || [];
         gameState.players.forEach(function (player) {
             if (player) {
                 let pl = {
