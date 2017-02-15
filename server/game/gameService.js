@@ -1,7 +1,7 @@
 "use strict";
 
 let gameModel = DB_MODELS.Game;
-let PokerTableModel = DB_MODELS.PokerTableModel;
+let PokerTableModel = DB_MODELS.PokerTable;
 let eventConfig = require("../game/eventConfig");
 
 module.exports = {
@@ -59,7 +59,7 @@ module.exports = {
             dealerPos: gameState.dealerPos,
             players: []
         };
-        
+
         gameState.players = gameState.players || [];
         gameState.players.forEach(function (player) {
             if (player) {
@@ -149,14 +149,31 @@ module.exports = {
                         });
                 });
         })
-            .then(function (result) {
-                // Testing Required
-                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
-                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
+            .then(function (table) {
+                let playerIdToCards = {};
+                let players = table.gameState.players;
+
+                players.forEach(function (player) {
+                    if(player) {
+                        playerIdToCards[player.id] = player.cards;
+                    }
+                    
+                });
+
+                let currentSockets = Object.keys(SOCKET_IO.nsps["/poker-game-authorized"].adapter.rooms[GlobalConstant.gameRoomPrefix + game.tableId].sockets);
+
+                currentSockets.forEach(function (currentSocket) {
+                    let socket = SOCKET_IO.nsps["/poker-game-authorized"].sockets[currentSocket];
+                    socket.emit(eventConfig.gameStarted, playerIdToCards[socket.user.id]);
+                });
+
+                // // Testing Required
+                // SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
+                // SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
 
             })
             .catch(function (err) {
-
+                console.log(`ERROR ::: Unable to start game, error: ${err.message}, stack: ${err.stack}`);
             })
 
     },

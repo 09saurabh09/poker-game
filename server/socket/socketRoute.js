@@ -37,7 +37,7 @@ gameAuthorizedIO.use(function (socket, next) {
 
 gameAuthorizedIO.on('connection', function (socket) {
     console.log("Player connected to authorized channel");
-    socketController.playerConnected(socket.user);
+    socketController.playerConnected(socket, socket.user);
 
     // Socket event for player turn
     socket.on('player-turn', function (params) {
@@ -62,14 +62,14 @@ gameAuthorizedIO.on('connection', function (socket) {
 
     socket.on('chat-message', function (params) {
         params = typeof(params) == "string" ? JSON.parse(params) : params;
-        let tableUniqueId = params.tableUniqueId;
+        let tableId = params.tableId;
         let message = {
             sender: socket.user.name,
             message: params.message,
         }
-        socket.broadcast.in(GlobalConstant.chatRoomPrefix + tableUniqueId).emit(eventConfig.chatMessage, commonGameState);
-        // SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.chatRoomPrefix + tableUniqueId).emit(eventConfig.chatMessage, commonGameState);
-        SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.chatRoomPrefix + tableUniqueId).emit(eventConfig.chatMessage, commonGameState);
+        socket.broadcast.in(GlobalConstant.chatRoomPrefix + tableId).emit(eventConfig.chatMessage, commonGameState);
+        // SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.chatRoomPrefix + tableId).emit(eventConfig.chatMessage, commonGameState);
+        SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.chatRoomPrefix + tableId).emit(eventConfig.chatMessage, commonGameState);
 
         // Not required, just for testing
         // socketController.testQ(params, socket);
@@ -92,14 +92,14 @@ gameUnauthorizedIO.on('connection', function (socket) {
 
     socket.on('game-subscribe-chat', function (params) {
         params = typeof(params) == "string" ? JSON.parse(params) : params;
-        let tableUniqueId = params.tableUniqueId;
-        socket.join(GlobalConstant.chatRoomPrefix + tableUniqueId);
+        let tableId = params.tableId;
+        socket.join(GlobalConstant.chatRoomPrefix + tableId);
     });
 
     socket.on('game-subscribe-gameState', function (params) {
         params = typeof(params) == "string" ? JSON.parse(params) : params;
-        let tableUniqueId = params.tableUniqueId;
-        socket.join(GlobalConstant.gameRoomPrefix + tableUniqueId);
+        let tableId = params.tableId;
+        socket.join(GlobalConstant.gameRoomPrefix + tableId);
     });
 });
 

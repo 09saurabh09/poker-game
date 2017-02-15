@@ -10,7 +10,7 @@ let UserModel = DB_MODELS.User;
 let UserPokerTable = DB_MODELS.UserPokerTable;
 
 module.exports = {
-    playerConnected: function (currentUser) {
+    playerConnected: function (socket, currentUser) {
         let params = {
             call: "playerConnected",
             callType: "game"
@@ -29,10 +29,14 @@ module.exports = {
                         game.playerTurn(params, currentUser);
                         pokerTable.set("gameState", game.getRawObject());
                         pokerTable.save()
-                            .then(function(table) {
+                            .then(function (table) {
+                                socket.join(GlobalConstant.gameRoomPrefix + pokerTable.id);
+                                socket.join(GlobalConstant.chatRoomPrefix + pokerTable.id);
+                                // console.log(SOCKET_IO.nsps["/poker-game-authorized"].sockets);
+                                // console.log(SOCKET_IO.nsps["/poker-game-authorized"].adapter.rooms, SOCKET_IO.nsps["/poker-game-unauthorized"].adapter.rooms)
                                 console.log(`SUCCESS ::: Player with id ${currentUser.id}, restored on table id: ${pokerTable.id}`);
                             })
-                            .catch(function(err) {
+                            .catch(function (err) {
                                 console.log(`ERROR ::: Player with id ${currentUser.id}, can't be restored on table id: ${pokerTable.id}, error: ${err.message}, stack: ${err.stack}`);
                             })
                     });
@@ -61,10 +65,10 @@ module.exports = {
                         game.playerTurn(params, currentUser);
                         pokerTable.set("gameState", game.getRawObject());
                         pokerTable.save()
-                            .then(function(table) {
+                            .then(function (table) {
                                 console.log(`SUCCESS ::: Player with id ${currentUser.id}, disconnected on table id: ${pokerTable.id}`);
                             })
-                            .catch(function(err) {
+                            .catch(function (err) {
                                 console.log(`ERROR ::: Player with id ${currentUser.id}, can't be restored on table id: ${pokerTable.id}, error: ${err.message}, stack: ${err.stack}`);
                             })
                     })
@@ -90,8 +94,8 @@ module.exports = {
                 table.save();
                 let commonGameState = gameService.getCommonGameState(game);
 
-                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
-                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
+                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.turnCompleted, commonGameState);
+                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.turnCompleted, commonGameState);
                 return null;
             } else {
                 console.log(`ERROR ::: Validation failed, not a turn for player id ${socket.user.id} for table: ${tableId}`)
@@ -129,37 +133,40 @@ module.exports = {
             let user = result.user;
 
             if (table && user) {
-                return DB_MODELS.sequelize.transaction(function (t) {
-                    game = new Game(table.gameState);
-                    game.playerTurn(params, socket.user);
-                    table.set("gameState", game.getRawObject());
+                // Adding table id in game state, just a hack should be done in after create
+                game = new Game(_.assign(table.gameState, {tableId: tableId}));
+                if (game.playerTurn(params, socket.user)) {
+                    return DB_MODELS.sequelize.transaction(function (t) {
+                        table.set("gameState", game.getRawObject());
 
-                    // chain all your queries here. make sure you return them.
-                    return table.save({ transaction: t })
-                        .then(function (table) {
-                            return user.decrement('currentBalance', { by: params.playerInfo.chips || 0 }, { transaction: t })
-                                .then(function () {
-                                    return user.addPokerTables(table, { transaction: t });
-                                })
-                        });
+                        // chain all your queries here. make sure you return them.
+                        return table.save({ transaction: t })
+                            .then(function (table) {
+                                return user.decrement('currentBalance', { by: params.playerInfo.chips || 0 }, { transaction: t })
+                                    .then(function () {
+                                        return user.addPokerTables(table, { transaction: t });
+                                    })
+                            });
 
-                }).then(function (result) {
-                    let commonGameState = gameService.getCommonGameState(game);
-                    // let comSocket = SOCKET_IO.of(socket.nsp.name).connected[`${socket.nsp.name}#${socket.client.id}`];
-                    // let comSocket = SOCKET_IO.sockets.connected[`${socket.client.id}`];
-                    // comSocket.join(room.name);
-                    // console.log(socket.nsp.name);
-                    // console.log(SOCKET_IO.of(socket.nsp.name).connected);
-                    // console.log(comSocket.nsp);
-                    // console.log(SOCKET_IO.sockets.adapter.rooms);
-                    // console.log(SOCKET_IO.of(socket.nsp.name).adapter.rooms);
+                    }).then(function (result) {
+                        let commonGameState = gameService.getCommonGameState(game);
+                        // let comSocket = SOCKET_IO.of(socket.nsp.name).connected[`${socket.nsp.name}#${socket.client.id}`];
+                        // let comSocket = SOCKET_IO.sockets.connected[`${socket.client.id}`];
+                        // comSocket.join(room.name);
+                        // console.log(socket.nsp.name);
+                        // console.log(SOCKET_IO.of(socket.nsp.name).connected);
+                        // console.log(comSocket.nsp);
+                        // console.log(SOCKET_IO.sockets.adapter.rooms);
+                        // console.log(SOCKET_IO.of(socket.nsp.name).adapter.rooms);
+                        // gameService.startGame(game);
+                        socket.join(GlobalConstant.gameRoomPrefix + table.id);
+                        socket.join(GlobalConstant.chatRoomPrefix + table.id);
+                        SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.playerJoined, commonGameState);
+                        SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.playerJoined, commonGameState);
+                        return null;
+                    })
+                }
 
-                    socket.join(GlobalConstant.gameRoomPrefix + table.uniqueId);
-                    socket.join(GlobalConstant.chatRoomPrefix + table.uniqueId);
-                    SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.playerJoined, commonGameState);
-                    SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.playerJoined, commonGameState);
-                    return null;
-                })
             }
 
         }).catch(function (err) {
@@ -199,13 +206,13 @@ module.exports = {
 
 
         }).then(function (result) {
-            socket.leave(GlobalConstant.gameRoomPrefix + table.uniqueId);
-            socket.leave(GlobalConstant.chatRoomPrefix + table.uniqueId);
+            socket.leave(GlobalConstant.gameRoomPrefix + table.id);
+            socket.leave(GlobalConstant.chatRoomPrefix + table.id);
             let commonGameState = gameService.getCommonGameState(game);
 
             // Inform others that player has left
-            SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
-            SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.turnCompleted, commonGameState);
+            SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.turnCompleted, commonGameState);
+            SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.turnCompleted, commonGameState);
 
         }).catch(function (err) {
             console.log(`ERROR ::: Unable to leave table with id ${tableId}, error: ${err.message}, stack: ${err.stack}`);

@@ -129,7 +129,7 @@ Game.prototype.playerTurn = function(params, user){
         switch(params.call){
             case "addPlayer":
                 logd("Add Player has been called for -------- " + user.id );
-                this.addPlayer(player);
+                return this.addPlayer(player);
                 break;
 
             case "addToWaiting":
@@ -367,6 +367,7 @@ Game.prototype.addToWaiting = function(attr){
  * @param attr
  */
 Game.prototype.addPlayer = function(attr) {
+    let playerAdded = false;
     var newPlayer = new Player(attr);
     // logd(JSON.stringify(newPlayer));
     if(this.currentTotalPlayer >= this.maxPlayer){
@@ -388,12 +389,16 @@ Game.prototype.addPlayer = function(attr) {
         newPlayer.idleForHand = true;
         this.players[ newPlayer.seat - 1 ] = newPlayer;
         this.currentTotalPlayer += 1;
+
+        playerAdded = true;
     }
     else if(this.round == 'idle' && this.players[ newPlayer.seat - 1 ] == null && this.validOldPlayer(newPlayer)){
         logd('Player ' + newPlayer.name + ' added to the game');
         newPlayer.game = this;
         this.players[ newPlayer.seat - 1 ] = newPlayer;
         this.currentTotalPlayer += 1;
+        
+        playerAdded = true
     }
     else if(!this.validOldPlayer(newPlayer)){
         logd('Player ' + newPlayer.name + ' Cannot be added the game');
@@ -407,6 +412,8 @@ Game.prototype.addPlayer = function(attr) {
         this.start();
         gameService.startGame(this);
     }
+
+    return playerAdded;
 };
 
 
