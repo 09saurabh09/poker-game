@@ -116,31 +116,6 @@ Game.prototype.playerTurn = function(params, user){
                     this.getCurrentPlayer().raise(params.amount);
                 }
                 break;
-                
-            case "sitOut":
-                logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.getCurrentPlayer().sitOut();
-                break;
-            case "sitIn":
-                logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.getCurrentPlayer().sitIn();
-                break;
-            case "setMaintChips":
-                logd("setMaintChips has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.getCurrentPlayer().setMaintChips(params.amount);
-                break;
-            case "unSetMaintainChips":
-                logd("unSetMaintChips has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.getCurrentPlayer().unSetMaintainChips();
-                break;
-            case "turnOffAutoMuck":
-                logd("turnOffAutoMuck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.getCurrentPlayer().turnOffAutoMuck();
-                break;
-            case "turnOnAutoMuck":
-                logd("turnOnAutoMuck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.getCurrentPlayer().turnOnAutoMuck();
-                break;
             default:
                 logd("Call is not correct " + params.call);
                 break;
@@ -155,61 +130,102 @@ Game.prototype.playerTurn = function(params, user){
                 logd("Add Player has been called for -------- " + user.id );
                 this.addPlayer(player);
                 break;
+
             case "addToWaiting":
                 logd("waitingPlayer has been called for -------- " + user.id );
                 this.addToWaiting(player);
                 break;
+
             case "leaveGame":
                 logd("leaveGame has been called for -------- " + user.id );
-                var pos = -1;
-                for(var i = 0; i < this.players.length; i++ ){
-                    if(this.players[i] && this.players[i].id == user.id){
-                        pos = i;
-                        break;
-                    }
-                }
+                var pos = findPlayerPos(user.id);
                 if(pos == -1){
                     logd("Player not present " + user.id);
                     break;
                 }
-                this.players[pos] = new Player(this.players[pos]);
-                this.players[pos].game = this;
                 this.removeFromGame(pos);
                 break;
+
             case "playerDisconnected":
                 logd("playerDisconnected has been called for -------- " + user.id );
-                var pos = -1;
-                for(var i = 0; i < this.players.length; i++ ){
-                    if(this.players[i] && this.players[i].id == user.id){
-                        pos = i;
-                        break;
-                    }
-                }
+                var pos = findPlayerPos(user.id);
                 if(pos == -1){
                     logd("Player not present " + user.id);
                     break;
                 }
-                this.players[pos] = new Player(this.players[pos]);
-                this.players[pos].game = this;
                 this.players[pos].playerDisconnected();
                 break;
+
             case "playerConnected":
                 logd("playerConnected has been called for -------- " + user.id );
-                var pos = -1;
-                for(var i = 0; i < this.players.length; i++ ){
-                    if(this.players[i] && this.players[i].id == user.id){
-                        pos = i;
-                        break;
-                    }
-                }
+                var pos = findPlayerPos(user.id);
                 if(pos == -1){
                     logd("Player not present " + user.id);
                     break;
                 }
-                this.players[pos] = new Player(this.players[pos]);
-                this.players[pos].game = this;
                 this.players[pos].playerConnected();
                 break;
+
+            case "sitOut":
+                logd("sitOut has been called for -------- " + user.id );
+                var pos = findPlayerPos(user.id);
+                if(pos == -1){
+                    logd("Player not present " + user.id);
+                    break;
+                }
+                this.players[pos].sitOut();
+                break;
+
+            case "sitIn":
+                logd("sitIn has been called for -------- " + user.id );
+                var pos = findPlayerPos(user.id);
+                if(pos == -1){
+                    logd("Player not present " + user.id);
+                    break;
+                }
+                this.players[pos].sitIn();
+                break;
+
+            case "setMaintChips":
+                logd("setMaintChips has been called for -------- " + user.id );
+                var pos = findPlayerPos(user.id);
+                if(pos == -1){
+                    logd("Player not present " + user.id);
+                    break;
+                }
+                this.players[pos].setMaintChips(params.playerInfo.chips);
+                break;
+
+            case "unSetMaintainChips":
+                logd("unSetMaintainChips has been called for -------- " + user.id );
+                var pos = findPlayerPos(user.id);
+                if(pos == -1){
+                    logd("Player not present " + user.id);
+                    break;
+                }
+                this.players[pos].unSetMaintainChips();
+                break;
+
+            case "turnOffAutoMuck":
+                logd("turnOffAutoMuck has been called for -------- " + user.id );
+                var pos = findPlayerPos(user.id);
+                if(pos == -1){
+                    logd("Player not present " + user.id);
+                    break;
+                }
+                this.players[pos].turnOffAutoMuck();
+                break;
+
+            case "turnOnAutoMuck":
+                logd("turnOnAutoMuck has been called for -------- " + user.id );
+                var pos = findPlayerPos(user.id);
+                if(pos == -1){
+                    logd("Player not present " + user.id);
+                    break;
+                }
+                this.players[pos].turnOnAutoMuck();
+                break;
+
             default:
                 logd("Call is not correct " + params.call);
                 break;
@@ -222,6 +238,21 @@ Game.prototype.playerTurn = function(params, user){
     this.currentGameState();
 }
 
+
+
+/**
+ * Find Player pos 
+ */
+Game.prototype.findPlayerPos = function(id){
+    var pos = -1;
+    for(var i = 0; i < this.players.length; i++ ){
+        if(this.players[i] && this.players[i].id == id){
+            pos = i;
+            break;
+        }
+    }
+    return pos;
+}
 
 
 /**
@@ -298,8 +329,7 @@ Game.prototype.currentGameState = function(){
                 + "  chips-" + this.players[i].chips 
                 + "  bet-" + this.players[i].bet 
                 + "  totalBet-" + this.players[i].totalBet
-                + "  cards- " + JSON.stringify(this.players[i].firstCard) + "," 
-                + JSON.stringify(this.players[i].secondCard) 
+                + "  cards- " + JSON.stringify(this.players[i].cards)
                 + "  lastAct-" + this.players[i].lastAction
                 + "  acted-"+this.players[i].hasActed 
                 + "  hasDone-" + this.players[i].hasDone 
@@ -403,6 +433,8 @@ Game.prototype.reset = function() {
     this.checkPlayersConnected();
     this.checkPlayersSitout();
     this.checkWaitingPlayers();
+
+    this.start();
     //this.initGamePots();
 };
 
@@ -546,8 +578,8 @@ Game.prototype.start = function() {
             var c1 = this.deck.drawCard();
             var c2 = this.deck.drawCard();
             logd('Player ' + this.players[i].name + ' gets card : ' + c1 + ' & ' + c2);
-            this.players[i].firstCard = c1;
-            this.players[i].secondCard = c2;
+            this.players[i].cards.push(c1);
+            this.players[i].cards.push(c2);
         }
     }
 
@@ -738,7 +770,7 @@ Game.prototype.showdown = function() {
                         logd("Player " + this.players[i].name + " has won the game.");
                     }
                     else{
-                        logd("Player  " + this.players[i].name+ " has won with cards " + this.players[i].firstCard + ", " + this.players[i].secondCard);  
+                        logd("Player  " + this.players[i].name+ " has won with cards " + JSON.stringify(this.players[i].cards));  
                     }
                 }
             }
@@ -852,8 +884,8 @@ Game.prototype.managePots = function(){
  */
 Game.prototype.getCurrentPlayer = function() {
     //return new Player(this.players[this.turnPos]);
-    this.players[this.turnPos] = new Player(this.players[this.turnPos]);
-    this.players[this.turnPos].game = this;
+    // this.players[this.turnPos] = new Player(this.players[this.turnPos]);
+    // this.players[this.turnPos].game = this;
     return this.players[this.turnPos];
 };
 
