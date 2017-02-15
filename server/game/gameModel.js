@@ -7,6 +7,7 @@ module.exports = function (sequelize, DataTypes) {
     var Game = sequelize.define("Game", {
         pokerTableId: DataTypes.INTEGER,
         finalGameState: DataTypes.JSONB,
+        earnings: DataTypes.JSONB,
         rake: DataTypes.FLOAT,
         status: {
             type: DataTypes.STRING,

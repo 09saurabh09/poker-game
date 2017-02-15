@@ -105,22 +105,24 @@ module.exports = {
     },
     /*
         { 
-            playersTranscation : [  
-                a: 20,
-                b: -30,
-                c: 100
-            ],
+            earnings : [{
+                id: 1,
+                amount: 10
+            }, {
+                id: 17,
+                amount: -60
+            }],
             rakeEarning: 10,
-            gameState:  this
+            gameState:  this(raw object)
         }
 
     */
 
-    gameOver: function (gameState) {
-        let pots = [{ "amount": 480, "stakeHolders": [1, 2, 3], "rakeMoney": 24 },
-        { "amount": 500, "stakeHolders": [1, 2], "rakeMoney": 50 },
-        { "amount": 1000, "stakeHolders": [1, 2, 3, 4], "rakeMoney": 100 }];
-        var job = GAME_QUEUE.create('gameOverMoneyTransaction', { pots: pots, gameId: gameState.currentGameId })
+    gameOver: function (params) {
+        // let pots = [{ "amount": 480, "stakeHolders": [1, 2, 3], "rakeMoney": 24 },
+        // { "amount": 500, "stakeHolders": [1, 2], "rakeMoney": 50 },
+        // { "amount": 1000, "stakeHolders": [1, 2, 3, 4], "rakeMoney": 100 }];
+        var job = GAME_QUEUE.create('gameOverUpdateGame', params)
             .attempts(5)
             .backoff({ type: 'exponential' })
             .save(function (err) {
@@ -146,15 +148,15 @@ module.exports = {
                         });
                 });
         })
-        .then(function (result) {
-            // Testing Required
-            SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
-            SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
+            .then(function (result) {
+                // Testing Required
+                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
+                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
 
-        })
-        .catch(function (err) {
+            })
+            .catch(function (err) {
 
-        })
+            })
 
     },
 
@@ -163,7 +165,7 @@ module.exports = {
     //     chips: 500 
     // }
 
-    leaveGame: function(params) {
+    leaveGame: function (params) {
 
     },
 
