@@ -19,10 +19,6 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING,
             allowNull: false
         },
-        uniqueId: {
-            type: DataTypes.UUIDV4,
-            defaultValue: DataTypes.UUIDV4
-        },
         currentBalance: {
             type: DataTypes.BIGINT,
             defaultValue: 0
