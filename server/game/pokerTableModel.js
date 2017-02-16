@@ -6,9 +6,8 @@ let pokerTableConfig = require("./pokerTableConfig").pokerTableConfig;
 
 module.exports = function (sequelize, DataTypes) {
     var PokerTable = sequelize.define("PokerTable", {
-        uniqueId: {
-            type: DataTypes.UUIDV4,
-            defaultValue: DataTypes.UUIDV4
+        tableName: {
+            type: DataTypes.STRING
         },
         gameState: {
             type: DataTypes.JSONB,
@@ -100,10 +99,20 @@ module.exports = function (sequelize, DataTypes) {
                     console.log("creating table");
                     let gameState = {
                         "tableId": table.id,
+                        "turnPos": 0,
+                        minRaise: 0,
+                        maxRaise: 0,
+                        callValue: 0,
+                        gamePots: [],
+                        totalPot: 0,
+                        lastRaise: 0,
+                        currentTotalPlayer: 0,
+                        dealerPos: 0,
                         "moneyType": table.moneyType,
                         "bigBlind": table.bigBlind,
                         "gameType": table.gameType,
                         "accessType": table.accessType,
+                        "communityCards": [],
                         "runTimeType": table.runTimeType,
                         "maxPlayer": table.maxPlayer,
                         "minAmount": table.minAmount,
