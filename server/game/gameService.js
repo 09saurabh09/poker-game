@@ -58,6 +58,8 @@ module.exports = {
             maxPlayer: gameState.maxPlayer,
             bigBlind: gameState.bigBlind,
             dealerPos: gameState.dealerPos,
+            minAmount: gameState.minAmount,
+            maxAmount: gameState.maxAmount,
             players: []
         };
 
