@@ -21,6 +21,8 @@ module.exports = function (sequelize, DataTypes) {
                     });
 
                     Game.belongsTo(models.PokerTable);
+
+                    Game.hasMany(models.GameHistory);
                 }
             }
         });

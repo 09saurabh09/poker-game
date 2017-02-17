@@ -8,6 +8,7 @@ let eventConfig = require("../game/eventConfig");
 let PokerTable = DB_MODELS.PokerTable;
 let UserModel = DB_MODELS.User;
 let UserPokerTable = DB_MODELS.UserPokerTable;
+let GameHistoryModel = DB_MODELS.GameHistory;
 
 module.exports = {
     playerConnected: function (socket, currentUser) {
@@ -27,9 +28,15 @@ module.exports = {
                         // console.log(pokerTable.id);
                         let game = new Game(pokerTable.gameState);
                         game.playerTurn(params, currentUser);
-                        pokerTable.set("gameState", game.getRawObject());
-                        pokerTable.save()
-                            .then(function (table) {
+                        let newGameState = game.getRawObject();
+                        GameHistoryModel.create({
+                            gameState: newGameState,
+                            pokerTableId: pokerTable.id,
+                            GameId: newGameState.currentGameId
+                        })
+                            // pokerTable.set("gameState", game.getRawObject());
+                            // pokerTable.save()
+                            .then(function (gameHistory) {
                                 socket.join(GlobalConstant.gameRoomPrefix + pokerTable.id);
                                 socket.join(GlobalConstant.chatRoomPrefix + pokerTable.id);
                                 // console.log(SOCKET_IO.nsps["/poker-game-authorized"].sockets);
@@ -63,9 +70,15 @@ module.exports = {
                         // console.log(pokerTable.id);
                         let game = new Game(pokerTable.gameState);
                         game.playerTurn(params, currentUser);
-                        pokerTable.set("gameState", game.getRawObject());
-                        pokerTable.save()
-                            .then(function (table) {
+                        // pokerTable.set("gameState", game.getRawObject());
+                        // pokerTable.save()
+                        let newGameState = game.getRawObject();
+                        GameHistoryModel.create({
+                            gameState: newGameState,
+                            pokerTableId: pokerTable.id,
+                            GameId: newGameState.currentGameId
+                        })
+                            .then(function (gameHistory) {
                                 console.log(`SUCCESS ::: Player with id ${currentUser.id}, disconnected on table id: ${pokerTable.id}`);
                             })
                             .catch(function (err) {
@@ -91,7 +104,15 @@ module.exports = {
                 let game = new Game(table.gameState);
                 params.tableInstance = table;
                 game.playerTurn(params, socket.user);
-                table.save();
+                let newGameState = game.getRawObject();
+                GameHistoryModel.create({
+                    gameState: newGameState,
+                    pokerTableId: pokerTable.id,
+                    GameId: newGameState.currentGameId
+                }).then(function(gameHistory) {
+                    console.log(`SUCCESS Game history created for game: ${newGameState.currentGameId} on ${socket.user.id} turn`);
+                })
+                // table.save();
                 let commonGameState = gameService.getCommonGameState(game);
 
                 SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.turnCompleted, commonGameState);
@@ -134,14 +155,20 @@ module.exports = {
 
             if (table && user) {
                 // Adding table id in game state, just a hack should be done in after create
-                game = new Game(_.assign(table.gameState, {tableId: tableId}));
+                game = new Game(_.assign(table.gameState, { tableId: tableId }));
                 if (game.playerTurn(params, socket.user)) {
                     return DB_MODELS.sequelize.transaction(function (t) {
-                        table.set("gameState", game.getRawObject());
+                        // table.set("gameState", game.getRawObject());
+                        let newGameState = game.getRawObject();
+                        return GameHistoryModel.create({
+                            gameState: newGameState,
+                            pokerTableId: table.id,
+                            GameId: newGameState.currentGameId
+                        }, { transaction: t })
 
-                        // chain all your queries here. make sure you return them.
-                        return table.save({ transaction: t })
-                            .then(function (table) {
+                            // chain all your queries here. make sure you return them.
+                            // return table.save({ transaction: t })
+                            .then(function (gameHistory) {
                                 return user.decrement('currentBalance', { by: params.playerInfo.chips || 0 }, { transaction: t })
                                     .then(function () {
                                         return user.addPokerTables(table, { transaction: t });
@@ -189,9 +216,15 @@ module.exports = {
             }, { transaction: t }).then(function (table) {
                 game = new Game(table.gameState);
                 game.playerTurn(params, socket.user);
-                table.set("gameState", game.getRawObject());
-                return table.save({ transaction: t })
-                    .then(function (table) {
+                // table.set("gameState", game.getRawObject());
+                let newGameState = game.getRawObject();
+                return GameHistoryModel.create({
+                    gameState: newGameState,
+                    pokerTableId: table.id,
+                    GameId: newGameState.currentGameId
+                }, { transaction: t })
+                // return table.save({ transaction: t })
+                    .then(function (gameHistory) {
                         return user.decrement('currentBalance', { by: params.playerInfo.chips || 0 }, { transaction: t })
                             .then(function () {
                                 return UserPokerTable.destroy({
@@ -237,8 +270,14 @@ module.exports = {
             }, { transaction: t }).then(function (table) {
                 game = new Game(table.gameState);
                 game.playerTurn(params, socket.user);
-                table.set("gameState", game.getRawObject());
-                return table.save({ transaction: t })
+                // table.set("gameState", game.getRawObject());
+                let newGameState = game.getRawObject();
+                return GameHistoryModel.create({
+                    gameState: newGameState,
+                    pokerTableId: table.id,
+                    GameId: newGameState.currentGameId
+                }, { transaction: t })
+                // return table.save({ transaction: t })
             })
         }).then(function (result) {
             console.log(`SUCCESS ::: Added to waiting list`);

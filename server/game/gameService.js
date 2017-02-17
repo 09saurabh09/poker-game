@@ -133,7 +133,7 @@ module.exports = {
             .backoff({ type: 'exponential' })
             .save(function (err) {
                 if (err) {
-                    console.log(`ERROR ::: Unable to enqueue transaction job`);
+                    console.log(`ERROR ::: Unable to enqueue transaction job, error: ${err.message}`);
                     // Manually add to DB so that can be picked up by cron
                 } else {
                     console.log(`SUCCESS ::: Transaction job has been successfully queued with id: ${job.id}`);
@@ -142,21 +142,28 @@ module.exports = {
     },
 
     startGame: function (game) {
+        let pokerTable;
         return DB_MODELS.sequelize.transaction(function (t) {
-
             // chain all your queries here. make sure you return them.
             return PokerTableModel.findOne({ where: { id: game.tableId } }, { transaction: t })
                 .then(function (table) {
+                    pokerTable = table;
                     return gameModel.create({ pokerTableId: game.tableId }, { transaction: t })
                         .then(function (gameInstance) {
-                            table.set("gameState", _.assign(game.getRawObject(), { currentGameId: gameInstance.id }));
-                            return table.save({ transaction: t })
+                            let newGameState = _.assign(game.getRawObject(), { currentGameId: gameInstance.id });
+                            return GameHistoryModel.create({
+                                gameState: newGameState,
+                                pokerTableId: pokerTable.id,
+                                GameId: newGameState.currentGameId
+                            }, {transaction: t})
+                            // table.set("gameState", _.assign(game.getRawObject(), { currentGameId: gameInstance.id }));
+                            // return table.save({ transaction: t })
                         });
                 });
         })
-            .then(function (table) {
+            .then(function (gameHistory) {
                 let playerIdToCards = {};
-                let players = table.gameState.players;
+                let players = pokerTable.gameState.players;
 
                 players.forEach(function (player) {
                     if(player) {
