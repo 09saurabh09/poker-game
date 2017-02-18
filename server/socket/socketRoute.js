@@ -94,12 +94,14 @@ gameUnauthorizedIO.on('connection', function (socket) {
         params = typeof(params) == "string" ? JSON.parse(params) : params;
         let tableId = params.tableId;
         socket.join(GlobalConstant.chatRoomPrefix + tableId);
+        console.log(`INFO ::: Socket with id ${socket.id} subscribed game chat for table ${tableId}`);
     });
 
     socket.on('game-subscribe-gameState', function (params) {
         params = typeof(params) == "string" ? JSON.parse(params) : params;
         let tableId = params.tableId;
         socket.join(GlobalConstant.gameRoomPrefix + tableId);
+        console.log(`INFO ::: Socket with id ${socket.id} subscribed game state for table ${tableId}`);
     });
 });
 
