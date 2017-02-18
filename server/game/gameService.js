@@ -2,6 +2,7 @@
 
 let gameModel = DB_MODELS.Game;
 let PokerTableModel = DB_MODELS.PokerTable;
+let GameHistoryModel = DB_MODELS.GameHistory;
 let eventConfig = require("../game/eventConfig");
 
 module.exports = {
