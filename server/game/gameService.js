@@ -156,7 +156,7 @@ module.exports = {
                                 gameState: newGameState,
                                 pokerTableId: pokerTable.id,
                                 GameId: newGameState.currentGameId
-                            }, {transaction: t})
+                            }, { transaction: t })
                             // table.set("gameState", _.assign(game.getRawObject(), { currentGameId: gameInstance.id }));
                             // return table.save({ transaction: t })
                         });
@@ -167,10 +167,10 @@ module.exports = {
                 let players = pokerTable.gameState.players;
 
                 players.forEach(function (player) {
-                    if(player) {
+                    if (player) {
                         playerIdToCards[player.id] = player.cards;
                     }
-                    
+
                 });
 
                 console.log(`INFO ::: Emitting cards in room ${GlobalConstant.gameRoomPrefix + game.tableId}`);
@@ -184,7 +184,7 @@ module.exports = {
                     socket.emit(eventConfig.gameStarted, playerIdToCards[socket.user.id]);
                 });
 
-                if(!currentSockets.length) {
+                if (!currentSockets.length) {
                     console.log(`INFO ::: No sockets found in room ${GlobalConstant.gameRoomPrefix + game.tableId}`);
                 }
                 // // Testing Required
@@ -196,6 +196,25 @@ module.exports = {
                 console.log(`ERROR ::: Unable to start game, error: ${err.message}, stack: ${err.stack}`);
             })
 
+    },
+
+    roundCompleted: function (game) {
+        let self = this;
+        let newGameState = game.getRawObject();
+        GameHistoryModel.create({
+            gameState: newGameState,
+            pokerTableId: game.tableId,
+            GameId: game.currentGameId
+        }).then(function(gameHistory) {
+             let commonGameState = self.getCommonGameState(game);
+
+            // Inform others that player has left
+            SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + game.tableId).emit(eventConfig.roundCompleted, commonGameState);
+            SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + game.tableId).emit(eventConfig.roundCompleted, commonGameState);
+
+        }).catch(function(err) {
+            console.log(`ERROR ::: Unable to complete round, error: ${err.message}, stack: ${err.stack}`);
+        })
     },
 
     // params = {
