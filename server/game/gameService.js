@@ -173,13 +173,20 @@ module.exports = {
                     
                 });
 
-                let currentSockets = Object.keys(SOCKET_IO.nsps["/poker-game-authorized"].adapter.rooms[GlobalConstant.gameRoomPrefix + game.tableId].sockets);
+                console.log(`INFO ::: Emitting cards in room ${GlobalConstant.gameRoomPrefix + game.tableId}`);
+
+                let room = SOCKET_IO.nsps["/poker-game-authorized"].adapter.rooms[GlobalConstant.gameRoomPrefix + game.tableId];
+                let currentSockets = (room && room.sockets && Object.keys(room.sockets)) || [];
+                // let currentSockets = Object.keys(SOCKET_IO.nsps["/poker-game-authorized"].adapter.rooms[GlobalConstant.gameRoomPrefix + game.tableId].sockets);
 
                 currentSockets.forEach(function (currentSocket) {
                     let socket = SOCKET_IO.nsps["/poker-game-authorized"].sockets[currentSocket];
                     socket.emit(eventConfig.gameStarted, playerIdToCards[socket.user.id]);
                 });
 
+                if(!currentSockets.length) {
+                    console.log(`INFO ::: No sockets found in room ${GlobalConstant.gameRoomPrefix + game.tableId}`);
+                }
                 // // Testing Required
                 // SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
                 // SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
