@@ -687,6 +687,7 @@ Game.prototype.nextRound = function() {
     } else {
         this.start();
     }
+    gameService.roundCompleted(this);
     this.currentGameState();
     if(this.checkPlayerLeft()  <  2){
         this.showdown();
