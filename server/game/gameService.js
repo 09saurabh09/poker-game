@@ -47,6 +47,7 @@ module.exports = {
 
     getCommonGameState: function (gameState) {
         let commonGameState = {
+            tableId: gameState.tableId,
             turnPos: gameState.turnPos,
             minRaise: gameState.minRaise,
             maxRaise: gameState.maxRaise,
@@ -69,6 +70,8 @@ module.exports = {
             if (player) {
                 let pl = {
                     id: player.id,
+                    name: player.name,
+                    seat: player.seat,
                     chips: player.chips,
                     bet: player.bet,
                     lastAction: player.lastAction,

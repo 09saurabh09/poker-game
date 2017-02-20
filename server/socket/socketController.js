@@ -107,7 +107,7 @@ module.exports = {
                 let newGameState = game.getRawObject();
                 GameHistoryModel.create({
                     gameState: newGameState,
-                    pokerTableId: pokerTable.id,
+                    pokerTableId: table.id,
                     GameId: newGameState.currentGameId
                 }).then(function(gameHistory) {
                     console.log(`SUCCESS Game history created for game: ${newGameState.currentGameId} on ${socket.user.id} turn`);
@@ -170,9 +170,9 @@ module.exports = {
                             // return table.save({ transaction: t })
                             .then(function (gameHistory) {
                                 return user.decrement('currentBalance', { by: params.playerInfo.chips || 0 }, { transaction: t })
-                                    .then(function () {
+                                    /*.then(function () {
                                         return user.addPokerTables(table, { transaction: t });
-                                    })
+                                    })*/
                             });
 
                     }).then(function (result) {
