@@ -23,6 +23,7 @@ module.exports = function (sequelize, DataTypes) {
                     var job = GAME_QUEUE.create('gameStateUpdated', gameHistory)
                         .attempts(5)
                         .backoff({ type: 'exponential' })
+                        .removeOnComplete( true )
                         .save(function (err) {
                             if (err) {
                                 console.log(`ERROR ::: Unable to enqueue game state update job, error: ${err.message}`);

@@ -132,6 +132,7 @@ module.exports = {
         var job = GAME_QUEUE.create('gameOverUpdateGame', params)
             .attempts(5)
             .backoff({ type: 'exponential' })
+            .removeOnComplete( true )
             .save(function (err) {
                 if (err) {
                     console.log(`ERROR ::: Unable to enqueue transaction job, error: ${err.message}`);
@@ -164,7 +165,7 @@ module.exports = {
         })
             .then(function (gameHistory) {
                 let playerIdToCards = {};
-                let players = pokerTable.gameState.players;
+                let players = game.players;
 
                 players.forEach(function (player) {
                     if (player) {
