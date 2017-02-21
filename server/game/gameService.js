@@ -3,7 +3,7 @@
 let gameModel = DB_MODELS.Game;
 let PokerTableModel = DB_MODELS.PokerTable;
 let GameHistoryModel = DB_MODELS.GameHistory;
-let eventConfig = require("../game/eventConfig");
+let eventConfig = require("../socket/eventConfig");
 
 module.exports = {
     /**
@@ -169,7 +169,7 @@ module.exports = {
             .then(function (gameHistory) {
                 let playerIdToCards = {};
                 let players = game.players;
-
+                let playerCards;
                 players.forEach(function (player) {
                     if (player) {
                         playerIdToCards[player.id] = player.cards;
@@ -185,7 +185,11 @@ module.exports = {
 
                 currentSockets.forEach(function (currentSocket) {
                     let socket = SOCKET_IO.nsps["/poker-game-authorized"].sockets[currentSocket];
-                    socket.emit(eventConfig.gameStarted, playerIdToCards[socket.user.id]);
+                    playerCards = {
+                        tableId: pokerTable.id,
+                        cards: playerIdToCards[socket.user.id]
+                    }
+                    socket.emit(eventConfig.gameStarted, playerCards);
                 });
 
                 if (!currentSockets.length) {

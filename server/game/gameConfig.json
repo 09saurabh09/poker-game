@@ -1,0 +1,6 @@
+{
+    "allowedActions": {
+        "gamePreference": ["sitOut", "sitIn", "setMaintChips", "unSetMaintainChips", "turnOffAutoMuck", "turnOnAutoMuck"],
+        "playerTurn": ["fold", "allin", "callOrCheck", "raise"]
+    }
+}
