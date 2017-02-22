@@ -4,11 +4,14 @@
 "use strict";
 module.exports = Game;
 
+var debugGameFlow = true;
+
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
 var evaluator = require('../utils/evaluator.js');
-var gameService = require('./gameService.js');
 var moment = require("moment");
+if(debugGameFlow)
+    var gameService = require('./gameService.js');
 
 
 /**
@@ -328,6 +331,7 @@ Game.prototype.currentGameState = function(){
                 + "  chips-" + this.players[i].chips 
                 + "  bet-" + this.players[i].bet 
                 + "  totalBet-" + this.players[i].totalBet
+                + "  betForRound-" + this.players[i].betForRound
                 + "  cards- " + JSON.stringify(this.players[i].cards)
                 + "  lastAct-" + this.players[i].lastAction
                 + "  acted-"+this.players[i].hasActed 
@@ -414,7 +418,8 @@ Game.prototype.addPlayer = function(attr) {
 
     if(this.currentTotalPlayer > 1 && this.round == 'idle'){
         this.start();
-        gameService.startGame(this);
+        if(debugGameFlow)
+            gameService.startGame(this);
     }
 
     return playerAdded;
@@ -673,23 +678,19 @@ Game.prototype.nextRound = function() {
     if (this.round === 'idle') {
         this.start();
     } else if (this.round === 'deal') {
-        this.gatherBets();
-        this.managePots();
+        this.updatePotAndBet();
         this.flop();
         if(this.lastRaise == 0 ){
             this.turnPos = this.nextPlayer(this.dealerPos);
         }
     } else if (this.round === 'flop') {
-        this.gatherBets();
-        this.managePots();
+        this.updatePotAndBet();
         this.turn();
     } else if (this.round === 'turn') {
-        this.gatherBets();
-        this.managePots();
+        this.updatePotAndBet();
         this.river();
     } else if (this.round === 'river') {
-        this.gatherBets();
-        this.managePots();
+        this.updatePotAndBet();
         this.showdown();
     } else {
         this.start();
@@ -701,6 +702,27 @@ Game.prototype.nextRound = function() {
 };
 
 
+
+/**
+ *
+ */
+Game.prototype.updatePotAndBet = function(){
+    this.gatherBets();
+    this.managePots();
+    this.unsetBetForRound();
+}
+
+
+/**
+ * Function to set Value for Bet For Round to 0.
+ */
+Game.prototype.unsetBetForRound = function(){
+    for(var i =0 ; i < this.players.length; i++){
+        if(this.players[i]){
+            this.players[i].betForRound = 0;
+        }
+    }
+}
 
 /**
  * Checks if ready to next round
@@ -807,7 +829,8 @@ Game.prototype.showdown = function() {
         this.handOverPot();
     }
     //this.reset();
-    gameService.gameOver();
+    if(debugGameFlow)
+        gameService.gameOver();
     this.startNewGame();
 };
 
@@ -819,7 +842,8 @@ Game.prototype.showdown = function() {
 Game.prototype.startNewGame = function(){
     var newGame = new Game(this);
     newGame.reset();
-    gameService.startGame(newGame);
+    if(debugGameFlow)
+        gameService.startGame(newGame);
 }
 
 
@@ -848,7 +872,7 @@ Game.prototype.gatherBets = function() {
         if(this.players[i]){
             this.players[i].totalBet = this.players[i].bet;
             this.totalPot += this.players[i].totalBet;
-            //this.players[i].bet = 0;
+             //this.players[i].bet = 0;
         }
     }
     this.logd("Total Pot : " + this.totalPot)
