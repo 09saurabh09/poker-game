@@ -370,6 +370,12 @@ Game.prototype.addPlayer = function(attr) {
     let playerAdded = false;
     var newPlayer = new Player(attr);
     // logd(JSON.stringify(newPlayer));
+    for(var i = 0; i < this.players.length; i++){
+        if(this.players[i] && this.players[i].id == newPlayer.id){
+            logd("Player Aready Added");
+            return playerAdded;
+        }
+    }
     if(this.currentTotalPlayer >= this.maxPlayer){
         this.addToWaiting(attr);
         logd("Table is full You have been added to the waiting List");
@@ -434,7 +440,7 @@ Game.prototype.reset = function() {
     this.callValue = 0;         
 
     //this.currentGameId = gameState.currentGameId;
-    //this.rakeEarning = gameState.rakeEarning || 0;
+    this.rakeEarning = 0;
 
     for (var i = 0; i < this.players.length; i++) {
         if(this.players[i])
@@ -1006,7 +1012,7 @@ Game.prototype.winnersPerPot = function (ranks){
  * Handover pots to whoever is the winner
  */
 Game.prototype.handOverPot = function(){
-    console.log("Handing over the pot to the winners");
+    logd("Handing over the pot to the winners");
     for(var i =0; i < this.gamePots.length; i++ ){
         if(this.gamePots[i].winners.length == 1){
             this.rakeEarning += this.gamePots[i].rakeMoney;
