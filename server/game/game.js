@@ -11,14 +11,6 @@ var gameService = require('./gameService.js');
 var moment = require("moment");
 
 
-function logd(message) {
-    if (this.debugMode) {
-        console.log(message);
-    }
-}
-
-
-
 /**
  * Constructor with the required Parameter and variables
  */
@@ -63,7 +55,11 @@ function Game(gameState) {
     }
 };
 
-
+Game.prototype.logd = function(message) {
+    if (this.debugMode) {
+        console.log(message);
+    }
+}
 
 /**
  *  var params = {
@@ -93,34 +89,34 @@ Game.prototype.playerTurn = function(params, user){
     this.reloadAllPlayers();
     if(params.callType == "player"){
         if(params.playerId != this.getCurrentPlayer().id && false){
-            logd("The Turn Positing is different for different Player");
+            this.logd("The Turn Positing is different for different Player");
             return;
         }
         switch(params.call){
             case "fold":
-                logd("Fold has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.logd("Fold has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
                 this.getCurrentPlayer().fold();
                 break;
             case "allin":
-                logd("allIn has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.logd("allIn has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
                 this.getCurrentPlayer().allin();
                 break;
             case "callOrCheck":
-                logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
                 this.getCurrentPlayer().callOrCheck();
                 break;
             case "raise":
                 if( params.amount < this.mininumunRaise() || params.amount > this.maximumRaise()){
-                    logd("Raise Amount  is not in range min ------ " + this.mininumunRaise() + " max " + this.maximumRaise());
+                    this.logd("Raise Amount  is not in range min ------ " + this.mininumunRaise() + " max " + this.maximumRaise());
                 }
                 else{
-                    logd("Raise has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                    this.logd("Raise has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
                     this.lastRaise = params.amount;
                     this.getCurrentPlayer().raise(params.amount);
                 }
                 break;
             default:
-                logd("Call is not correct " + params.call);
+                this.logd("Call is not correct " + params.call);
                 break;
         }
     }
@@ -130,112 +126,112 @@ Game.prototype.playerTurn = function(params, user){
         player.name = user.name;
         switch(params.call){
             case "addPlayer":
-                logd("Add Player has been called for -------- " + user.id );
+                this.logd("Add Player has been called for -------- " + user.id );
                 return this.addPlayer(player);
                 break;
 
             case "addToWaiting":
-                logd("waitingPlayer has been called for -------- " + user.id );
+                this.logd("waitingPlayer has been called for -------- " + user.id );
                 this.addToWaiting(player);
                 break;
 
             case "leaveGame":
-                logd("leaveGame has been called for -------- " + user.id );
+                this.logd("leaveGame has been called for -------- " + user.id );
                 var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
-                    logd("Player not present " + user.id);
+                    this.logd("Player not present " + user.id);
                     break;
                 }
                 this.removeFromGame(pos);
                 break;
 
             case "playerDisconnected":
-                logd("playerDisconnected has been called for -------- " + user.id );
+                this.logd("playerDisconnected has been called for -------- " + user.id );
                 var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
-                    logd("Player not present " + user.id);
+                    this.logd("Player not present " + user.id);
                     break;
                 }
                 this.players[pos].playerDisconnected();
                 break;
 
             case "playerConnected":
-                logd("playerConnected has been called for -------- " + user.id );
+                this.logd("playerConnected has been called for -------- " + user.id );
                 var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
-                    logd("Player not present " + user.id);
+                    this.logd("Player not present " + user.id);
                     break;
                 }
                 this.players[pos].playerConnected();
                 break;
 
             case "sitOut":
-                logd("sitOut has been called for -------- " + user.id );
+                this.logd("sitOut has been called for -------- " + user.id );
                 var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
-                    logd("Player not present " + user.id);
+                    this.logd("Player not present " + user.id);
                     break;
                 }
                 this.players[pos].sitOut();
                 break;
 
             case "sitIn":
-                logd("sitIn has been called for -------- " + user.id );
+                this.logd("sitIn has been called for -------- " + user.id );
                 var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
-                    logd("Player not present " + user.id);
+                    this.logd("Player not present " + user.id);
                     break;
                 }
                 this.players[pos].sitIn();
                 break;
 
             case "setMaintChips":
-                logd("setMaintChips has been called for -------- " + user.id );
+                this.logd("setMaintChips has been called for -------- " + user.id );
                 var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
-                    logd("Player not present " + user.id);
+                    this.logd("Player not present " + user.id);
                     break;
                 }
                 this.players[pos].setMaintChips(params.playerInfo.chips);
                 break;
 
             case "unSetMaintainChips":
-                logd("unSetMaintainChips has been called for -------- " + user.id );
+                this.logd("unSetMaintainChips has been called for -------- " + user.id );
                 var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
-                    logd("Player not present " + user.id);
+                    this.logd("Player not present " + user.id);
                     break;
                 }
                 this.players[pos].unSetMaintainChips();
                 break;
 
             case "turnOffAutoMuck":
-                logd("turnOffAutoMuck has been called for -------- " + user.id );
+                this.logd("turnOffAutoMuck has been called for -------- " + user.id );
                 var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
-                    logd("Player not present " + user.id);
+                    this.logd("Player not present " + user.id);
                     break;
                 }
                 this.players[pos].turnOffAutoMuck();
                 break;
 
             case "turnOnAutoMuck":
-                logd("turnOnAutoMuck has been called for -------- " + user.id );
+                this.logd("turnOnAutoMuck has been called for -------- " + user.id );
                 var pos = self.findPlayerPos(user.id);
                 if(pos == -1){
-                    logd("Player not present " + user.id);
+                    this.logd("Player not present " + user.id);
                     break;
                 }
                 this.players[pos].turnOnAutoMuck();
                 break;
 
             default:
-                logd("Call is not correct " + params.call);
+                this.logd("Call is not correct " + params.call);
                 break;
         }
     }
     else{
-        logd("Incorrect CallType " + params.callType);
+        this.logd("Incorrect CallType " + params.callType);
     }
     this.updateGameInstance();
     this.currentGameState();
@@ -306,28 +302,28 @@ Game.prototype.initGamePots = function(){
  *  Current Table State for Testing
  */
 Game.prototype.currentGameState = function(){
-    logd("------------------------------------------------------GAME STATE START-----------------------------------------------------------");
-    logd("## Game bigBlind - " +this.bigBlind);
-    logd("## Game maxPlayer - " +this.maxPlayer);
-    logd("## Game minAmount - " +this.minAmount);
-    logd("## Game maxAmount - " +this.maxAmount);
-    logd("## Game maxSitOutTIme - " +this.maxSitOutTIme);
-    logd("## Game dealerPos - " +this.dealerPos);        
-    logd("## Game Round - " + this.round);
-    logd("## Game minRaise - " +this.minRaise);        
-    logd("## Game maxRaise - " +this.maxRaise);        
-    logd("## Game callValue - " +this.callValue);        
-    logd("## Game turnPos - " +this.turnPos);           
-    logd("## Game totalpot - " +this.totalPot);
-    logd("## Game rakeEarning - " +this.rakeEarning);
-    logd("## Game gamePots - " + JSON.stringify(this.gamePots));   
-    logd("## Game currentTotalPlayer - " +this.currentTotalPlayer); 
-    logd("## Game Community Cards - " + JSON.stringify(this.communityCards));
-    logd("## Game waitingPlayers - " + JSON.stringify(this.waitingPlayers));
-    logd("## Game oldPlayers - " + JSON.stringify(this.oldPlayers));
+    this.logd("------------------------------------------------------GAME STATE START-----------------------------------------------------------");
+    this.logd("## Game bigBlind - " +this.bigBlind);
+    this.logd("## Game maxPlayer - " +this.maxPlayer);
+    this.logd("## Game minAmount - " +this.minAmount);
+    this.logd("## Game maxAmount - " +this.maxAmount);
+    this.logd("## Game maxSitOutTIme - " +this.maxSitOutTIme);
+    this.logd("## Game dealerPos - " +this.dealerPos);        
+    this.logd("## Game Round - " + this.round);
+    this.logd("## Game minRaise - " +this.minRaise);        
+    this.logd("## Game maxRaise - " +this.maxRaise);        
+    this.logd("## Game callValue - " +this.callValue);        
+    this.logd("## Game turnPos - " +this.turnPos);           
+    this.logd("## Game totalpot - " +this.totalPot);
+    this.logd("## Game rakeEarning - " +this.rakeEarning);
+    this.logd("## Game gamePots - " + JSON.stringify(this.gamePots));   
+    this.logd("## Game currentTotalPlayer - " +this.currentTotalPlayer); 
+    this.logd("## Game Community Cards - " + JSON.stringify(this.communityCards));
+    this.logd("## Game waitingPlayers - " + JSON.stringify(this.waitingPlayers));
+    this.logd("## Game oldPlayers - " + JSON.stringify(this.oldPlayers));
     for (var i=0;i<this.maxPlayer;i++){
         if(this.players[i]!=null){
-            logd("## Seat-" + (i+1) 
+            this.logd("## Seat-" + (i+1) 
                 + "  has player " + this.players[i].name 
                 + "  chips-" + this.players[i].chips 
                 + "  bet-" + this.players[i].bet 
@@ -342,10 +338,10 @@ Game.prototype.currentGameState = function(){
                 + "  maintinChips-"+ this.players[i].isMaintainChips + "," + this.players[i].maintainChips);
         }
         else{
-            logd("## Seat-> " + (i+1) + " is empty ");
+            this.logd("## Seat-> " + (i+1) + " is empty ");
         }
     }
-    logd("------------------------------------------------------GAME STATE END-----------------------------------------------------------");
+    this.logd("------------------------------------------------------GAME STATE END-----------------------------------------------------------");
 };
 
 
@@ -359,7 +355,7 @@ Game.prototype.addToWaiting = function(attr){
         name : attr.name
     };
     this.waitingPlayers.push(waitingPlayer);
-    logd( waitingPlayer.name + " has been added to the waiting List.");
+    this.logd( waitingPlayer.name + " has been added to the waiting List.");
 };
 
 
@@ -371,28 +367,28 @@ Game.prototype.addToWaiting = function(attr){
 Game.prototype.addPlayer = function(attr) {
     let playerAdded = false;
     var newPlayer = new Player(attr);
-    // logd(JSON.stringify(newPlayer));
+    // this.logd(JSON.stringify(newPlayer));
     for(var i = 0; i < this.players.length; i++){
         if(this.players[i] && this.players[i].id == newPlayer.id){
-            logd("Player Aready Added");
+            this.logd("Player Aready Added");
             return playerAdded;
         }
     }
     if(this.currentTotalPlayer >= this.maxPlayer){
         this.addToWaiting(attr);
-        logd("Table is full You have been added to the waiting List");
+        this.logd("Table is full You have been added to the waiting List");
     }
     else if(newPlayer.chips < this.minAmount){
-        logd("Insufficient Chips for player " + newPlayer.name );
+        this.logd("Insufficient Chips for player " + newPlayer.name );
     }
     else if(newPlayer.chips > this.maxAmount){
-        logd("Insufficient Chips for player " + newPlayer.name );
+        this.logd("Insufficient Chips for player " + newPlayer.name );
     }
     else if(newPlayer.seat > this.maxPlayer){
-        logd("NO Seat Availabe for Player " + newPlayer.name);
+        this.logd("NO Seat Availabe for Player " + newPlayer.name);
     }
     else if (this.round != 'idle' && this.players[ newPlayer.seat - 1 ] == null && this.validOldPlayer(newPlayer)){
-        logd('Player ' + newPlayer.name + ' added but will will idle for this hand');
+        this.logd('Player ' + newPlayer.name + ' added but will will idle for this hand');
         newPlayer.game = this;
         newPlayer.idleForHand = true;
         this.players[ newPlayer.seat - 1 ] = newPlayer;
@@ -401,7 +397,7 @@ Game.prototype.addPlayer = function(attr) {
         playerAdded = true;
     }
     else if(this.round == 'idle' && this.players[ newPlayer.seat - 1 ] == null && this.validOldPlayer(newPlayer)){
-        logd('Player ' + newPlayer.name + ' added to the game');
+        this.logd('Player ' + newPlayer.name + ' added to the game');
         newPlayer.game = this;
         this.players[ newPlayer.seat - 1 ] = newPlayer;
         this.currentTotalPlayer += 1;
@@ -409,10 +405,10 @@ Game.prototype.addPlayer = function(attr) {
         playerAdded = true
     }
     else if(!this.validOldPlayer(newPlayer)){
-        logd('Player ' + newPlayer.name + ' Cannot be added the game');
+        this.logd('Player ' + newPlayer.name + ' Cannot be added the game');
     }
     else{
-        logd("Seat-> " + ( newPlayer.seat  - 1 ) + "  is Already Been Taken");
+        this.logd("Seat-> " + ( newPlayer.seat  - 1 ) + "  is Already Been Taken");
     }
     
 
@@ -430,7 +426,7 @@ Game.prototype.addPlayer = function(attr) {
  * Resets game to the default state
  */
 Game.prototype.reset = function() {
-    logd('^^^^^^Game reset^^^^^^^');
+    this.logd('^^^^^^Game reset^^^^^^^');
     this.round = 'idle';
     this.communityCards = [];   
     this.totalPot = 0;          
@@ -584,10 +580,10 @@ Game.prototype.checkForGameRun = function(){
  */
 Game.prototype.start = function() {
     if( !this.checkForGameRun() ){
-        logd("Need More Player to start the Game ");
+        this.logd("Need More Player to start the Game ");
         return;
     }
-    logd('========== STARTING GAME ==========');
+    this.logd('========== STARTING GAME ==========');
     
 
     this.round = 'deal';
@@ -596,7 +592,7 @@ Game.prototype.start = function() {
         if(this.players[i]){
             var c1 = this.deck.drawCard();
             var c2 = this.deck.drawCard();
-            logd('Player ' + this.players[i].name + ' gets card : ' + c1 + ' & ' + c2);
+            this.logd('Player ' + this.players[i].name + ' gets card : ' + c1 + ' & ' + c2);
             this.players[i].cards.push(c1);
             this.players[i].cards.push(c2);
         }
@@ -605,7 +601,7 @@ Game.prototype.start = function() {
     this.dealerPosition();
     
     //Setting the value for smal Blind and big blind.
-    logd('Player ' + this.players[this.dealerPos].name + ' is the dealer');
+    this.logd('Player ' + this.players[this.dealerPos].name + ' is the dealer');
     var smallBlindPos = this.nextPlayer(this.dealerPos);
     var bigBlindPos =  this.nextPlayer(smallBlindPos);
 
@@ -613,15 +609,15 @@ Game.prototype.start = function() {
     this.players[smallBlindPos].addBet(1/2 * this.bigBlind);
     this.players[bigBlindPos].addBet(this.bigBlind);
 
-    logd('Player ' + this.players[smallBlindPos].name + ' pays small blind : ' + (1/2 * this.bigBlind));
-    logd('Player ' + this.players[bigBlindPos].name + ' pays big blind : ' + this.bigBlind);
+    this.logd('Player ' + this.players[smallBlindPos].name + ' pays small blind : ' + (1/2 * this.bigBlind));
+    this.logd('Player ' + this.players[bigBlindPos].name + ' pays big blind : ' + this.bigBlind);
 
     // determine whose turn it is
     this.turnPos = this.nextPlayer(bigBlindPos);
-    logd('Now its player ' + this.players[this.turnPos].name + '\'s turn');
+    this.logd('Now its player ' + this.players[this.turnPos].name + '\'s turn');
 
     // begin game, start 'deal' Round
-    logd('========== Round DEAL ==========');
+    this.logd('========== Round DEAL ==========');
 };
 
 
@@ -712,10 +708,10 @@ Game.prototype.nextRound = function() {
  */
 Game.prototype.checkForNextRound = function() {
     if (this.isEndRound()) {
-        logd('begin next round');
+        this.logd('begin next round');
         this.nextRound();
     } else {
-        logd('cannot begin next round');
+        this.logd('cannot begin next round');
     }
 };
 
@@ -725,14 +721,14 @@ Game.prototype.checkForNextRound = function() {
  * Starts the 'flop' Round
  */
 Game.prototype.flop = function() {
-    logd('========== Round FLOP ==========');
+    this.logd('========== Round FLOP ==========');
     this.round = 'flop';
     // deal three cards in board
     this.communityCards[0] = this.deck.drawCard();
     this.communityCards[1] = this.deck.drawCard();
     this.communityCards[2] = this.deck.drawCard();
     // begin betting
-    logd('Community cards : ' + this.communityCards[0] + ', ' + this.communityCards[1] + ', ' + this.communityCards[2]);
+    this.logd('Community cards : ' + this.communityCards[0] + ', ' + this.communityCards[1] + ', ' + this.communityCards[2]);
     // other players must act
     this.requestPlayerAction();
 };
@@ -743,12 +739,12 @@ Game.prototype.flop = function() {
  * Starts the 'turn' Round
  */
 Game.prototype.turn = function() {
-    logd('========== Round TURN ==========');
+    this.logd('========== Round TURN ==========');
     this.round = 'turn';
     // deal fourth card
     this.communityCards[3] = this.deck.drawCard();
     // begin betting
-    logd('Community cards : ' + this.communityCards[0] + ', ' + this.communityCards[1] + ', ' + this.communityCards[2] + ', ' + this.communityCards[3]);
+    this.logd('Community cards : ' + this.communityCards[0] + ', ' + this.communityCards[1] + ', ' + this.communityCards[2] + ', ' + this.communityCards[3]);
     // other players must act
     this.requestPlayerAction();
 };
@@ -759,12 +755,12 @@ Game.prototype.turn = function() {
  * Starts the 'river' Round
  */
 Game.prototype.river = function() {
-    logd('========== Round RIVER ==========');
+    this.logd('========== Round RIVER ==========');
     this.round = 'river';
     // deal fifth card
     this.communityCards[4] = this.deck.drawCard();
     // begin betting
-    logd('Community cards : ' + this.communityCards[0] + ', ' + this.communityCards[1] + ', ' + this.communityCards[2] + ', ' + this.communityCards[3] + ', '  + this.communityCards[4]);
+    this.logd('Community cards : ' + this.communityCards[0] + ', ' + this.communityCards[1] + ', ' + this.communityCards[2] + ', ' + this.communityCards[3] + ', '  + this.communityCards[4]);
     // other players must act
     this.requestPlayerAction();
 };
@@ -775,21 +771,21 @@ Game.prototype.river = function() {
  * Starts the 'showdown' Round
  */
 Game.prototype.showdown = function() {
-    logd('====================== SHOWDOWN ======================');
+    this.logd('====================== SHOWDOWN ======================');
     this.round = 'showdown';
 
     if(this.checkPlayerLeft()  <  2){
         if(this.checkPlayerLeft() == 0){
-            logd("All Have Folded or left Game No one won");
+            this.logd("All Have Folded or left Game No one won");
         }
         else{
             for(var i = 0; i <this.players.length; i++ ){
                 if(this.players[i] && this.players[i].hasDone == false ){
                     if(this.players[i].autoMuck==true){
-                        logd("Player " + this.players[i].name + " has won the game.");
+                        this.logd("Player " + this.players[i].name + " has won the game.");
                     }
                     else{
-                        logd("Player  " + this.players[i].name+ " has won with cards " + JSON.stringify(this.players[i].cards));  
+                        this.logd("Player  " + this.players[i].name+ " has won with cards " + JSON.stringify(this.players[i].cards));  
                     }
                 }
             }
@@ -797,21 +793,21 @@ Game.prototype.showdown = function() {
     }
     else{
         //Sorting all the players card accordingly
-        logd('====================== Results ======================');
+        this.logd('====================== Results ======================');
         var evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
         for(var i = 0; i < evalHands.length; i++){
-            logd("Player  " + evalHands[i].playerInfo + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
+            this.logd("Player  " + evalHands[i].playerInfo + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
         }
         var ranks = evaluator.resultsAfterRank(evalHands);
         for(var i = 0; i < ranks.length; i++ ){
-            logd("*********" + JSON.stringify(ranks[i]) + '\n');
+            this.logd("*********" + JSON.stringify(ranks[i]) + '\n');
         }
         this.rakeForGame();
         this.winnersPerPot(ranks);
         this.handOverPot();
     }
     //this.reset();
-    //Start New Game;
+    gameService.gameOver();
     this.startNewGame();
 };
 
@@ -855,7 +851,7 @@ Game.prototype.gatherBets = function() {
             //this.players[i].bet = 0;
         }
     }
-    logd("Total Pot : " + this.totalPot)
+    this.logd("Total Pot : " + this.totalPot)
 };
 
 
@@ -1014,7 +1010,7 @@ Game.prototype.winnersPerPot = function (ranks){
  * Handover pots to whoever is the winner
  */
 Game.prototype.handOverPot = function(){
-    logd("Handing over the pot to the winners");
+    this.logd("Handing over the pot to the winners");
     for(var i =0; i < this.gamePots.length; i++ ){
         if(this.gamePots[i].winners.length == 1){
             this.rakeEarning += this.gamePots[i].rakeMoney;
@@ -1034,7 +1030,7 @@ Game.prototype.handOverPot = function(){
                 }
             }
             if(noOfWinners != 0 ){
-                logd("Something went wrong while handing over the pot money");
+                this.logd("Something went wrong while handing over the pot money");
             }
         }
     }
@@ -1064,7 +1060,7 @@ Game.prototype.showCard = function(){
  */
 Game.prototype.dealerPosition = function(){
     //Will Increamene teverytime when the game will reset
-    logd("Chossing the dealer postions ");
+    this.logd("Chossing the dealer postions ");
     for (var i=0; i<this.maxPlayer; i++ ){
         var p = ( this.dealerPos + i ) % this.maxPlayer;
         if(this.players[p] != null){
