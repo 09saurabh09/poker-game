@@ -10,9 +10,9 @@ var evaluator = require('../utils/evaluator.js');
 var gameService = require('./gameService.js');
 var moment = require("moment");
 
-var debug = true;
+
 function logd(message) {
-    if (debug) {
+    if (this.debugMode) {
         console.log(message);
     }
 }
@@ -38,6 +38,8 @@ function Game(gameState) {
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
     this.tableId = gameState.tableId;
+
+    this.debugMode = gameState.debugMode;
 
     this.players = gameState.players || [];                     // Array of Player object, represents all players in this game
     this.waitingPlayers = gameState.waitingPlayers || [];       // Array of all the players who will be there in the waiting list
