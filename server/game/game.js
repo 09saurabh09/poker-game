@@ -424,14 +424,17 @@ Game.prototype.addPlayer = function(attr) {
 Game.prototype.reset = function() {
     logd('^^^^^^Game reset^^^^^^^');
     this.round = 'idle';
-    this.communityCards = [];   // clear cards on board
-    this.totalPot = 0;               // clear pots on board
-    this.deck = new Deck();     // use new deck of cards
+    this.communityCards = [];   
+    this.totalPot = 0;          
+    this.deck = new Deck();     
     this.gamePots = [];
     this.lastRaise = 0;
     this.minRaise = 0;         
     this.maxRaise = 0            
     this.callValue = 0;         
+
+    //this.currentGameId = gameState.currentGameId;
+    //this.rakeEarning = gameState.rakeEarning || 0;
 
     for (var i = 0; i < this.players.length; i++) {
         if(this.players[i])
@@ -799,9 +802,21 @@ Game.prototype.showdown = function() {
         this.winnersPerPot(ranks);
         this.handOverPot();
     }
-    this.reset();
+    //this.reset();
+    //Start New Game;
+    this.startNewGame();
 };
 
+
+
+/**
+ * Start A new Game when the game Ends
+ */
+Game.prototype.startNewGame = function(){
+    var newGame = new Game(this);
+    newGame.reset();
+    gameService.startGame(newGame);
+}
 
 
 /**
@@ -1082,6 +1097,10 @@ Game.prototype.checkPlayerLeft = function(){
     }
     return totalPlaying;
 }
+
+
+
+
 /**
  * Intialiase all players
  */
@@ -1093,7 +1112,6 @@ Game.prototype.reloadAllPlayers = function(){
         }
     }
 }
-
 
 
 
