@@ -170,9 +170,9 @@ module.exports = {
                             // return table.save({ transaction: t })
                             .then(function (gameHistory) {
                                 return user.decrement('currentBalance', { by: params.playerInfo.chips || 0 }, { transaction: t })
-                                    /*.then(function () {
+                                    .then(function () {
                                         return user.addPokerTables(table, { transaction: t });
-                                    })*/
+                                    })
                             });
 
                     }).then(function (result) {
