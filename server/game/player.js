@@ -32,6 +32,7 @@ function Player(options) {
     this.cards = options.cards || [];
     this.bet = options.bet || 0;
     this.totalBet = options.totalBet || 0;
+    this.betForRound = options.betForRound || 0;
     this.showCards = options.showCards || false;
 
     this.lastAction =options.lastAction || "";
@@ -136,6 +137,7 @@ Player.prototype.reset = function() {
     this.cards = [];
     this.bet = 0;
     this.totalBet = 0;
+    this.betForRound = 0;
 
     this.lastAction = "";
     this.hasActed = false;
@@ -163,6 +165,7 @@ Player.prototype.addBet = function(amount) {
     }
     this.chips -= amount;
     this.bet += amount;
+    this.betForRound += amount;
 };
 
 

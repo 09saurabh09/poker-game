@@ -15,7 +15,8 @@ var gameParams = {
     runTimeType:2,
     rakeX: 5,
     rakeY: 5,
-    rakeZ: 2
+    rakeZ: 2,
+    debugMode: true
 };
 
 var playerParams1 = {

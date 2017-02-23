@@ -3,7 +3,8 @@
 let Game = require("../game/game");
 let gameService = require("../game/gameService");
 let userService = require("../user/userService");
-let eventConfig = require("../game/eventConfig");
+let gameConfig = require("../game/gameConfig");
+let eventConfig = require("../socket/eventConfig");
 
 let PokerTable = DB_MODELS.PokerTable;
 let UserModel = DB_MODELS.User;
@@ -100,7 +101,8 @@ module.exports = {
             }
         }).then(function (table) {
             let currentGameState = table.gameState;
-            if (currentGameState.players[currentGameState.turnPos].id == socket.user.id) {
+            if (currentGameState.players[currentGameState.turnPos].id == socket.user.id &&
+                gameConfig.allowedActions.playerTurn.indexOf(params.call) > -1) {
                 let game = new Game(table.gameState);
                 params.tableInstance = table;
                 game.playerTurn(params, socket.user);
@@ -109,14 +111,18 @@ module.exports = {
                     gameState: newGameState,
                     pokerTableId: table.id,
                     GameId: newGameState.currentGameId
-                }).then(function(gameHistory) {
+                }).then(function (gameHistory) {
                     console.log(`SUCCESS Game history created for game: ${newGameState.currentGameId} on ${socket.user.id} turn`);
                 })
                 // table.save();
-                let commonGameState = gameService.getCommonGameState(game);
+                // Proceed only if game is not over, as game over event is handled in gameService
+                if (game.round !== 'idle') {
+                    console.log(`INFO ::: Game completed, game id: ${game.currentGameId}`);
+                    let commonGameState = gameService.getCommonGameState(game);
 
-                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.turnCompleted, commonGameState);
-                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.turnCompleted, commonGameState);
+                    SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.turnCompleted, commonGameState);
+                    SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.turnCompleted, commonGameState);
+                }
                 return null;
             } else {
                 console.log(`ERROR ::: Validation failed, not a turn for player id ${socket.user.id} for table: ${tableId}`)
@@ -223,7 +229,7 @@ module.exports = {
                     pokerTableId: table.id,
                     GameId: newGameState.currentGameId
                 }, { transaction: t })
-                // return table.save({ transaction: t })
+                    // return table.save({ transaction: t })
                     .then(function (gameHistory) {
                         return user.decrement('currentBalance', { by: params.playerInfo.chips || 0 }, { transaction: t })
                             .then(function () {
@@ -284,5 +290,40 @@ module.exports = {
         }).catch(function (err) {
             console.log(`ERROR ::: Unable to leave table with id ${tableId}, error: ${err.message}, stack: ${err.stack}`);
         })
+    },
+
+    updateGamePreference: function (params, socket) {
+        params.callType = "game";
+        let tableId = params.tableId;
+
+        // Allow only game preference change 
+        if (gameConfig.allowedActions.gamePreference.indexOf(params.call) > -1) {
+            return DB_MODELS.sequelize.transaction(function (t) {
+                // chain all your queries here. make sure you return them.
+                return PokerTable.findOne({
+                    where: {
+                        id: tableId
+                    }
+                }, { transaction: t }).then(function (table) {
+                    game = new Game(table.gameState);
+                    game.playerTurn(params, socket.user);
+                    // table.set("gameState", game.getRawObject());
+                    let newGameState = game.getRawObject();
+                    return GameHistoryModel.create({
+                        gameState: newGameState,
+                        pokerTableId: table.id,
+                        GameId: newGameState.currentGameId
+                    }, { transaction: t })
+                    // return table.save({ transaction: t })
+                })
+            }).then(function (result) {
+                console.log(`SUCCESS ::: Game preferences updated for table ${tableId} by user ${socket.user.id}`);
+            }).catch(function (err) {
+                console.log(`ERROR ::: Unable to update game preference on table with id ${tableId} by user ${socket.user.id}, error: ${err.message}, stack: ${err.stack}`);
+            })
+        } else {
+            console.log(`ERROR ::: Not a valid game preference option, ${JSON.stringify(params)} for user: ${socket.user.id}`);
+        }
+
     }
 }
