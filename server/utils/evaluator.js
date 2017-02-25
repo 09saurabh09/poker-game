@@ -54,11 +54,11 @@ function sortByRankOmaha(communityCards, players){
     for (var i = 0; i < players.length ; i++ ) {
         var playerHand = {};
         var hand = [];
-        if(players[i]){
+        if(players[i] && !players[i].idleForHand){
             var playerBestCard = bestHandInOmaha(communityCards, players[i]);
             playerHand.playerInfo = players[i].id;
             playerHand.cards = playerBestCard.cards;
-            playerHand.hand = playerBestCard.hand;
+            playerHand.hand = PokerEvaluator.evalHand( playerBestCard.cards );
             evalHands.push(playerHand);
         }
     }
@@ -107,7 +107,7 @@ function bestHandInOmaha(communityCards, player){
             return 0;
         return 1;
     });
-    return evalHands;
+    return evalHands[0];
 }
 
 

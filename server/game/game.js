@@ -4,7 +4,7 @@
 "use strict";
 module.exports = Game;
 
-var debugGameFlow = false;
+var debugGameFlow = true;
 
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
@@ -832,13 +832,26 @@ Game.prototype.showdown = function() {
     else{
         //Sorting all the players card accordingly
         this.logd('====================== Results ======================');
-        var evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
-        for(var i = 0; i < evalHands.length; i++){
-            this.logd("Player  " + evalHands[i].playerInfo + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
+
+        if(this.gameType == "holdem"){
+            var evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
+            for(var i = 0; i < evalHands.length; i++){
+                this.logd("Player  " + evalHands[i].playerInfo + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
+            }
+            var ranks = evaluator.resultsAfterRank(evalHands);
+            for(var i = 0; i < ranks.length; i++ ){
+                this.logd("*********" + JSON.stringify(ranks[i]) + '\n');
+            }
         }
-        var ranks = evaluator.resultsAfterRank(evalHands);
-        for(var i = 0; i < ranks.length; i++ ){
-            this.logd("*********" + JSON.stringify(ranks[i]) + '\n');
+        else if(this.gameType == "omaha"){
+            var evalHands = evaluator.sortByRankOmaha(this.communityCards, this.players);
+            for(var i = 0; i < evalHands.length; i++){
+                this.logd("Player  " + evalHands[i].playerInfo + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
+            }
+            var ranks = evaluator.resultsAfterRank(evalHands);
+            for(var i = 0; i < ranks.length; i++ ){
+                this.logd("*********" + JSON.stringify(ranks[i]) + '\n');
+            }
         }
         this.rakeForGame();
         this.winnersPerPot(ranks);
