@@ -16,7 +16,8 @@ var gameParams = {
     rakeX: 5,
     rakeY: 5,
     rakeZ: 2,
-    debugMode: true
+    debugMode: true,
+    gameType: "omaha",
 };
 
 var playerParams1 = {

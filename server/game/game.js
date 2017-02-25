@@ -4,7 +4,7 @@
 "use strict";
 module.exports = Game;
 
-var debugGameFlow = true;
+var debugGameFlow = false;
 
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
@@ -313,6 +313,7 @@ Game.prototype.currentGameState = function(){
     this.logd("## Game maxAmount - " +this.maxAmount);
     this.logd("## Game maxSitOutTIme - " +this.maxSitOutTIme);
     this.logd("## Game dealerPos - " +this.dealerPos);        
+    this.logd("## Game gameType - " +this.gameType);        
     this.logd("## Game Round - " + this.round);
     this.logd("## Game minRaise - " +this.minRaise);        
     this.logd("## Game maxRaise - " +this.maxRaise);        
@@ -582,6 +583,23 @@ Game.prototype.checkForGameRun = function(){
 
 
 /**
+ * Function to Draw Card For each Players
+ */
+Game.prototype.getPlayersCard = function(noOfCards){
+    for (var i=0; i<this.players.length; i++) {
+        if(this.players[i]){
+            for (var j = 0; j < noOfCards; j++ ){
+                var c = this.deck.drawCard();
+                this.players[i].cards.push(c);
+            }
+            this.logd('Player ' + this.players[i].id + ' gets card : ' + JSON.stringify(this.players[i].cards));
+        }
+    }
+}
+
+
+
+/**
  * Starts the 'deal' Round
  */
 Game.prototype.start = function() {
@@ -593,15 +611,12 @@ Game.prototype.start = function() {
     
 
     this.round = 'deal';
-    // deal two cards to each players
-    for (var i=0; i<this.players.length; i++) {
-        if(this.players[i]){
-            var c1 = this.deck.drawCard();
-            var c2 = this.deck.drawCard();
-            this.logd('Player ' + this.players[i].name + ' gets card : ' + c1 + ' & ' + c2);
-            this.players[i].cards.push(c1);
-            this.players[i].cards.push(c2);
-        }
+    
+    if(this.gameType == "holdem"){
+        this.getPlayersCard(2);
+    }
+    else if(this.gameType == "omaha"){
+        this.getPlayersCard(4);
     }
 
     this.dealerPosition();
