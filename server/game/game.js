@@ -29,6 +29,7 @@ function Game(gameState) {
     this.rakeX = gameState.rakeX;
     this.rakeY = gameState.rakeY;
     this.rakeZ = gameState.rakeZ;
+    this.gameType = gameState.gameType;                         //The type of Game it is holdem or omaha.
 
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
@@ -984,16 +985,17 @@ Game.prototype.mininumunRaise = function(){
  * Check the Maximum Raise
  */
 Game.prototype.maximumRaise = function(){
-    this.maxRaise = this.getCurrentPlayer().chips;
-
-    //Maximum logic for omaha
-    // if(this.getCurrentPlayer().chips  <  this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck()){
-    //     this.maxRaise = this.getCurrentPlayer().chips;
-    // }
-    // else{
-    //     this.maxRaise = this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck();
-    // }
-
+    if(this.gameType == "holdem"){
+        this.maxRaise = this.getCurrentPlayer().chips;
+    }
+    else if(this.gameType == "omaha"){
+        if(this.getCurrentPlayer().chips  <  this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck()){
+            this.maxRaise = this.getCurrentPlayer().chips;
+        }
+        else{
+            this.maxRaise = this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck();
+        }
+    }
     return this.maxRaise;
 }
 
