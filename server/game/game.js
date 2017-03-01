@@ -4,7 +4,7 @@
 "use strict";
 module.exports = Game;
 
-var debugGameFlow = true;
+var debugGameFlow = false;
 
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
@@ -43,7 +43,8 @@ function Game(gameState) {
     this.round = gameState.round || 'idle';                     // current round in a game ['idle', 'deal', 'flop' , 'turn', 'river']
     this.dealerPos = gameState.dealerPos || 0;                  // to determine the dealer position for each game, incremented by 1 for each end game
     this.turnPos = gameState.turnPos || 0;                      // to determine whose turn it is in a playing game
-    this.totalPot = gameState.totalPot || 0;                    // accumulated chips in center of the table
+    this.totalPot = gameState.totalPot || 0;                    // accumulated chips in center of the table after each Game
+    this.currentPot = gameState.currentPot || 0;                // Current Pot at any point of time. 
     this.minRaise = gameState.minRaise || 0;                    // Minimum raise to be have
     this.maxRaise = gameState.maxRaise || 0;                    // Maximum raise for the next player
     this.callValue = gameState.callValue || 0;                  // Call Value to be stored for next Player
@@ -318,6 +319,8 @@ Game.prototype.currentGameState = function(){
     this.logd("## Game minRaise - " +this.minRaise);        
     this.logd("## Game maxRaise - " +this.maxRaise);        
     this.logd("## Game callValue - " +this.callValue);        
+    this.logd("## Game currentPot - " +this.currentPot);           
+    this.logd("## Game lastRaise - " +this.lastRaise);           
     this.logd("## Game turnPos - " +this.turnPos);           
     this.logd("## Game totalpot - " +this.totalPot);
     this.logd("## Game rakeEarning - " +this.rakeEarning);
@@ -1017,11 +1020,15 @@ Game.prototype.maximumRaise = function(){
         this.maxRaise = this.getCurrentPlayer().chips;
     }
     else if(this.gameType == "omaha"){
-        if(this.getCurrentPlayer().chips  <  this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck()){
-            this.maxRaise = this.getCurrentPlayer().chips;
+        if(this.lastRaise == 0){
+            this.maxRaise = this.currentPot + 2 * this.bigBlind;
         }
         else{
-            this.maxRaise = this.totalPot + 2 * this.getCurrentPlayer().getCallOrCheck();
+            this.maxRaise = this.currentPot + 2 * this.getCurrentPlayer().getCallOrCheck();
+        }
+
+        if(this.getCurrentPlayer().chips  <  this.maxRaise){
+            this.maxRaise = this.getCurrentPlayer().chips;
         }
     }
     return this.maxRaise;

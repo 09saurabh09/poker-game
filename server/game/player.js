@@ -165,6 +165,7 @@ Player.prototype.addBet = function(amount) {
     }
     this.chips -= amount;
     this.bet += amount;
+    this.game.currentPot += amount;
     this.betForRound += amount;
 };
 
