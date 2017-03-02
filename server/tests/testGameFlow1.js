@@ -17,7 +17,7 @@ var gameParams = {
     rakeY: 5,
     rakeZ: 2,
     debugMode: true,
-    gameType: "omaha",
+    gameType: "holdem",
 };
 
 var playerParams1 = {
@@ -156,7 +156,10 @@ game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
-// game.playerTurn(turnParamsCall,gameInstance);
+game = new Game(game);
+game.playerTurn(turnParamsCall,gameInstance);
+game = new Game(game);
+game.playerTurn(turnParamsCall,gameInstance);
 // game.playerTurn(turnParamsRaise,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);

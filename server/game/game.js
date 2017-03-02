@@ -4,7 +4,7 @@
 "use strict";
 module.exports = Game;
 
-var debugGameFlow = false;
+var debugGameFlow = true;
 
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
@@ -60,11 +60,18 @@ function Game(gameState) {
     }
 };
 
+
+
+/**
+ * Logd for complete flow
+ */
 Game.prototype.logd = function(message) {
     if (this.debugMode) {
         console.log(message);
     }
 }
+
+
 
 /**
  *  var params = {
@@ -245,7 +252,7 @@ Game.prototype.playerTurn = function(params, user){
 
 
 /**
- * Find Player pos 
+ * Find Player pos return the seat number 0 index
  */
 Game.prototype.findPlayerPos = function(id){
     var pos = -1;
@@ -257,6 +264,7 @@ Game.prototype.findPlayerPos = function(id){
     }
     return pos;
 }
+
 
 
 /**
@@ -743,6 +751,8 @@ Game.prototype.unsetBetForRound = function(){
     }
 }
 
+
+
 /**
  * Checks if ready to next round
  * If yes, starts the next round
@@ -860,11 +870,86 @@ Game.prototype.showdown = function() {
         this.winnersPerPot(ranks);
         this.handOverPot();
     }
+    this.currentGameState();
+    this.callGameOver();
     //this.reset();
-    if(debugGameFlow)
-        gameService.gameOver();
-    this.startNewGame();
+    //this.startNewGame();
 };
+
+
+
+/**
+ * Call Game Over With the Given Params
+        { 
+            earnings : [{
+                id: 1,
+                amount: 10
+            }, {
+                id: 17,
+                amount: -60
+            }],
+            rakeEarning: 10,
+            gameState:  this(raw object)
+        }
+ */
+Game.prototype.callGameOver = function(){
+    var gameOverParams = {};
+    gameOverParams.gameState = this;
+    gameOverParams.rakeEarning = this.rakeEarning;
+    gameOverParams.earnings = this.gameEarnings();
+    if(debugGameFlow)
+        gameService.gameOver(gameOverParams);
+}
+
+
+
+/**
+ * Calculate Game Earning at the end of the Game
+ */
+Game.prototype.gameEarnings = function(){
+    this.logd("calculating the earnings");
+    var earnings = []
+    for(var i = 0; i < this.players.length; i++){
+        if(this.players[i] && this.players[i].idleForHand == false){
+            var p = {}
+            p.id = this.players[i].id;
+            p.amount =  this.players[i].bet * (-1);
+            earnings.push(p);
+        }
+    }
+    for(var i =0; i < this.gamePots.length; i++ ){
+        if(this.gamePots[i].winners.length == 1){
+            this.rakeEarning += this.gamePots[i].rakeMoney;
+            for(var j = 0; j < this.players.length; j++){
+                if(this.players[j] && this.players[j].id == this.gamePots[i].winners[0]){
+                    for(var k = 0; k < earnings.length; k++ ){
+                        if(earnings[k].id == this.players[j].id){
+                            earnings[k].amount += (this.gamePots[i].amount -  this.gamePots[i].rakeMoney);
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            var noOfWinners = this.gamePots[i].winners.length;
+            var amountPerWinner = this.gamePots[i].amount / noOfWinners;
+            for(var j = 0; j < this.players.length; j++){
+                if(this.players[j] && this.gamePots[i].winners.indexOf(this.players[j].id) != -1){
+                   for(var k = 0; k < earnings.length; k++ ){
+                        if(earnings[k].id == this.players[j].id){
+                            earnings[k].amount += amountPerWinner;
+                        }
+                    }
+                    noOfWinners--;
+                }
+            }
+            if(noOfWinners != 0 ){
+                this.logd("Something went wrong while calculating the earnings");
+            }
+        }
+    }
+    return earnings;
+}
 
 
 
@@ -877,6 +962,7 @@ Game.prototype.startNewGame = function(){
     if(debugGameFlow)
         gameService.startGame(newGame);
 }
+
 
 
 /**
