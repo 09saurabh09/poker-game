@@ -110,6 +110,21 @@ Player.prototype.getCallOrCheck = function(){
 
 
 /**
+ * When the user cannot move its turn in given time 
+ * then do the best call whatever is possible.
+ */
+Player.prototype.doBestCall = function(){
+    if(this.getCallOrCheck() == 0){
+        this.callOrCheck();
+    }
+    else{
+        this.fold();
+    }
+}
+
+
+
+/**
  * Raise your bet
  * If your bet is not the same with highest bet
  * Add to your bet altogether with difference

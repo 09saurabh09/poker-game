@@ -127,6 +127,9 @@ Game.prototype.playerTurn = function(params, user){
                     this.getCurrentPlayer().raise(params.amount);
                 }
                 break;
+            case "doBestCall":
+                this.logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
+                this.getCurrentPlayer().doBestCall();
             default:
                 this.logd("Call is not correct " + params.call);
                 break;
