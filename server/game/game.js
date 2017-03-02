@@ -872,11 +872,12 @@ Game.prototype.showdown = function() {
         this.rakeForGame();
         this.winnersPerPot(ranks);
         this.handOverPot();
+        this.showCard();
     }
     this.currentGameState();
     this.callGameOver();
     //this.reset();
-    //this.startNewGame();
+    this.startNewGame();
 };
 
 
@@ -1195,7 +1196,7 @@ Game.prototype.showCard = function(){
     for(var i = 0 ;i< this.gamePots.length; i++ ){
         for(var j = 0 ; j < this.gamePots[i].winners.length; j++){
             for(var k = 0; k <this.players.length; k++){
-                if(this.players[k].id == this.gamePots[i].winners[j]){
+                if(this.players[k] && this.players[k].id == this.gamePots[i].winners[j]){
                     this.players[k].showCards = true;
                 }
             }
