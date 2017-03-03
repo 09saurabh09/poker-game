@@ -4,7 +4,7 @@
 "use strict";
 module.exports = Game;
 
-var debugGameFlow = true;
+var debugGameFlow = false;
 
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
@@ -761,12 +761,17 @@ Game.prototype.unsetBetForRound = function(){
  * If yes, starts the next round
  */
 Game.prototype.checkForNextRound = function() {
-    if (this.isEndRound()) {
-        this.logd('begin next round');
-        this.nextRound();
-    } else {
-        this.logd('cannot begin next round');
+    if(this.checkPlayerLeft() < 2){
+        this.showdown();
     }
+    else{
+        if (this.isEndRound()) {
+            this.logd('begin next round');
+            this.nextRound();
+        } else {
+            this.logd('cannot begin next round');
+        }
+    }   
 };
 
 
@@ -834,7 +839,7 @@ Game.prototype.showdown = function() {
         }
         else{
             for(var i = 0; i <this.players.length; i++ ){
-                if(this.players[i] && this.players[i].hasDone == false ){
+                if(this.players[i] && this.players[i].hasDone == false && this.players[i].idleForHand == false){
                     if(this.players[i].autoMuck==true){
                         this.logd("Player " + this.players[i].name + " has won the game.");
                     }
@@ -1246,7 +1251,7 @@ Game.prototype.rakeForGame = function(){
 Game.prototype.checkPlayerLeft = function(){
     var totalPlaying = 0;
     for(var i = 0; i <this.players.length; i++ ){
-        if(this.players[i] && this.players[i].hasDone == false ){
+        if(this.players[i] && this.players[i].hasDone == false && this.players[i].idleForHand == false){
             totalPlaying++;
         }
     }
