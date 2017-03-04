@@ -183,10 +183,10 @@ module.exports = {
                 });
 
                 console.log(`INFO ::: Emitting cards in room ${GlobalConstant.gameRoomPrefix + game.tableId}`);
-                
+
                 // Get current game room
                 let room = SOCKET_IO.nsps["/poker-game-authorized"].adapter.rooms[GlobalConstant.gameRoomPrefix + game.tableId];
-                
+
                 // List all socket in game room
                 let currentSockets = (room && room.sockets && Object.keys(room.sockets)) || [];
                 // let currentSockets = Object.keys(SOCKET_IO.nsps["/poker-game-authorized"].adapter.rooms[GlobalConstant.gameRoomPrefix + game.tableId].sockets);
@@ -214,6 +214,20 @@ module.exports = {
                 // SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
                 // SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
 
+
+                // Add games to user User History
+                var job = GAME_QUEUE.create('gameStartCreateUserGames', game)
+                    .attempts(5)
+                    .backoff({ type: 'exponential' })
+                    .removeOnComplete(true)
+                    .save(function (err) {
+                        if (err) {
+                            console.log(`ERROR ::: Unable to enqueue transaction job, error: ${err.message}`);
+                            // Manually add to DB so that can be picked up by cron
+                        } else {
+                            console.log(`SUCCESS ::: Transaction job has been successfully queued with id: ${job.id}`);
+                        }
+                    });
             })
             .catch(function (err) {
                 console.log(`ERROR ::: Unable to start game, error: ${err.message}, stack: ${err.stack}`);
@@ -253,7 +267,7 @@ module.exports = {
 
     },
 
-    isGameStarted: function(gameState) {
+    isGameStarted: function (gameState) {
         let startGame;
         let parentType = gameState.parentType;
         if ((parentType == "cashGame") && gameState.currentTotalPlayer == 2) {
