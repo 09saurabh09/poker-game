@@ -4,7 +4,7 @@
 "use strict";
 module.exports = Game;
 
-var debugGameFlow = false;
+var debugGameFlow = true;
 
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
@@ -874,11 +874,14 @@ Game.prototype.showdown = function() {
                 this.logd("*********" + JSON.stringify(ranks[i]) + '\n');
             }
         }
-        this.rakeForGame();
-        this.winnersPerPot(ranks);
-        this.handOverPot();
-        this.showCard();
     }
+
+    this.rakeForGame();
+    this.winnersPerPot(ranks);
+    //this.logd( "VISHal" + JSON.stringify(this.gamePots));
+    this.handOverPot();
+    this.showCard();
+
     this.currentGameState();
     this.callGameOver();
     //this.reset();
@@ -1135,28 +1138,40 @@ Game.prototype.maximumRaise = function(){
  * Deciding Winner for every Pot and Transfering Money to Wineer
  */
 Game.prototype.winnersPerPot = function (ranks){
-    for(var i = 0; i < this.gamePots.length; i++ ){
-        var winners = [];
-        var winnerRank = 10000;
-        for(var j = 0; j < this.gamePots[i].stakeHolders.length; j++){
-            for(var k = 0; k < ranks.length; k++){
-                for(var l = 0; l < ranks[k].length; l++){
-                    if(ranks[k][l].playerInfo == this.gamePots[i].stakeHolders[j]){
-                        if(k < winnerRank){
-                            winnerRank = k;
+    if(this.checkPlayerLeft() < 2 ){
+        for(var i= 0; i< this.players.length; i++){
+            if(this.players[i] && this.players[i].idleForHand ==  false && this.players[i].hasDone == false){
+                for(var j= 0; j < this.gamePots.length; j++){
+                    this.gamePots[j].winners = [];
+                    this.gamePots[j].winners.push ( this.players[i].id ); 
+                }
+            }
+        }
+    }
+    else{
+        for(var i = 0; i < this.gamePots.length; i++ ){
+            var winners = [];
+            var winnerRank = 10000;
+            for(var j = 0; j < this.gamePots[i].stakeHolders.length; j++){
+                for(var k = 0; k < ranks.length; k++){
+                    for(var l = 0; l < ranks[k].length; l++){
+                        if(ranks[k][l].playerInfo == this.gamePots[i].stakeHolders[j]){
+                            if(k < winnerRank){
+                                winnerRank = k;
+                            }
                         }
                     }
                 }
             }
-        }
-        for(var j = 0; j < this.gamePots[i].stakeHolders.length; j++){
-            for(var l = 0; l < ranks[winnerRank].length; l++){
-                if(ranks[winnerRank][l].playerInfo == this.gamePots[i].stakeHolders[j] ){
-                    winners.push(ranks[winnerRank][l].playerInfo);
+            for(var j = 0; j < this.gamePots[i].stakeHolders.length; j++){
+                for(var l = 0; l < ranks[winnerRank].length; l++){
+                    if(ranks[winnerRank][l].playerInfo == this.gamePots[i].stakeHolders[j] ){
+                        winners.push(ranks[winnerRank][l].playerInfo);
+                    }
                 }
             }
+            this.gamePots[i].winners = winners;
         }
-        this.gamePots[i].winners = winners;
     }
 }
 
@@ -1233,12 +1248,17 @@ Game.prototype.dealerPosition = function(){
  */
 Game.prototype.rakeForGame = function(){
     this.rakeMoney = 0;
-    for(var i = 0; i <this.gamePots.length; i++ ){
-        if( this.gamePots[i].stakeHolders.length <= this.rakeY ){
-            this.gamePots[i].rakeMoney = (this.gamePots[i].amount * this.rakeX) / 100;
-        }
-        else{
-            this.gamePots[i].rakeMoney = (this.gamePots[i].amount * this.rakeZ) / 100;
+    if(this.checkPlayerLeft() <  2){
+        //Decide Whether the rake money has to be calculated or to be not calc.
+    }
+    else {
+        for(var i = 0; i <this.gamePots.length; i++ ){
+            if( this.gamePots[i].stakeHolders.length <= this.rakeY ){
+                this.gamePots[i].rakeMoney = (this.gamePots[i].amount * this.rakeX) / 100;
+            }
+            else{
+                this.gamePots[i].rakeMoney = (this.gamePots[i].amount * this.rakeZ) / 100;
+            }
         }
     }
 }
