@@ -138,6 +138,13 @@ var turnParamsStack = {
     playerId:""
 };
 
+var turnParamsFold = {
+    callType:"player",
+    call:"fold",
+    amount:20,
+    playerId:""
+};
+
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
@@ -145,21 +152,21 @@ game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
-game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsFold,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
-game = new Game(game);
-game.playerTurn(turnParamsStack,gameInstance);
-game = new Game(game);
-game.playerTurn(turnParamsRaise,gameInstance);
-game = new Game(game);
-game.playerTurn(turnParamsCall,gameInstance);
-game = new Game(game);
-game.playerTurn(turnParamsCall,gameInstance);
-game = new Game(game);
-game.playerTurn(turnParamsCall,gameInstance);
-game = new Game(game);
-game.playerTurn(turnParamsCall,gameInstance);
+// game = new Game(game);
+// game.playerTurn(turnParamsStack,gameInstance);
+// game = new Game(game);
+// game.playerTurn(turnParamsRaise,gameInstance);
+// game = new Game(game);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game = new Game(game);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game = new Game(game);
+// game.playerTurn(turnParamsCall,gameInstance);
+// game = new Game(game);
+// game.playerTurn(turnParamsCall,gameInstance);s
 // game.playerTurn(turnParamsRaise,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);
