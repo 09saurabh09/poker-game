@@ -49,6 +49,7 @@ module.exports = {
         let commonGameState = {
             tableId: gameState.tableId,
             turnPos: gameState.turnPos,
+            round: gameState.round,
             minRaise: gameState.minRaise,
             maxRaise: gameState.maxRaise,
             callValue: gameState.callValue,
@@ -79,6 +80,9 @@ module.exports = {
                     idleForHand: player.idleForHand,
                     betForRound: player.betForRound
                 }
+                if ((gameState.round == "showdown") && (player.showCards)) {
+                    pl.cards = player.cards;
+                }
                 commonGameState.players.push(pl);
             } else {
                 commonGameState.players.push(null);
@@ -101,13 +105,13 @@ module.exports = {
             }
 
         }).then(function () {
-            DB_MODELS.sequelize.query(updateCurrentBalanceQuery)
-                .then(function (table) {
+            // DB_MODELS.sequelize.query(updateCurrentBalanceQuery)
+            //     .then(function (table) {
 
-                })
-                .catch(function (err) {
+            //     })
+            //     .catch(function (err) {
 
-                })
+            //     })
         }).catch(function () {
 
         })
@@ -135,7 +139,7 @@ module.exports = {
         var job = GAME_QUEUE.create('gameOverUpdateGame', params)
             .attempts(5)
             .backoff({ type: 'exponential' })
-            .removeOnComplete( true )
+            .removeOnComplete(true)
             .save(function (err) {
                 if (err) {
                     console.log(`ERROR ::: Unable to enqueue transaction job, error: ${err.message}`);
@@ -147,6 +151,7 @@ module.exports = {
     },
 
     startGame: function (game) {
+        let self = this;
         let pokerTable;
         return DB_MODELS.sequelize.transaction(function (t) {
             // chain all your queries here. make sure you return them.
@@ -178,8 +183,11 @@ module.exports = {
                 });
 
                 console.log(`INFO ::: Emitting cards in room ${GlobalConstant.gameRoomPrefix + game.tableId}`);
-
+                
+                // Get current game room
                 let room = SOCKET_IO.nsps["/poker-game-authorized"].adapter.rooms[GlobalConstant.gameRoomPrefix + game.tableId];
+                
+                // List all socket in game room
                 let currentSockets = (room && room.sockets && Object.keys(room.sockets)) || [];
                 // let currentSockets = Object.keys(SOCKET_IO.nsps["/poker-game-authorized"].adapter.rooms[GlobalConstant.gameRoomPrefix + game.tableId].sockets);
 
@@ -195,6 +203,13 @@ module.exports = {
                 if (!currentSockets.length) {
                     console.log(`INFO ::: No sockets found in room ${GlobalConstant.gameRoomPrefix + game.tableId}`);
                 }
+
+                // Emit game state to all players in room
+                let commonGameState = self.getCommonGameState(game);
+
+                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.turnCompleted, commonGameState);
+                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.turnCompleted, commonGameState);
+
                 // // Testing Required
                 // SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
                 // SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
@@ -213,14 +228,14 @@ module.exports = {
             gameState: newGameState,
             pokerTableId: game.tableId,
             GameId: game.currentGameId
-        }).then(function(gameHistory) {
-             let commonGameState = self.getCommonGameState(game);
+        }).then(function (gameHistory) {
+            let commonGameState = self.getCommonGameState(game);
 
             // Inform others that player has left
             SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + game.tableId).emit(eventConfig.roundCompleted, commonGameState);
             SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + game.tableId).emit(eventConfig.roundCompleted, commonGameState);
 
-        }).catch(function(err) {
+        }).catch(function (err) {
             console.log(`ERROR ::: Unable to complete round, error: ${err.message}, stack: ${err.stack}`);
         })
     },
@@ -236,5 +251,14 @@ module.exports = {
 
     getGameStateForUser: function (gameState, currentUser) {
 
+    },
+
+    isGameStarted: function(gameState) {
+        let startGame;
+        let parentType = gameState.parentType;
+        if ((parentType == "cashGame") && gameState.currentTotalPlayer == 2) {
+            startGame = true;
+        }
+        return startGame;
     }
-} 
+}

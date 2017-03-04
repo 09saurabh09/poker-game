@@ -29,38 +29,38 @@ module.exports = function (sequelize, DataTypes) {
         moneyType: {
             type: DataTypes.STRING,
             validate: {
-                isIn: [pokerTableConfig.moneyType.values],
+                isIn: [pokerTableConfig.moneyType.values]
             }
         },
         bigBlind: {
             type: DataTypes.FLOAT,
             validate: {
-                isIn: [pokerTableConfig.bigBlind.values],
+                isIn: [pokerTableConfig.bigBlind.values]
             }
         },
         gameType: {
             type: DataTypes.STRING,
             validate: {
-                isIn: [pokerTableConfig.gameType.values],
+                isIn: [pokerTableConfig.gameType.values]
             }
         },
         accessType: {
             type: DataTypes.STRING,
             validate: {
-                isIn: [pokerTableConfig.accessType.values],
+                isIn: [pokerTableConfig.accessType.values]
             }
         },
         runTimeType: {
             type: DataTypes.STRING,
             validate: {
-                isIn: [pokerTableConfig.runTimeType.values],
+                isIn: [pokerTableConfig.runTimeType.values]
             }
         },
         maxPlayer: {
             type: DataTypes.INTEGER,
             validate: {
                 min: [pokerTableConfig.nOfPlayers.min],
-                max: [pokerTableConfig.nOfPlayers.max],
+                max: [pokerTableConfig.nOfPlayers.max]
             }
         },
         minAmount: {
@@ -71,9 +71,6 @@ module.exports = function (sequelize, DataTypes) {
         },
         maxSitOutTime: {
             type: DataTypes.INTEGER
-        },
-        tableType: {
-            type: DataTypes.STRING
         },
         rakeX: {
             type: DataTypes.FLOAT
@@ -111,6 +108,7 @@ module.exports = function (sequelize, DataTypes) {
                         "moneyType": table.moneyType,
                         "bigBlind": table.bigBlind,
                         "gameType": table.gameType,
+                        "parentType": table.parentType,
                         "accessType": table.accessType,
                         "communityCards": [],
                         "runTimeType": table.runTimeType,

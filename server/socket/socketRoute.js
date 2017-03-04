@@ -70,11 +70,11 @@ gameAuthorizedIO.on('connection', function (socket) {
         let tableId = params.tableId;
         let message = {
             sender: socket.user.name,
-            message: params.message,
+            message: params.message
         }
-        socket.broadcast.in(GlobalConstant.chatRoomPrefix + tableId).emit(eventConfig.chatMessage, commonGameState);
+        socket.broadcast.in(GlobalConstant.chatRoomPrefix + tableId).emit(eventConfig.chatMessage, message);
         // SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.chatRoomPrefix + tableId).emit(eventConfig.chatMessage, commonGameState);
-        SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.chatRoomPrefix + tableId).emit(eventConfig.chatMessage, commonGameState);
+        SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.chatRoomPrefix + tableId).emit(eventConfig.chatMessage, message);
 
         // Not required, just for testing
         // socketController.testQ(params, socket);
