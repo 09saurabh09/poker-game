@@ -29,7 +29,8 @@ function Game(gameState) {
     this.rakeX = gameState.rakeX;
     this.rakeY = gameState.rakeY;
     this.rakeZ = gameState.rakeZ;
-    this.gameType = gameState.gameType;                         //The type of Game it is holdem or omaha.
+    this.gameType = gameState.gameType;  
+    this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
 
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
