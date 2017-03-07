@@ -87,7 +87,7 @@ module.exports = function (sequelize, DataTypes) {
                     PokerTable.belongsToMany(models.User, {
                         through: "UserPokerTables"
                     });
-                    PokerTable.hasMany(models.Game);
+                    PokerTable.hasMany(models.Game, {foreignKey: 'pokerTableId'});
                 }
             },
 

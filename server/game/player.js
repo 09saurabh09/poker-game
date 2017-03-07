@@ -5,6 +5,7 @@
 "use strict";
 
 var moment = require("moment");
+let gameService = require("./gameService");
 
 module.exports = Player;
 
@@ -25,7 +26,8 @@ function Player(options) {
     this.chips = options.chips;
     this.isMaintainChips = options.isMaintainChips; // Thyis should be intialised with the game boolean value
     this.maintainChips = options.chips;             // The value to which we need to maintain stack
-    this.seat = options.seat;                       // Seat on Gmae
+    this.seat = options.seat;                       // Seat on Game
+    this.sessionKey = options.sessionKey;
 
     this.game = options.game || null;
 

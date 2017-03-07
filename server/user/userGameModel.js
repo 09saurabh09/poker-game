@@ -9,14 +9,17 @@ module.exports = function (sequelize, DataTypes) {
         },
         // Both UserId and GameId columns are Automatically created by sequalize
         GameId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.INTEGER
         },
         UserId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.INTEGER
+        },
+        sessionKey: {
+            type: DataTypes.STRING
         },
         status: {
             type: DataTypes.STRING
-        },
+        }
     });
     return UserGame;
 };

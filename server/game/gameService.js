@@ -222,10 +222,10 @@ module.exports = {
                     .removeOnComplete(true)
                     .save(function (err) {
                         if (err) {
-                            console.log(`ERROR ::: Unable to enqueue transaction job, error: ${err.message}`);
+                            console.log(`ERROR ::: Unable to enqueue gameStartCreateUserGames job, error: ${err.message}`);
                             // Manually add to DB so that can be picked up by cron
                         } else {
-                            console.log(`SUCCESS ::: Transaction job has been successfully queued with id: ${job.id}`);
+                            console.log(`SUCCESS ::: gameStartCreateUserGames job has been successfully queued with id: ${job.id}`);
                         }
                     });
             })
