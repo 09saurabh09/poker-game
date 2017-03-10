@@ -136,18 +136,26 @@ module.exports = {
         // let pots = [{ "amount": 480, "stakeHolders": [1, 2, 3], "rakeMoney": 24 },
         // { "amount": 500, "stakeHolders": [1, 2], "rakeMoney": 50 },
         // { "amount": 1000, "stakeHolders": [1, 2, 3, 4], "rakeMoney": 100 }];
-        var job = GAME_QUEUE.create('gameOverUpdateGame', params)
-            .attempts(5)
-            .backoff({ type: 'exponential' })
-            .removeOnComplete(true)
-            .save(function (err) {
-                if (err) {
-                    console.log(`ERROR ::: Unable to enqueue transaction job, error: ${err.message}`);
-                    // Manually add to DB so that can be picked up by cron
-                } else {
-                    console.log(`SUCCESS ::: Transaction job has been successfully queued with id: ${job.id}`);
-                }
-            });
+        // var job = GAME_QUEUE.create('gameOverUpdateGame', params)
+        //     .attempts(5)
+        //     .backoff({ type: 'exponential' })
+        //     .removeOnComplete(true)
+        //     .save(function (err) {
+        //         if (err) {
+        //             console.log(`ERROR ::: Unable to enqueue transaction job, error: ${err.message}`);
+        //             // Manually add to DB so that can be picked up by cron
+        //         } else {
+        //             console.log(`SUCCESS ::: Transaction job has been successfully queued with id: ${job.id}`);
+        //         }
+        //     });
+
+        POKER_QUEUE.gameOverUpdateGame.add(params, GlobalConstant.bullQueueDefaultJobOptions)
+            .then(function (job) {
+                console.log(`SUCCESS ::: gameOverUpdateGame job has been successfully queued with id: ${job.data.id}`);
+            })
+            .catch(function (err) {
+                console.log(`ERROR ::: Unable to enqueue gameOverUpdateGame job, error: ${err.message}`);
+            })
     },
 
     startGame: function (game) {
@@ -216,18 +224,26 @@ module.exports = {
 
 
                 // Add games to user User History
-                var job = GAME_QUEUE.create('gameStartCreateUserGames', game)
-                    .attempts(5)
-                    .backoff({ type: 'exponential' })
-                    .removeOnComplete(true)
-                    .save(function (err) {
-                        if (err) {
-                            console.log(`ERROR ::: Unable to enqueue gameStartCreateUserGames job, error: ${err.message}`);
-                            // Manually add to DB so that can be picked up by cron
-                        } else {
-                            console.log(`SUCCESS ::: gameStartCreateUserGames job has been successfully queued with id: ${job.id}`);
-                        }
-                    });
+                // var job = GAME_QUEUE.create('gameStartCreateUserGames', game)
+                //     .attempts(5)
+                //     .backoff({ type: 'exponential' })
+                //     .removeOnComplete(true)
+                //     .save(function (err) {
+                //         if (err) {
+                //             console.log(`ERROR ::: Unable to enqueue gameStartCreateUserGames job, error: ${err.message}`);
+                //             // Manually add to DB so that can be picked up by cron
+                //         } else {
+                //             console.log(`SUCCESS ::: gameStartCreateUserGames job has been successfully queued with id: ${job.id}`);
+                //         }
+                //     });
+
+                POKER_QUEUE.gameStartCreateUserGames.add(game, GlobalConstant.bullQueueDefaultJobOptions)
+                    .then(function (job) {
+                        console.log(`SUCCESS ::: gameStartCreateUserGames job has been successfully queued with id: ${job.data.id}`);
+                    })
+                    .catch(function (err) {
+                        console.log(`ERROR ::: Unable to enqueue gameStartCreateUserGames job, error: ${err.message}`);
+                    })
             })
             .catch(function (err) {
                 console.log(`ERROR ::: Unable to start game, error: ${err.message}, stack: ${err.stack}`);

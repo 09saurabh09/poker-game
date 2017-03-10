@@ -20,18 +20,26 @@ module.exports = function (sequelize, DataTypes) {
                     console.log(`SUCCESS Game history created for table ${gameHistory.pokerTableId} and game: ${gameHistory.GameId},
                      now pushing it to queue for updating game state in pokerTable`);
 
-                    var job = GAME_QUEUE.create('gameStateUpdated', gameHistory)
-                        .attempts(5)
-                        .backoff({ type: 'exponential' })
-                        .removeOnComplete( true )
-                        .save(function (err) {
-                            if (err) {
-                                console.log(`ERROR ::: Unable to enqueue game state update job, error: ${err.message}`);
-                                // Manually add to DB so that can be picked up by cron
-                            } else {
-                                console.log(`SUCCESS ::: game state update job has been successfully queued with id: ${job.id}`);
-                            }
-                        });
+                    // var job = GAME_QUEUE.create('gameStateUpdated', gameHistory)
+                    //     .attempts(5)
+                    //     .backoff({ type: 'exponential' })
+                    //     .removeOnComplete( true )
+                    //     .save(function (err) {
+                    //         if (err) {
+                    //             console.log(`ERROR ::: Unable to enqueue game state update job, error: ${err.message}`);
+                    //             // Manually add to DB so that can be picked up by cron
+                    //         } else {
+                    //             console.log(`SUCCESS ::: game state update job has been successfully queued with id: ${job.id}`);
+                    //         }
+                    //     });
+
+                    POKER_QUEUE.gameStateUpdated.add(gameHistory, GlobalConstant.bullQueueDefaultJobOptions)
+                        .then(function(job) {
+                            console.log(`SUCCESS ::: game state update job has been successfully queued with id: ${job.data.id}`);
+                        })
+                        .catch(function(err) {
+                            console.log(`ERROR ::: Unable to enqueue game state update job, error: ${err.message}`);
+                        })
 
                 }
             }

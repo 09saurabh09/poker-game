@@ -30,6 +30,7 @@
         "PROMISE": true,
         "_": true,
         "async": true,
-        "SOCKET_IO": true
+        "SOCKET_IO": true,
+        "POKER_QUEUE": true
     }
 }
