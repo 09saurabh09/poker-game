@@ -433,13 +433,11 @@ Game.prototype.addPlayer = function(attr) {
         this.logd("Seat-> " + ( newPlayer.seat  - 1 ) + "  is Already Been Taken");
     }
     
-
-    //this.start();
-    // if(this.currentTotalPlayer > 1 && this.round == 'idle'){
-    //     this.start();
-    //     if(debugGameFlow)
-    //         gameService.startGame(this);
-    // }
+    if(this.currentTotalPlayer > 1 && this.round == 'idle'){
+        if(!debugGameFlow){
+            this.start();
+        }
+    }
 
     return playerAdded;
 };
@@ -655,6 +653,8 @@ Game.prototype.start = function() {
     this.logd('Now its player ' + this.players[this.turnPos].name + '\'s turn');
 
     // begin game, start 'deal' Round
+    this.updateGameInstance();
+    this.currentGameState();
     this.logd('========== Round DEAL ==========');
 };
 
@@ -709,7 +709,8 @@ Game.prototype.isEndRound = function() {
  */
 Game.prototype.nextRound = function() {
     if (this.round === 'idle') {
-        this.start();
+        //this.start();
+        this.logd("Current is in IDLE round");
     } else if (this.round === 'deal') {
         this.updatePotAndBet();
         this.flop();

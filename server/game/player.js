@@ -5,7 +5,10 @@
 "use strict";
 
 var moment = require("moment");
-let gameService = require("./gameService");
+var debugGameFlow = true;
+
+if(debugGameFlow)
+    var gameService = require("./gameService");
 
 module.exports = Player;
 
@@ -222,7 +225,8 @@ Player.prototype.leaveGame = function(){
         id:17,
         chips: 500 
     }
-    gameService.leaveGame(params);
+    if(debugGameFlow)
+        gameService.leaveGame(params);
 }
 
 
