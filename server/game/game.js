@@ -434,11 +434,12 @@ Game.prototype.addPlayer = function(attr) {
     }
     
 
-    if(this.currentTotalPlayer > 1 && this.round == 'idle'){
-        this.start();
-        if(debugGameFlow)
-            gameService.startGame(this);
-    }
+    //this.start();
+    // if(this.currentTotalPlayer > 1 && this.round == 'idle'){
+    //     this.start();
+    //     if(debugGameFlow)
+    //         gameService.startGame(this);
+    // }
 
     return playerAdded;
 };
