@@ -910,7 +910,7 @@ Game.prototype.showdown = function() {
  */
 Game.prototype.callGameOver = function(){
     var gameOverParams = {};
-    gameOverParams.gameState = this;
+    gameOverParams.gameState = this.getRawObject();
     gameOverParams.rakeEarning = this.rakeEarning;
     gameOverParams.earnings = this.gameEarnings();
     if(debugGameFlow)
