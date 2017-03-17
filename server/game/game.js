@@ -434,9 +434,10 @@ Game.prototype.addPlayer = function(attr) {
     }
     
     if(this.currentTotalPlayer > 1 && this.round == 'idle'){
-        if(!debugGameFlow){
+        /*if(!debugGameFlow){
             this.start();
-        }
+        }*/
+        this.start();
     }
 
     return playerAdded;
