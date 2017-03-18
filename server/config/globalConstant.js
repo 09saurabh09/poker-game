@@ -4,6 +4,7 @@
 "use strict";
 
 let env = process.env;
+console.log(`INFO ::: env variables: ${JSON.stringify(env)}`);
 
 require('dotenv').config({ path: `${__dirname}/environments/${env.NODE_ENV}.env` });
 let Promise = require("bluebird");
@@ -22,7 +23,6 @@ DB_CREDENTIALS.REDIS_HOST = env.REDIS_HOST;
 DB_CREDENTIALS.REDIS_PORT = env.REDIS_PORT;
 DB_CREDENTIALS.DATABASE_URL = env.DATABASE_URL;
 DB_CREDENTIALS.REDIS_URL = env.REDISCLOUD_URL;
-
 
 // Create DB connection, do not change position as it require above variables
 var database = require('../config/database');
