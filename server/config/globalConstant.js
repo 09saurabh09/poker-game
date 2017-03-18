@@ -49,7 +49,6 @@ global.POKER_QUEUE = {};
 GlobalConstant.bullQueueRedisConnectionOptions = {
     // host: DB_CREDENTIALS.REDIS_HOST,
     // port: DB_CREDENTIALS.REDIS_PORT,
-    path: DB_CREDENTIALS.REDIS_URL,
     keyPrefix: 'bullPokerQueue',
     retryStrategy: function (options) {
         if (options.error && options.error.code === 'ECONNREFUSED') {
@@ -77,9 +76,9 @@ GlobalConstant.bullQueueDefaultJobOptions = {
     }
 }
 
-POKER_QUEUE.gameStateUpdated = Queue('gameStateUpdated', GlobalConstant.bullQueueRedisConnectionOptions); 
-POKER_QUEUE.gameOverUpdateGame = Queue('gameOverUpdateGame', GlobalConstant.bullQueueRedisConnectionOptions); 
-POKER_QUEUE.gameStartCreateUserGames = Queue('gameStartCreateUserGames', GlobalConstant.bullQueueRedisConnectionOptions);
+POKER_QUEUE.gameStateUpdated = Queue('gameStateUpdated', DB_CREDENTIALS.REDIS_URL, GlobalConstant.bullQueueRedisConnectionOptions); 
+POKER_QUEUE.gameOverUpdateGame = Queue('gameOverUpdateGame', DB_CREDENTIALS.REDIS_URL, GlobalConstant.bullQueueRedisConnectionOptions); 
+POKER_QUEUE.gameStartCreateUserGames = Queue('gameStartCreateUserGames', DB_CREDENTIALS.REDIS_URL, GlobalConstant.bullQueueRedisConnectionOptions);
 
 // global.GAME_QUEUE = kue.createQueue({
 //     prefix: 'pokerQueue',
