@@ -21,7 +21,7 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING
         },
         tableType: {
-            type: DataTypes.INTEGER
+            type: DataTypes.STRING
         },
         state: {
             type: DataTypes.STRING

@@ -101,7 +101,7 @@ module.exports = {
             }
         }).then(function (table) {
             let currentGameState = table.gameState;
-            if (currentGameState.players[currentGameState.turnPos].id == socket.user.id &&
+            if (currentGameState.players[currentGameState.turnPos] && currentGameState.players[currentGameState.turnPos].id == socket.user.id &&
                 gameConfig.allowedActions.playerTurn.indexOf(params.call) > -1) {
                 let game = new Game(table.gameState);
                 params.tableInstance = table;
