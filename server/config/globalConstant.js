@@ -9,7 +9,7 @@ require('dotenv').config({ path: `${__dirname}/environments/${env.NODE_ENV}.env`
 let Promise = require("bluebird");
 let lodash = require("lodash");
 let async = require("async");
-let kue = require("kue");
+// let kue = require("kue");
 let Queue = require("bull");
 
 // Set DB credentials
