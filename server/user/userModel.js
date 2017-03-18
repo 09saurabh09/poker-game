@@ -31,6 +31,36 @@ module.exports = function (sequelize, DataTypes) {
         },
         country: {
             type: DataTypes.STRING
+        },
+        cardBackTheme: {
+            type: DataTypes.STRING
+        },
+        cardFrontTheme: {
+            type: DataTypes.STRING
+        },
+        buyInPreference: {
+            type: DataTypes.BIGINT
+        },
+        maintainStack: {
+            type: DataTypes.BOOLEAN
+        },
+        autoPost: {
+            type: DataTypes.BOOLEAN
+        },
+        straddle: {
+            type: DataTypes.BOOLEAN
+        },
+        music: {
+            type: DataTypes.BOOLEAN
+        },
+        soundEffects: {
+            type: DataTypes.BOOLEAN
+        },
+        preflop: {
+            type: DataTypes.STRING
+        },
+        postFlop: {
+            type: DataTypes.STRING
         }
     }, {
             classMethods: {
