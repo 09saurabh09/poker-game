@@ -14,7 +14,6 @@ let glob      = require("glob");
 //}
 
 var sequelize = new Sequelize(DB_CREDENTIALS.DATABASE_URL, {
-    host: DB_CREDENTIALS.DB_HOST,
     dialect: 'postgres',
     logging: console.log,
     pool: {
