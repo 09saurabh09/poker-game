@@ -13,7 +13,7 @@ let glob      = require("glob");
 //    var sequelize = new Sequelize(config.database, config.username, config.password, config);
 //}
 
-var sequelize = new Sequelize(DB_CREDENTIALS.DB_NAME, DB_CREDENTIALS.DB_USERNAME, DB_CREDENTIALS.DB_PASSWORD, {
+var sequelize = new Sequelize(DB_CREDENTIALS.DATABASE_URL, {
     host: DB_CREDENTIALS.DB_HOST,
     dialect: 'postgres',
     logging: console.log,
