@@ -4,7 +4,6 @@
 "use strict";
 
 let env = process.env;
-console.log(`INFO ::: env variables: ${JSON.stringify(env)}`);
 
 require('dotenv').config({ path: `${__dirname}/environments/${env.NODE_ENV}.env` });
 let Promise = require("bluebird");
