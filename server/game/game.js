@@ -902,7 +902,7 @@ Game.prototype.showdown = function() {
     this.currentGameState();
     this.callGameOver();
     //this.reset();
-    setTimeout(this.startNewGame(), 1000);
+    setTimeout(this.startNewGame, 1000);
 };
 
 
@@ -986,6 +986,7 @@ Game.prototype.gameEarnings = function(){
  * Start A new Game when the game Ends
  */
 Game.prototype.startNewGame = function(){
+    console.log("Staring new game...");
     var newGame = new Game(this);
     newGame.reset();
     if(debugGameFlow)
