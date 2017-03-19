@@ -137,7 +137,8 @@ Game.prototype.playerTurn = function(params, user){
                 this.logd("Call is not correct " + params.call);
                 break;
         }
-        this.updatelastTurnTime();
+        this.updateLastTurnTime();
+        this.updateExpCallValue();
     }
     else if(params.callType == "game"){
         var player = params.playerInfo || {};
@@ -261,8 +262,21 @@ Game.prototype.playerTurn = function(params, user){
 /**
  * Update the Last turn time in moment
  */
-Game.prototype.updatelastTurnTime = function(){
+Game.prototype.updateLastTurnTime = function(){
     this.lastTurnTime = moment();
+}
+
+
+
+/**
+ * Update the Expected Value of Every Value
+ */
+Game.prototype.updateExpCallValue = function(){
+    for(var i = 0; i < this.players.length; i++){
+        if(this.players[i]){
+            this.players[i].expCallValue = this.players[i].getCallOrCheck();
+        }
+    }
 }
 
 
@@ -363,6 +377,7 @@ Game.prototype.currentGameState = function(){
                 + "  totalBet-" + this.players[i].totalBet
                 + "  betForRound-" + this.players[i].betForRound
                 + "  cards- " + JSON.stringify(this.players[i].cards)
+                + "  expCallValue- " + this.players[i].expCallValue
                 + "  lastAct-" + this.players[i].lastAction
                 + "  acted-"+this.players[i].hasActed 
                 + "  hasDone-" + this.players[i].hasDone 

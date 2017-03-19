@@ -50,6 +50,7 @@ function Player(options) {
     this.disconnectionTIme = options.disconnectionTIme || 0;         // TIme since the person has been Disconnected
     this.autoMuck = options.disconnectionTIme || true;               // Default True for the every Player 
     this.timeBank = options.timeBank || 0;                          //To store the TimeBank for a player
+    this.expCallValue = options.expCallValue || 0;              //Expected Call Value
 }
 
 
