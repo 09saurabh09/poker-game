@@ -30,6 +30,7 @@ function Game(gameState) {
     this.rakeY = gameState.rakeY;
     this.rakeZ = gameState.rakeZ;
     this.gameType = gameState.gameType;  
+    this.actionTime = gameState.actionTime;
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
 
     // attributes needed post game
@@ -55,6 +56,7 @@ function Game(gameState) {
     this.gamePots = gameState.gamePots || [];                   // The Vairable to store all the game pots 
     this.lastRaise = gameState.lastRaise || 0;                  // Maintaing what was the last raise. 
     this.rakeEarning = gameState.rakeEarning || 0;              // Options for the rake earning per For Game
+    this.lastTurnTime = gameState.lastTurnTime || 0;
 
     if(this.players.length == 0){
         this.initPlayers();
@@ -135,6 +137,7 @@ Game.prototype.playerTurn = function(params, user){
                 this.logd("Call is not correct " + params.call);
                 break;
         }
+        this.updatelastTurnTime();
     }
     else if(params.callType == "game"){
         var player = params.playerInfo || {};
@@ -255,6 +258,14 @@ Game.prototype.playerTurn = function(params, user){
 }
 
 
+/**
+ * Update the Last turn time in moment
+ */
+Game.prototype.updatelastTurnTime = function(){
+    this.lastTurnTime = moment();
+}
+
+
 
 /**
  * Find Player pos return the seat number 0 index
@@ -332,6 +343,7 @@ Game.prototype.currentGameState = function(){
     this.logd("## Game minRaise - " +this.minRaise);        
     this.logd("## Game maxRaise - " +this.maxRaise);        
     this.logd("## Game callValue - " +this.callValue);        
+    this.logd("## Game lastTurnTime - " +this.lastTurnTime);        
     this.logd("## Game currentPot - " +this.currentPot);           
     this.logd("## Game lastRaise - " +this.lastRaise);           
     this.logd("## Game turnPos - " +this.turnPos);           
