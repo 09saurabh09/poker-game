@@ -948,7 +948,7 @@ Game.prototype.gameEarnings = function(){
     }
     for(var i =0; i < this.gamePots.length; i++ ){
         if(this.gamePots[i].winners.length == 1){
-            this.rakeEarning += this.gamePots[i].rakeMoney;
+            this.rakeEarning = parseFloat(  this.rakeEarning ) + parseFloat( this.gamePots[i].rakeMoney );
             for(var j = 0; j < this.players.length; j++){
                 if(this.players[j] && this.players[j].id == this.gamePots[i].winners[0]){
                     for(var k = 0; k < earnings.length; k++ ){
@@ -1161,6 +1161,7 @@ Game.prototype.winnersPerPot = function (ranks){
             if(this.players[i] && this.players[i].idleForHand ==  false && this.players[i].hasDone == false){
                 for(var j= 0; j < this.gamePots.length; j++){
                     this.gamePots[j].winners = [];
+                    this.gamePots[j].winnerHand = "All Folded";
                     this.gamePots[j].winners.push ( this.players[i].id ); 
                 }
             }
@@ -1185,6 +1186,7 @@ Game.prototype.winnersPerPot = function (ranks){
                 for(var l = 0; l < ranks[winnerRank].length; l++){
                     if(ranks[winnerRank][l].playerInfo == this.gamePots[i].stakeHolders[j] ){
                         winners.push(ranks[winnerRank][l].playerInfo);
+                        this.gamePots[i].winnerHand = ranks[winnerRank][l].hand.handName;
                     }
                 }
             }
