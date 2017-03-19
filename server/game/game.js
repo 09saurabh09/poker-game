@@ -1271,10 +1271,10 @@ Game.prototype.rakeForGame = function(){
     else {
         for(var i = 0; i <this.gamePots.length; i++ ){
             if( this.gamePots[i].stakeHolders.length <= this.rakeY ){
-                this.gamePots[i].rakeMoney = (this.gamePots[i].amount * this.rakeX) / 100;
+                this.gamePots[i].rakeMoney = ((this.gamePots[i].amount * this.rakeX) / 100).toFixed(2);
             }
             else{
-                this.gamePots[i].rakeMoney = (this.gamePots[i].amount * this.rakeZ) / 100;
+                this.gamePots[i].rakeMoney = ((this.gamePots[i].amount * this.rakeX) / 100).toFixed(2);
             }
         }
     }
