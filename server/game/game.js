@@ -137,6 +137,9 @@ Game.prototype.playerTurn = function(params, user){
                 this.logd("Call is not correct " + params.call);
                 break;
         }
+        if(this.round == "showdown") {
+            return;
+        } 
         this.updateLastTurnTime();
         this.updateExpCallValue();
     }
