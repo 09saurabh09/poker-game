@@ -646,6 +646,7 @@ Game.prototype.getPlayersCard = function(noOfCards){
  * Starts the 'deal' Round
  */
 Game.prototype.start = function() {
+    this.reloadAllPlayers();
     if( !this.checkForGameRun() ){
         this.logd("Need More Player to start the Game ");
         return;
