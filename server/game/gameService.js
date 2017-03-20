@@ -148,7 +148,7 @@ module.exports = {
         //             console.log(`SUCCESS ::: Transaction job has been successfully queued with id: ${job.id}`);
         //         }
         //     });
-
+        params.gameState = params.gameState.getRawObject();
         POKER_QUEUE.gameOverUpdateGame.add(params, GlobalConstant.bullQueueDefaultJobOptions)
             .then(function (job) {
                 console.log(`SUCCESS ::: gameOverUpdateGame job has been successfully queued with id: ${job.data.id}`);
