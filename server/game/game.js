@@ -37,7 +37,7 @@ function Game(gameState) {
     this.currentGameId = gameState.currentGameId;
     this.tableId = gameState.tableId;
 
-    this.debugMode = gameState.debugMode;
+    this.debugMode = true || gameState.debugMode;
 
     this.players = gameState.players || [];                     // Array of Player object, represents all players in this game
     this.waitingPlayers = gameState.waitingPlayers || [];       // Array of all the players who will be there in the waiting list
