@@ -917,7 +917,7 @@ Game.prototype.showdown = function() {
     this.currentGameState();
     this.callGameOver();
     //this.reset();
-    setTimeout(this.startNewGame, 1000);
+    setTimeout(this.startNewGame.bind(this), 1000);
 };
 
 
