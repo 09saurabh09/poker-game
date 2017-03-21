@@ -1,6 +1,7 @@
 "use strict";
 
 var PokerEvaluator = require('poker-evaluator');
+var pokerSolver = require('pokersolver').Hand;
 
 
 /**
@@ -39,7 +40,7 @@ function sortByRankHoldem(communityCards, players){
 		return 1;
 	});
 
-	return evalHands;
+    return getFullHandName(evalHands);
 }
 
 
@@ -70,6 +71,14 @@ function sortByRankOmaha(communityCards, players){
             return 0;
         return 1;
     });
+    return getFullHandName(evalHands);
+}
+
+
+function getFullHandName(evalHands){
+    for(var i = 0; i < evalHands.length; i++){
+        evalHands[i].hand.handNameFull = pokerSolver.solve( evalHands[i].cards).descr;
+    }
     return evalHands;
 }
 

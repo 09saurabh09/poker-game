@@ -1205,7 +1205,7 @@ Game.prototype.winnersPerPot = function (ranks){
                 for(var l = 0; l < ranks[winnerRank].length; l++){
                     if(ranks[winnerRank][l].playerInfo == this.gamePots[i].stakeHolders[j] ){
                         winners.push(ranks[winnerRank][l].playerInfo);
-                        this.gamePots[i].winnerHand = ranks[winnerRank][l].hand.handName;
+                        this.gamePots[i].winnerHand = ranks[winnerRank][l].hand.handNameFull;
                     }
                 }
             }
