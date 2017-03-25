@@ -686,6 +686,7 @@ Game.prototype.start = function() {
     this.logd('Now its player ' + this.players[this.turnPos].name + '\'s turn');
 
     // begin game, start 'deal' Round
+    console.log("Current Player " + this.getCurrentPlayer());
     this.updateGameInstance();
     this.currentGameState();
     this.logd('========== Round DEAL ==========');
@@ -1365,5 +1366,5 @@ Game.prototype.getRawObject = function() {
  * Update Time Bank
  */
 Game.prototype.updateTimeBank = function(timeBankUsed) {
-    let player = this.getCurrentPlayer().subtractTimeBank(timeBankUsed);
+    this.getCurrentPlayer().subtractTimeBank(timeBankUsed);
 }
