@@ -80,7 +80,8 @@ module.exports = {
                     lastAction: player.lastAction,
                     hasDone: player.hasDone,
                     idleForHand: player.idleForHand,
-                    betForRound: player.betForRound
+                    betForRound: player.betForRound,
+                    timeBank: player.timeBank
                 }
                 if ((gameState.round == "showdown") && (player.showCards)) {
                     pl.cards = player.cards;
