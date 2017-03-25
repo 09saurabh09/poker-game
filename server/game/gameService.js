@@ -82,7 +82,8 @@ module.exports = {
                     hasDone: player.hasDone,
                     idleForHand: player.idleForHand,
                     betForRound: player.betForRound,
-                    timeBank: player.timeBank
+                    timeBank: player.timeBank,
+                    expCallValue: player.expCallValue
                 }
                 if ((gameState.round == "showdown") && (player.showCards)) {
                     pl.cards = player.cards;
