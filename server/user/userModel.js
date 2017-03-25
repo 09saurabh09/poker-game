@@ -58,7 +58,7 @@ module.exports = function (sequelize, DataTypes) {
         soundEffects: {
             type: DataTypes.BOOLEAN
         },
-        preflop: {
+        preFlop: {
             type: DataTypes.JSONB
         },
         postFlop: {
