@@ -286,7 +286,7 @@ module.exports = {
         } else {
             // Stop timer for player
             let duration = parseInt(GlobalConstant.timers[game.tableId].getDurationPassed()/ 1000);
-            let timeBankUsed = duration > (duration - pokerTableConfig.timer.defaultDuration) ? (duration - pokerTableConfig.timer.defaultDuration): 0;
+            let timeBankUsed = (duration - pokerTableConfig.timer.defaultDuration) > 0 ? (duration - pokerTableConfig.timer.defaultDuration): 0;
             GlobalConstant.timers[game.tableId].stop();
             console.log(`INFO ::: Time bank used by player: ${user.id} is: ${timeBankUsed}`);
             game.updateTimeBank(timeBankUsed);
