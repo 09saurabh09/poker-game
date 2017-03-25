@@ -157,7 +157,7 @@ var turnParamsStack = {
 
 var turnParamsFold = {
     callType:"player",
-    call:"fold",
+    call:"doBestCall",
     amount:20,
     playerId:""
 };
@@ -168,8 +168,8 @@ game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
-// game = new Game(game);
-// game.playerTurn(turnParamsFold,gameInstance);
+game = new Game(game);
+game.playerTurn(turnParamsFold,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
@@ -187,6 +187,11 @@ game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
+game.playerTurn(turnParamsCall,gameInstance);
+game = new Game(game);
+game.playerTurn(turnParamsCall,gameInstance);
+game = new Game(game);
+game.playerTurn(turnParamsCall,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);s
 // game.playerTurn(turnParamsRaise,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);

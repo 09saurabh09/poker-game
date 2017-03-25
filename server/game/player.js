@@ -125,12 +125,12 @@ Player.prototype.getCallOrCheck = function(){
  * then do the best call whatever is possible.
  */
 Player.prototype.doBestCall = function(){
+    //this.sitOut();
     if(this.getCallOrCheck() == 0){
         this.callOrCheck();
     } else{
         this.fold();
     }
-    this.sitOut();
 }
 
 
@@ -215,7 +215,7 @@ Player.prototype.moveNext = function(){
 Player.prototype.sitOut = function(){
     this.hasSitOut = true;
     this.sitOutTime = moment();
-    this.timeBank = 0;
+    //this.timeBank = 0;
 }
 
 
