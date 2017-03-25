@@ -33,6 +33,7 @@ function Game(gameState) {
     this.actionTime = gameState.actionTime;
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
     this.startNewGameAfter = gameState.startNewGameAfter || 2000;
+    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 2; 
 
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
@@ -127,7 +128,6 @@ Game.prototype.playerTurn = function(params, user){
                 }
                 else{
                     this.logd("Raise has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                    this.lastRaise = params.amount;
                     this.getCurrentPlayer().raise(params.amount);
                 }
                 break;
@@ -464,7 +464,7 @@ Game.prototype.addPlayer = function(attr) {
         this.logd("Seat-> " + ( newPlayer.seat  - 1 ) + "  is Already Been Taken");
     }
     
-    if(this.currentTotalPlayer > 1 && this.round == 'idle'){
+    if(this.currentTotalPlayer >= this.startWhenPlayerCount && this.round == 'idle'){
         /*if(!debugGameFlow){
             this.start();
         }*/
@@ -1138,6 +1138,14 @@ Game.prototype.nextCall = function(){
 
 
 /**
+ * Update Last Raise
+ */
+Game.prototype.updateLastRaise = function(amount){
+    this.lastRaise = amount;
+}
+
+
+/**
  * Check the Minimum Raise
  */
 Game.prototype.mininumunRaise = function(){
@@ -1146,7 +1154,7 @@ Game.prototype.mininumunRaise = function(){
         this.minRaise = 2*this.bigBlind;
     }
     else{
-       this.minRaise = this.lastRaise + this.getCurrentPlayer().getCallOrCheck();
+       this.minRaise = this.lastRaise + this.getHighestBet();
     }
     return this.minRaise;
 }
@@ -1165,7 +1173,7 @@ Game.prototype.maximumRaise = function(){
             this.maxRaise = this.currentPot + 2 * this.bigBlind;
         }
         else{
-            this.maxRaise = this.currentPot + 2 * this.getCurrentPlayer().getCallOrCheck();
+            this.maxRaise = this.currentPot + 2 * this.getHighestBet();
         }
 
         if(this.getCurrentPlayer().chips  <  this.maxRaise){
