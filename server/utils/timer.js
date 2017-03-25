@@ -10,6 +10,7 @@ module.exports = {
         // let pos = game.findPlayerPos(user.id);
         let playerTimeBank = user.timeBank;
 
+        console.log(`INFO ::: Adding timer for user ${user.id}`);
         GlobalConstant.timers[game.tableId] = momentTimer.timer(moment.duration(pokerTableConfig.timer.defaultDuration + playerTimeBank, "seconds"),function () {
             console.log(`INFO ::: Started timer for player ${user.id}`);
             let turnType = "timer";
