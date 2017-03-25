@@ -118,6 +118,7 @@ module.exports = {
     },
 
     joinTable: function (params, socket) {
+        console.log(`INFO ::: Table join called with params: ${JSON.stringify(params)}`);
         params.callType = "game";
         params.call = "addPlayer";
 
