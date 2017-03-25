@@ -5,7 +5,7 @@ let PokerTableModel = DB_MODELS.PokerTable;
 let GameHistoryModel = DB_MODELS.GameHistory;
 let eventConfig = require("../socket/eventConfig");
 let timer = require("../utils/timer");
-let pokerTableConfig = require("./game/pokerTableConfig");
+let pokerTableConfig = require("./pokerTableConfig");
 
 module.exports = {
     /**
