@@ -65,6 +65,7 @@ module.exports = {
             dealerPos: gameState.dealerPos,
             minAmount: gameState.minAmount,
             maxAmount: gameState.maxAmount,
+            currentPot: gameState.currentPot,
             players: []
         };
 
@@ -81,7 +82,9 @@ module.exports = {
                     hasDone: player.hasDone,
                     idleForHand: player.idleForHand,
                     betForRound: player.betForRound,
-                    timeBank: player.timeBank
+                    timeBank: player.timeBank,
+                    expCallValue: player.expCallValue,
+                    hasSitOut: player.hasSitOut
                 }
                 if ((gameState.round == "showdown") && (player.showCards)) {
                     pl.cards = player.cards;
