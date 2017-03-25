@@ -1,7 +1,6 @@
 "use strict";
 
-let moment = require('moment');
-require('moment-timer');
+let moment = require('moment-timer');
 let pokerTableConfig = require('../game/pokerTableConfig');
 
 module.exports = {
