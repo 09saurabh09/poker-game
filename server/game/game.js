@@ -33,6 +33,7 @@ function Game(gameState) {
     this.actionTime = gameState.actionTime;
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
     this.startNewGameAfter = gameState.startNewGameAfter || 2000;
+    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 2; 
 
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
@@ -463,7 +464,7 @@ Game.prototype.addPlayer = function(attr) {
         this.logd("Seat-> " + ( newPlayer.seat  - 1 ) + "  is Already Been Taken");
     }
     
-    if(this.currentTotalPlayer > 1 && this.round == 'idle'){
+    if(this.currentTotalPlayer >= this.startWhenPlayerCount && this.round == 'idle'){
         /*if(!debugGameFlow){
             this.start();
         }*/
