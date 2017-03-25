@@ -127,8 +127,7 @@ Player.prototype.getCallOrCheck = function(){
 Player.prototype.doBestCall = function(){
     if(this.getCallOrCheck() == 0){
         this.callOrCheck();
-    }
-    else{
+    } else{
         this.fold();
     }
     this.sitOut();
@@ -146,6 +145,8 @@ Player.prototype.raise = function(amount) {
     this.lastAction = "raise";
 
     var diff = amount - this.bet;
+
+    this.game.updateLastRaise(diff);
 
     if(diff >= this.chips){
         this.allin();
@@ -275,11 +276,9 @@ Player.prototype.setMaintainChips = function(amount){
         logd("For Player "+this.player.name +" maintainStack Changed " + amount);
         this.maintainChips = amount;
 
-    }
-    else{
+    } else{
         logd("For Player "+this.player.name +" requested maintainStack cannot be changed " + amount );
     }
-
 }
 
 
