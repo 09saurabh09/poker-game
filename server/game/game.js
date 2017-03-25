@@ -104,7 +104,7 @@ Game.prototype.playerTurn = function(params, user){
     let self = this;
     this.reloadAllPlayers();
     if(params.callType == "player"){
-        if(params.playerId != this.getCurrentPlayer().id && false){
+        if( user.id != this.getCurrentPlayer().id ){
             this.logd("The Turn Positing is different for different Player");
             return;
         }

@@ -213,6 +213,7 @@ Player.prototype.moveNext = function(){
 Player.prototype.sitOut = function(){
     this.hasSitOut = true;
     this.sitOutTime = moment();
+    this.timeBank = 0;
 }
 
 
