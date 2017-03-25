@@ -131,9 +131,9 @@ Game.prototype.playerTurn = function(params, user){
                     this.getCurrentPlayer().raise(params.amount);
                 }
                 break;
-                case "doBestCall":
-                    this.logd("doBestCall has been called for -------- " + this.getCurrentPlayer().id);
-                    this.getCurrentPlayer().doBestCall();
+            case "doBestCall":
+                this.logd("doBestCall has been called for -------- " + this.getCurrentPlayer().id);
+                this.getCurrentPlayer().doBestCall();
                 break;
             default:
                 this.logd("Call is not correct " + params.call);
@@ -387,6 +387,7 @@ Game.prototype.currentGameState = function(){
                 + "  hasDone-" + this.players[i].hasDone 
                 + "  idle-" + this.players[i].idleForHand 
                 + "  id-" + this.players[i].id
+                + "  timeBank" + this.players[i].timeBank
                 + "  sitout-"+this.players[i].hasSitOut+","+ this.players[i].sitOutTime
                 + "  maintinChips-"+ this.players[i].isMaintainChips + "," + this.players[i].maintainChips);
         }
@@ -1368,5 +1369,6 @@ Game.prototype.getRawObject = function() {
 Game.prototype.updateTimeBank = function(timeBankUsed) {
     //this.getCurrentPlayer().subtractTimeBank(timeBankUsed);
     //this.timeBank -= timeBankUsed;
+    console.log(`Player id ${this.getCurrentPlayer().id} and name ${this.getCurrentPlayer().name} with subtract time ${timeBankUsed} and curren time Bank ${this.getCurrentPlayer().timeBank}`);
     this.getCurrentPlayer().timeBank -= timeBankUsed;
 }
