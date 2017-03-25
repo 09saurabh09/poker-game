@@ -753,7 +753,11 @@ Game.prototype.nextRound = function() {
         this.updatePotAndBet();
         this.flop();
         if(this.lastRaise == 0 ){
-            this.turnPos = this.nextPlayer(this.dealerPos);
+            if(this.checkPlayerLeft() == 2){
+                this.turnPos = this.dealerPos;
+            } else{
+                this.turnPos = this.nextPlayer(this.dealerPos);
+            }
         }
     } else if (this.round === 'flop') {
         this.updatePotAndBet();
