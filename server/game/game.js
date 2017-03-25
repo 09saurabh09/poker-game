@@ -131,6 +131,10 @@ Game.prototype.playerTurn = function(params, user){
                     this.getCurrentPlayer().raise(params.amount);
                 }
                 break;
+                case "doBestCall":
+                    this.logd("doBestCall has been called for -------- " + user.id);
+                    this.getCurrentPlayer().doBestCall();
+                break;
             default:
                 this.logd("Call is not correct " + params.call);
                 break;
@@ -246,15 +250,6 @@ Game.prototype.playerTurn = function(params, user){
                 }
                 this.players[pos].turnOnAutoMuck();
                 break;
-            case "doBestCall":
-                this.logd("doBestCall has been called for -------- " + tuser.id);
-                var pos = self.findPlayerPos(user.id);
-                if(pos == -1){
-                    this.logd("Player not present " + user.id);
-                    break;
-                }
-                this.players[pos].doBestCall();
-                this.players[pos].sitOut();
             default:
                 this.logd("Call is not correct " + params.call);
                 break;
@@ -1355,4 +1350,9 @@ Game.prototype.getRawObject = function() {
         }
     })
     return this;
+}
+
+Game.prototype.updateTimeBank = function(timeBankUsed) {
+    let player = this.getCurrentPlayer();
+    player.timeBank -= timeBankUsed;
 }

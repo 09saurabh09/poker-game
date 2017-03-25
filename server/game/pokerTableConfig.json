@@ -19,5 +19,8 @@
             "min": 2,
             "max": 9
         }
+    },
+    "timer": {
+        "defaultDuration": 21
     }
 }

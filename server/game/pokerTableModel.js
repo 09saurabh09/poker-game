@@ -80,6 +80,10 @@ module.exports = function (sequelize, DataTypes) {
         },
         rakeZ: {
             type: DataTypes.FLOAT
+        },
+        timeBank: {
+            type: DataTypes.JSONB,
+            defaultValue: {}
         }
     }, {
             classMethods: {

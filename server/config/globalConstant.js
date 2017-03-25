@@ -42,6 +42,7 @@ global.GlobalConstant = {};
 GlobalConstant.tokenSecret = env.TOKEN_SECRET;
 GlobalConstant.chatRoomPrefix = "pokerChatRoom";
 GlobalConstant.gameRoomPrefix = "pokerGameRoom";
+GlobalConstant.timers = {};
 
 global.POKER_QUEUE = {};
 

@@ -4,6 +4,8 @@ let gameModel = DB_MODELS.Game;
 let PokerTableModel = DB_MODELS.PokerTable;
 let GameHistoryModel = DB_MODELS.GameHistory;
 let eventConfig = require("../socket/eventConfig");
+let timer = require("../utils/timer");
+let pokerTableConfig = require("./game/pokerTableConfig");
 
 module.exports = {
     /**
@@ -218,24 +220,8 @@ module.exports = {
                 SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.turnCompleted, commonGameState);
                 SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.turnCompleted, commonGameState);
 
-                // // Testing Required
-                // SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
-                // SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.uniqueId).emit(eventConfig.gameStarted, commonGameState);
-
-
-                // Add games to user User History
-                // var job = GAME_QUEUE.create('gameStartCreateUserGames', game)
-                //     .attempts(5)
-                //     .backoff({ type: 'exponential' })
-                //     .removeOnComplete(true)
-                //     .save(function (err) {
-                //         if (err) {
-                //             console.log(`ERROR ::: Unable to enqueue gameStartCreateUserGames job, error: ${err.message}`);
-                //             // Manually add to DB so that can be picked up by cron
-                //         } else {
-                //             console.log(`SUCCESS ::: gameStartCreateUserGames job has been successfully queued with id: ${job.id}`);
-                //         }
-                //     });
+                // Add timer for next player
+                timer.playerTurnTimer(self, game);
 
                 POKER_QUEUE.gameStartCreateUserGames.add(game, GlobalConstant.bullQueueDefaultJobOptions)
                     .then(function (job) {
@@ -290,5 +276,41 @@ module.exports = {
             startGame = true;
         }
         return startGame;
+    },
+
+    playerTurn: function ({params, user, game, turnType}) {
+        let self = this;
+        if(turnType == "timer") {
+            game.playerTurn({callType: "player", call: "doBestCall"}, user);
+        } else {
+            // Stop timer for player
+            let duration = GlobalConstant.timers[game.tableId].getDuration();
+            let timeBankUsed = duration > (duration - pokerTableConfig.timer.defaultDuration) ? (duration - pokerTableConfig.timer.defaultDuration): 0;
+            GlobalConstant.timers[game.tableId].stop();
+            game.updateTimeBank(timeBankUsed);
+            // delete GlobalConstant.timers[game.tableId];
+
+            game.playerTurn(params, user);
+        }
+        
+        let newGameState = game.getRawObject();
+        return DB_MODELS.sequelize.transaction(function (t) {
+            return GameHistoryModel.create({
+                gameState: newGameState,
+                pokerTableId: game.tableId,
+                GameId: newGameState.currentGameId
+            }, { transaction: t }).then(function (gameHistory) {
+                console.log(`SUCCESS Game history created for game: ${newGameState.currentGameId} on ${user.id} turn`);
+                let commonGameState = self.getCommonGameState(game);
+
+                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + game.tableId).emit(eventConfig.turnCompleted, commonGameState);
+                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + game.tableId).emit(eventConfig.turnCompleted, commonGameState);
+
+                // Add timer for next turn
+                timer.playerTurnTimer(self, game);
+            }).catch(function (err) {
+                console.log(`ERROR ::: Unable to make player turn for user: ${user.id}, error: ${err.message}, stack: ${err.stack}`);
+            });
+        })
     }
 }

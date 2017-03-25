@@ -90,6 +90,7 @@
     "jsonwebtoken": "^7.2.1",
     "lodash": "^4.17.4",
     "moment": "^2.17.1",
+    "moment-timer": "^1.1.5",
     "morgan": "~1.7.0",
     "pg": "^6.1.2",
     "pg-hstore": "^2.3.2",
