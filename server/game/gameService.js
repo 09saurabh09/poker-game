@@ -273,7 +273,7 @@ module.exports = {
     isGameStarted: function (gameState) {
         let startGame;
         let parentType = gameState.parentType;
-        if ((parentType == "cashGame") && gameState.currentTotalPlayer == 2) {
+        if ((parentType == "cashGame") && gameState.currentTotalPlayer == 3) {
             startGame = true;
         }
         return startGame;
