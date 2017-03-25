@@ -321,6 +321,14 @@ Player.prototype.turnOffAutoMuck = function(){
 }
 
 
+/**
+ * Subtracting the time Bank Of Player 
+ */
+Player.prototype.subtractTimeBank = function(timeBankUsed){
+    player.timeBank -= timeBankUsed;
+}
+
+
 
 /**
  * Player can turn on Auto Muck

@@ -104,7 +104,7 @@ Game.prototype.playerTurn = function(params, user){
     let self = this;
     this.reloadAllPlayers();
     if(params.callType == "player"){
-        if( user.id != this.getCurrentPlayer().id ){
+        if(debugGameFlow && user.id != this.getCurrentPlayer().id ){
             this.logd("The Turn Positing is different for different Player");
             return;
         }
@@ -132,7 +132,7 @@ Game.prototype.playerTurn = function(params, user){
                 }
                 break;
                 case "doBestCall":
-                    this.logd("doBestCall has been called for -------- " + user.id);
+                    this.logd("doBestCall has been called for -------- " + this.getCurrentPlayer().id);
                     this.getCurrentPlayer().doBestCall();
                 break;
             default:
@@ -1352,7 +1352,10 @@ Game.prototype.getRawObject = function() {
     return this;
 }
 
+
+/**
+ * Update Time Bank
+ */
 Game.prototype.updateTimeBank = function(timeBankUsed) {
-    let player = this.getCurrentPlayer();
-    player.timeBank -= timeBankUsed;
+    let player = this.getCurrentPlayer().subtractTimeBank(timeBankUsed);
 }
