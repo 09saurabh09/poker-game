@@ -4,7 +4,7 @@
 "use strict";
 module.exports = Game;
 
-var debugGameFlow = true;
+var debugGameFlow = false;
 
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
@@ -33,7 +33,7 @@ function Game(gameState) {
     this.actionTime = gameState.actionTime || 25;
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
     this.startNewGameAfter = gameState.startNewGameAfter || 2000;
-    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 2; 
+    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 3; 
 
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;

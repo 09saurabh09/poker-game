@@ -131,6 +131,23 @@ var turnParamsRaise = {
     playerId:""
 };
 
+
+var turnParamsRaise1 = {
+    callType:"player",
+    call:"raise",
+    amount:80,
+    playerId:""
+};
+
+var turnParamsRaise2 = {
+    callType:"player",
+    call:"raise",
+    amount:150,
+    playerId:""
+};
+
+
+
 var turnParamsStack = {
     callType:"player",
     call:"unSetMaintainChips",
@@ -159,6 +176,10 @@ game = new Game(game);
 game.playerTurn(turnParamsStack,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsRaise,gameInstance);
+game = new Game(game);
+game.playerTurn(turnParamsRaise1,gameInstance);
+game = new Game(game);
+game.playerTurn(turnParamsRaise2,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);

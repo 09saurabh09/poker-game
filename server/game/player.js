@@ -5,7 +5,7 @@
 "use strict";
 
 var moment = require("moment");
-var debugGameFlow = true;
+var debugGameFlow = false;
 
 if(debugGameFlow)
     var gameService = require("./gameService");
@@ -146,7 +146,7 @@ Player.prototype.raise = function(amount) {
 
     var diff = amount - this.bet;
 
-    this.game.updateLastRaise(diff);
+    this.game.updateLastRaise(amount - this.game.getHighestBet());
 
     if(diff >= this.chips){
         this.allin();
