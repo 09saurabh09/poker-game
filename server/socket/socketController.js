@@ -94,6 +94,7 @@ module.exports = {
 
     playerTurn: function (params, socket) {
         let tableId = params.tableId;
+        let user = socket.user;
         params.callType = "player";
         PokerTable.findOne({
             where: {
@@ -105,25 +106,7 @@ module.exports = {
                 gameConfig.allowedActions.playerTurn.indexOf(params.call) > -1) {
                 let game = new Game(table.gameState);
                 params.tableInstance = table;
-                game.playerTurn(params, socket.user);
-                let newGameState = game.getRawObject();
-                GameHistoryModel.create({
-                    gameState: newGameState,
-                    pokerTableId: table.id,
-                    GameId: newGameState.currentGameId
-                }).then(function (gameHistory) {
-                    console.log(`SUCCESS Game history created for game: ${newGameState.currentGameId} on ${socket.user.id} turn`);
-                })
-                // table.save();
-
-                // Commented comment
-                // Proceed only if game is not over, as game over event is handled in gameService(Not handled now)
-
-                console.log(`INFO ::: Game completed, game id: ${game.currentGameId}`);
-                let commonGameState = gameService.getCommonGameState(game);
-
-                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.turnCompleted, commonGameState);
-                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.turnCompleted, commonGameState);
+                gameService.playerTurn({params, user, game})
                 return null;
             } else {
                 console.log(`ERROR ::: Validation failed, not a turn for player id ${socket.user.id} for table: ${tableId}`)
@@ -163,6 +146,7 @@ module.exports = {
             if (table && user) {
                 // Adding table id in game state, just a hack should be done in after create
                 game = new Game(_.assign(table.gameState, { tableId: tableId }));
+                params.playerInfo.timeBank = table.timeBank.timeGiven;
                 if (game.playerTurn(params, socket.user)) {
                     return DB_MODELS.sequelize.transaction(function (t) {
                         // table.set("gameState", game.getRawObject());

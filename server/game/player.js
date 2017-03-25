@@ -127,6 +127,7 @@ Player.prototype.doBestCall = function(){
     else{
         this.fold();
     }
+    this.sitOut();
 }
 
 
