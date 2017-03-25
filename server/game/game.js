@@ -23,7 +23,7 @@ function Game(gameState) {
     this.maxPlayer = gameState.maxPlayer;
     this.minAmount = gameState.minAmount;
     this.maxAmount = gameState.maxAmount;
-    this.maxSitOutTIme = gameState.maxSitOutTIme;
+    this.maxSitOutTime = gameState.maxSitOutTime;
     this.annyomousGame = gameState.annyomousGame;
     this.runTimeType = gameState.runTimeType;
     this.rakeX = gameState.rakeX;
@@ -32,6 +32,7 @@ function Game(gameState) {
     this.gameType = gameState.gameType;  
     this.actionTime = gameState.actionTime;
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
+    this.startNewGameAfter = gameState.startNewGameAfter || 2000;
 
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
@@ -103,7 +104,7 @@ Game.prototype.playerTurn = function(params, user){
     let self = this;
     this.reloadAllPlayers();
     if(params.callType == "player"){
-        if(params.playerId != this.getCurrentPlayer().id && false){
+        if(debugGameFlow && user.id != this.getCurrentPlayer().id ){
             this.logd("The Turn Positing is different for different Player");
             return;
         }
@@ -131,7 +132,7 @@ Game.prototype.playerTurn = function(params, user){
                 }
                 break;
                 case "doBestCall":
-                    this.logd("doBestCall has been called for -------- " + user.id);
+                    this.logd("doBestCall has been called for -------- " + this.getCurrentPlayer().id);
                     this.getCurrentPlayer().doBestCall();
                 break;
             default:
@@ -353,7 +354,7 @@ Game.prototype.currentGameState = function(){
     this.logd("## Game maxPlayer - " +this.maxPlayer);
     this.logd("## Game minAmount - " +this.minAmount);
     this.logd("## Game maxAmount - " +this.maxAmount);
-    this.logd("## Game maxSitOutTIme - " +this.maxSitOutTIme);
+    this.logd("## Game maxSitOutTime - " +this.maxSitOutTime);
     this.logd("## Game dealerPos - " +this.dealerPos);        
     this.logd("## Game gameType - " +this.gameType);        
     this.logd("## Game Round - " + this.round);
@@ -538,7 +539,7 @@ Game.prototype.checkPlayersSitout = function(){
             }
             if(this.players[i].hasSitOut){
                 var sitOutDuration = moment() - this.players[i].sitOutTime;
-                if(sitOutDuration / (1000*60) >= this.maxSitOutTIme ){
+                if(sitOutDuration / (1000 * 60) >= this.maxSitOutTime ){
                     this.removeFromGame(i);
                 }
                 else{
@@ -584,7 +585,7 @@ Game.prototype.validOldPlayer = function(params){
 Game.prototype.updateOldPlayerList = function(){
     for(var i = 0; i < oldPlayers.length; i++){
         var sitOutDuration = moment() - this.oldPlayers[i].leaveTime;
-        if(sitOutDuration / (1000*60) >= this.maxSitOutTIme ){
+        if(sitOutDuration / (1000*60) >= this.maxSitOutTime ){
             this.oldPlayers.splice(i,1);
             i--;
         }
@@ -747,7 +748,11 @@ Game.prototype.nextRound = function() {
         this.updatePotAndBet();
         this.flop();
         if(this.lastRaise == 0 ){
-            this.turnPos = this.nextPlayer(this.dealerPos);
+            if(this.checkPlayerLeft() == 2){
+                this.turnPos = this.dealerPos;
+            } else{
+                this.turnPos = this.nextPlayer(this.dealerPos);
+            }
         }
     } else if (this.round === 'flop') {
         this.updatePotAndBet();
@@ -921,7 +926,7 @@ Game.prototype.showdown = function() {
     this.currentGameState();
     this.callGameOver();
     //this.reset();
-    setTimeout(this.startNewGame.bind(this), 1000);
+    setTimeout(this.startNewGame.bind(this), this.startNewGameAfter);
 };
 
 
@@ -1347,7 +1352,10 @@ Game.prototype.getRawObject = function() {
     return this;
 }
 
+
+/**
+ * Update Time Bank
+ */
 Game.prototype.updateTimeBank = function(timeBankUsed) {
-    let player = this.getCurrentPlayer();
-    player.timeBank -= timeBankUsed;
+    let player = this.getCurrentPlayer().subtractTimeBank(timeBankUsed);
 }

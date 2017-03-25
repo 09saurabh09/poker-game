@@ -92,16 +92,20 @@ Player.prototype.callOrCheck = function() {
     this.hasActed = true;
 
     var diff = this.game.getHighestBet() - this.bet;
-    this.addBet(diff);
 
-    if (diff > 0) {
-        this.lastAction = "call";
-        logd('Player ' + this.name + ' CALL : ' + diff);
+    if(diff >= this.chips){
+        this.allin();
     } else {
-        this.lastAction = "check";
-        logd('Player ' + this.name + ' CHECK');
+        this.addBet(diff);
+        if (diff > 0) {
+            this.lastAction = "call";
+            logd('Player ' + this.name + ' CALL : ' + diff);
+        } else {
+            this.lastAction = "check";
+            logd('Player ' + this.name + ' CHECK');
+        }
+        this.moveNext();
     }
-    this.moveNext();
 };
 
 
@@ -141,14 +145,17 @@ Player.prototype.doBestCall = function(){
 Player.prototype.raise = function(amount) {
     this.lastAction = "raise";
 
-    var diff = this.game.getHighestBet() - this.bet;
-    this.addBet(diff + amount);
+    var diff = amount - this.bet;
 
-    logd('Player ' + this.name + ' Raises : ' + (diff + amount));
-
-    this.game.requestPlayerAction(); // other players must act
-    this.hasActed = true;
-    this.moveNext();
+    if(diff >= this.chips){
+        this.allin();
+    } else {
+        this.addBet(diff);
+        logd('Player ' + this.name + ' Raises To : ' + amount + "raise Amount" + diff );
+        this.game.requestPlayerAction(); // other players must act
+        this.hasActed = true;
+        this.moveNext();
+    }
 };
 
 
@@ -207,6 +214,7 @@ Player.prototype.moveNext = function(){
 Player.prototype.sitOut = function(){
     this.hasSitOut = true;
     this.sitOutTime = moment();
+    this.timeBank = 0;
 }
 
 
@@ -310,6 +318,14 @@ Player.prototype.playerConnected = function(){
  */
 Player.prototype.turnOffAutoMuck = function(){
     this.autoMuck = false;
+}
+
+
+/**
+ * Subtracting the time Bank Of Player 
+ */
+Player.prototype.subtractTimeBank = function(timeBankUsed){
+    player.timeBank -= timeBankUsed;
 }
 
 
