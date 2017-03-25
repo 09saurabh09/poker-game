@@ -30,7 +30,7 @@ function Game(gameState) {
     this.rakeY = gameState.rakeY;
     this.rakeZ = gameState.rakeZ;
     this.gameType = gameState.gameType;  
-    this.actionTime = gameState.actionTime;
+    this.actionTime = gameState.actionTime || 25;
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
     this.startNewGameAfter = gameState.startNewGameAfter || 2000;
     this.startWhenPlayerCount = gameState.startWhenPlayerCount || 2; 
