@@ -108,6 +108,13 @@ Timer.prototype.getDuration = function () {
     return this.timerDuration;
 }
 
+Timer.prototype.getDurationPassed = function () {
+    if (this.startTick) {
+        return Date.now() - this.startTick;
+    }
+    return 0;
+}
+
 Timer.prototype.getRemainingDuration = function () {
     if (this.startTick && this.endTick) {
         if (this.stopped) {
