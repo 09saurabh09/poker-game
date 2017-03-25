@@ -130,9 +130,6 @@ Game.prototype.playerTurn = function(params, user){
                     this.getCurrentPlayer().raise(params.amount);
                 }
                 break;
-            case "doBestCall":
-                this.logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.getCurrentPlayer().doBestCall();
             default:
                 this.logd("Call is not correct " + params.call);
                 break;
@@ -248,7 +245,15 @@ Game.prototype.playerTurn = function(params, user){
                 }
                 this.players[pos].turnOnAutoMuck();
                 break;
-
+            case "doBestCall":
+                this.logd("doBestCall has been called for -------- " + tuser.id);
+                var pos = self.findPlayerPos(user.id);
+                if(pos == -1){
+                    this.logd("Player not present " + user.id);
+                    break;
+                }
+                this.players[pos].doBestCall();
+                this.players[pos].sitOut();
             default:
                 this.logd("Call is not correct " + params.call);
                 break;
@@ -1136,6 +1141,7 @@ Game.prototype.nextCall = function(){
  * Check the Minimum Raise
  */
 Game.prototype.mininumunRaise = function(){
+    //this.getHighestBet();
     if(this.lastRaise == 0){
         this.minRaise = 2*this.bigBlind;
     }
