@@ -1,6 +1,7 @@
 "use strict";
 
-let moment = require('moment-timer');
+let moment = require('moment');
+let momentTimer = require('../utils/momentTimer');
 let pokerTableConfig = require('../game/pokerTableConfig');
 
 module.exports = {
@@ -9,7 +10,7 @@ module.exports = {
         // let pos = game.findPlayerPos(user.id);
         let playerTimeBank = user.timeBank;
 
-        GlobalConstant.timers[game.tableId] = moment.duration(pokerTableConfig.timer.defaultDuration + playerTimeBank, "seconds").timer(function () {
+        GlobalConstant.timers[game.tableId] = momentTimer.timer(moment.duration(pokerTableConfig.timer.defaultDuration + playerTimeBank, "seconds"),function () {
             console.log(`INFO ::: Started timer for player ${user.id}`);
             let turnType = "timer";
             self.playerTurn({ user, game, turnType})
