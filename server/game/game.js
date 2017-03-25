@@ -1366,5 +1366,7 @@ Game.prototype.getRawObject = function() {
  * Update Time Bank
  */
 Game.prototype.updateTimeBank = function(timeBankUsed) {
-    this.getCurrentPlayer().subtractTimeBank(timeBankUsed);
+    //this.getCurrentPlayer().subtractTimeBank(timeBankUsed);
+    //this.timeBank -= timeBankUsed;
+    this.getCurrentPlayer().timeBank -= timeBankUsed;
 }
