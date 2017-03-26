@@ -33,7 +33,7 @@ function Game(gameState) {
     this.actionTime = gameState.actionTime || 25;
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
     this.startNewGameAfter = gameState.startNewGameAfter || 2000;
-    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 3; 
+    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 2; 
 
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
@@ -683,12 +683,16 @@ Game.prototype.start = function() {
     this.logd('Player ' + this.players[smallBlindPos].name + ' pays small blind : ' + (1/2 * this.bigBlind));
     this.logd('Player ' + this.players[bigBlindPos].name + ' pays big blind : ' + this.bigBlind);
 
+    if(this.checkPlayerLeft() == 2){
+        this.dealerPos = smallBlindPos;
+        this.logd('Player ' + this.players[this.dealerPos].name + ' is the dealer for total Player 2');
+    }
     // determine whose turn it is
     this.turnPos = this.nextPlayer(bigBlindPos);
     this.logd('Now its player ' + this.players[this.turnPos].name + '\'s turn');
 
     // begin game, start 'deal' Round
-    console.log("Current Player " + this.getCurrentPlayer());
+    console.log("Current Player " + this.getCurrentPlayer().id);
     this.lastTurnTime = moment();
     this.updateGameInstance();
     this.currentGameState();
@@ -751,13 +755,6 @@ Game.prototype.nextRound = function() {
     } else if (this.round === 'deal') {
         this.updatePotAndBet();
         this.flop();
-        if(this.lastRaise == 0 ){
-            if(this.checkPlayerLeft() == 2){
-                this.turnPos = this.dealerPos;
-            } else{
-                this.turnPos = this.nextPlayer(this.dealerPos);
-            }
-        }
     } else if (this.round === 'flop') {
         this.updatePotAndBet();
         this.turn();
@@ -783,6 +780,11 @@ Game.prototype.checkAfterEachRound = function(){
         this.showdown();
     }
     this.lastRaise = 0;
+    // if(this.checkPlayerLeft() == 2){
+    //     this.turnPos = this.dealerPos;
+    // } else{
+    this.turnPos = this.nextPlayer(this.dealerPos);
+    // }
     this.currentGameState();
 }
 
