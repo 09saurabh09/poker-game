@@ -194,8 +194,6 @@ game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
-game = new Game(game);
-game.playerTurn(turnParamsCall,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);s
 // game.playerTurn(turnParamsRaise,gameInstance);
 // game.playerTurn(turnParamsCall,gameInstance);

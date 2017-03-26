@@ -4,7 +4,7 @@
 "use strict";
 module.exports = Game;
 
-var debugGameFlow = true;
+var debugGameFlow = false;
 
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
@@ -487,10 +487,13 @@ Game.prototype.reset = function() {
     this.totalPot = 0;          
     this.deck = new Deck();     
     this.gamePots = [];
+    this.currentPot = 0;
     this.lastRaise = 0;
     this.minRaise = 0;         
     this.maxRaise = 0            
-    this.callValue = 0;         
+    this.callValue = 0;
+    this.rakeEarning = 0;
+    this.lastTurnTime = 0;        
 
     //this.currentGameId = gameState.currentGameId;
     this.rakeEarning = 0;
@@ -688,6 +691,7 @@ Game.prototype.start = function() {
 
     // begin game, start 'deal' Round
     console.log("Current Player " + this.getCurrentPlayer());
+    this.lastTurnTime = moment();
     this.updateGameInstance();
     this.currentGameState();
     this.logd('========== Round DEAL ==========');
