@@ -34,7 +34,7 @@ function Game(gameState) {
     this.actionTime = gameState.actionTime || 25;
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
     this.startNewGameAfter = gameState.startNewGameAfter || 2000;
-    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 3; 
+    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 2; 
 
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
@@ -624,15 +624,15 @@ Game.prototype.removeFromGame = function(pos){
  * Check the Conditions before starting a Game
  */
 Game.prototype.checkForGameRun = function(){
-    if(this.currentTotalPlayer < 2){
+    if(this.currentTotalPlayer < this.startWhenPlayerCount){
         return false;
     }
     var cnt = 0;
     for(var i = 0; i < this.maxPlayer; i++){
-        if(this.players[i] && this.players[i].hasSitOut == false)
+        if(this.players[i] && this.players[i].idleForHand == false)
             cnt++;
     }
-    if(cnt < 2)
+    if(cnt < this.startWhenPlayerCount)
         return false;
     return true;
 }
@@ -1130,6 +1130,7 @@ Game.prototype.updatePotBeforeShowdown = function(winnerid){
     mainPot.winners = [];
     mainPot.winners.push(winnerid);
     mainPot.stakeHolders = [];
+    mainPot.rakeMoney = 0;
     for(var i = 0; i < this.players.length; i++ ){
         if(this.players[i] && this.players[i].bet > 0 ){
             mainPot.stakeHolders.push(this.players[i].id);
@@ -1282,10 +1283,10 @@ Game.prototype.handOverPot = function(){
     this.logd("Handing over the pot to the winners");
     for(var i =0; i < this.gamePots.length; i++ ){
         if(this.gamePots[i].winners.length == 1){
-            this.rakeEarning += this.gamePots[i].rakeMoney;
+            this.rakeEarning += (this.gamePots[i].rakeMoney || 0);
             for(var j = 0; j < this.players.length; j++){
                 if(this.players[j] && this.players[j].id == this.gamePots[i].winners[0]){
-                    this.players[j].addChips(this.gamePots[i].amount -  this.gamePots[i].rakeMoney);
+                    this.players[j].addChips(this.gamePots[i].amount -  ( this.gamePots[i].rakeMoney || 0) );
                 }
             }
         }

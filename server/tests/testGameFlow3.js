@@ -1,6 +1,6 @@
 var Game = require('../game/game');
 
-for(var i=0;i<15;i++){
+for(var i=0;i<20;i++){
     console.log("\n");
 }
 
@@ -177,11 +177,11 @@ game.playerTurn(turnParamsRaise,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsFold,gameInstance);
 game = new Game(game);
-game.playerTurn(turnParamsFold,gameInstance);
-game = new Game(game);
 game.playerTurn(turnParamsRaise1,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsRaise2,gameInstance);
+game = new Game(game);
+game.playerTurn(turnParamsFold,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
