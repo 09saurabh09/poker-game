@@ -310,8 +310,6 @@ Game.prototype.updateGameInstance = function(){
         this.maximumRaise();
         this.nextCall();
     }
-    //this.currentGameState();
-    //Code to store Game State
 }
 
 
@@ -772,11 +770,21 @@ Game.prototype.nextRound = function() {
     } else {
         this.start();
     }
-    this.currentGameState();
+    this.checkAfterEachRound();
+};
+
+
+
+/**
+ * Checks After Each Round
+ */
+Game.prototype.checkAfterEachRound = function(){
     if(this.checkPlayerLeft()  <  2){
         this.showdown();
     }
-};
+    this.lastRaise = 0;
+    this.currentGameState();
+}
 
 
 
@@ -1157,7 +1165,11 @@ Game.prototype.updateLastRaise = function(amount){
 Game.prototype.mininumunRaise = function(){
     //this.getHighestBet();
     if(this.lastRaise == 0){
-        this.minRaise = 2*this.bigBlind;
+        if(this.round == 'deal'){
+            this.minRaise = 2 * this.bigBlind;
+        } else {
+            this.minRaise = this.bigBlind;
+        }
     }
     else{
        this.minRaise = this.lastRaise + this.getHighestBet();
