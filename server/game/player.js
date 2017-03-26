@@ -125,7 +125,7 @@ Player.prototype.getCallOrCheck = function(){
  * then do the best call whatever is possible.
  */
 Player.prototype.doBestCall = function(){
-    //this.sitOut();
+    this.sitOut();
     this.timeBank = 0;
     if(this.getCallOrCheck() == 0){
         this.callOrCheck();
@@ -175,6 +175,7 @@ Player.prototype.reset = function() {
     this.hasActed = false;
     this.hasDone = false;
     this.showCards = false;
+    this.expCallValue = 0;
 
     if(this.isMaintainChips){
         this.maintainChipsStack();

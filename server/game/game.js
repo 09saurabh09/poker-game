@@ -23,7 +23,7 @@ function Game(gameState) {
     this.maxPlayer = gameState.maxPlayer;
     this.minAmount = gameState.minAmount;
     this.maxAmount = gameState.maxAmount;
-    this.maxSitOutTime = gameState.maxSitOutTime;
+    this.maxSitOutTime = gameState.maxSitOutTime || 30;
     this.annyomousGame = gameState.annyomousGame;
     this.runTimeType = gameState.runTimeType;
     this.rakeX = gameState.rakeX;
@@ -33,7 +33,7 @@ function Game(gameState) {
     this.actionTime = gameState.actionTime || 25;
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
     this.startNewGameAfter = gameState.startNewGameAfter || 2000;
-    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 2; 
+    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 3; 
 
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
@@ -104,6 +104,12 @@ Game.prototype.logd = function(message) {
 Game.prototype.playerTurn = function(params, user){
     let self = this;
     this.reloadAllPlayers();
+
+    if(this.round == 'showdown'){
+        console.log("Game Ended Can Do your turn this.round " + this.round);
+        return;
+    }
+
     if(params.callType == "player"){
         if(debugGameFlow && user.id != this.getCurrentPlayer().id ){
             this.logd("The Turn Positing is different for different Player");
@@ -764,6 +770,7 @@ Game.prototype.nextRound = function() {
     } else if (this.round === 'river') {
         this.updatePotAndBet();
         this.showdown();
+        this.round = 'showdown'
     } else {
         this.start();
     }
@@ -780,11 +787,7 @@ Game.prototype.checkAfterEachRound = function(){
         this.showdown();
     }
     this.lastRaise = 0;
-    // if(this.checkPlayerLeft() == 2){
-    //     this.turnPos = this.dealerPos;
-    // } else{
     this.turnPos = this.nextPlayer(this.dealerPos);
-    // }
     this.currentGameState();
 }
 
