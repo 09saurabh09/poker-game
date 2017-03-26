@@ -642,7 +642,7 @@ Game.prototype.checkForGameRun = function(){
  */
 Game.prototype.getPlayersCard = function(noOfCards){
     for (var i=0; i<this.players.length; i++) {
-        if(this.players[i]){
+        if(this.players[i] && this.players[i].idleForHand == false){
             for (var j = 0; j < noOfCards; j++ ){
                 var c = this.deck.drawCard();
                 this.players[i].cards.push(c);
