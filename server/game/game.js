@@ -4,7 +4,7 @@
 "use strict";
 module.exports = Game;
 
-var debugGameFlow = false;
+var debugGameFlow = true;
 
 var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
