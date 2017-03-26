@@ -33,7 +33,7 @@ function Game(gameState) {
     this.actionTime = gameState.actionTime || 25;
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
     this.startNewGameAfter = gameState.startNewGameAfter || 2000;
-    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 2; 
+    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 3; 
 
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
@@ -901,6 +901,7 @@ Game.prototype.showdown = function() {
         else{
             for(var i = 0; i <this.players.length; i++ ){
                 if(this.players[i] && this.players[i].hasDone == false && this.players[i].idleForHand == false){
+                    this.updatePotBeforeShowdown(this.players[i].id);
                     if(this.players[i].autoMuck==true){
                         this.logd("Player " + this.players[i].name + " has won the game.");
                     }
@@ -939,7 +940,6 @@ Game.prototype.showdown = function() {
 
     this.rakeForGame();
     this.winnersPerPot(ranks);
-    //this.logd( "VISHal" + JSON.stringify(this.gamePots));
     this.handOverPot();
     this.showCard();
 
@@ -975,7 +975,6 @@ Game.prototype.callGameOver = function(){
 }
 
 
-
 /**
  * Calculate Game Earning at the end of the Game
  */
@@ -992,12 +991,12 @@ Game.prototype.gameEarnings = function(){
     }
     for(var i =0; i < this.gamePots.length; i++ ){
         if(this.gamePots[i].winners.length == 1){
-            this.rakeEarning = parseFloat(  this.rakeEarning ) + parseFloat( this.gamePots[i].rakeMoney );
+            this.rakeEarning = parseFloat(  this.rakeEarning || 0 ) + parseFloat( this.gamePots[i].rakeMoney || 0 );
             for(var j = 0; j < this.players.length; j++){
                 if(this.players[j] && this.players[j].id == this.gamePots[i].winners[0]){
                     for(var k = 0; k < earnings.length; k++ ){
                         if(earnings[k].id == this.players[j].id){
-                            earnings[k].amount += (this.gamePots[i].amount -  this.gamePots[i].rakeMoney);
+                            earnings[k].amount += (this.gamePots[i].amount -  (this.gamePots[i].rakeMoney || 0) );
                         }
                     }
                 }
@@ -1117,6 +1116,25 @@ Game.prototype.managePots = function(){
         sidePot.rakeMoney = 0;
         this.gamePots.push(sidePot);    
     }
+}
+
+
+/**
+ *
+ */
+Game.prototype.updatePotBeforeShowdown = function(winnerid){
+    this.gamePots = [];
+    var mainPot = {};
+    mainPot.amount = this.currentPot;
+    mainPot.winners = [];
+    mainPot.winners.push(winnerid);
+    mainPot.stakeHolders = [];
+    for(var i = 0; i < this.players.length; i++ ){
+        if(this.players[i] && this.players[i].bet > 0 ){
+            mainPot.stakeHolders.push(this.players[i].id);
+        }
+    }
+    this.gamePots.push(mainPot);
 }
 
 
@@ -1306,10 +1324,10 @@ Game.prototype.showCard = function(){
 
 
 /**
- * choosing Dealer Position
+ * choosing Dealer Position 
+ *   Will Increamene teverytime when the game will reset
  */
 Game.prototype.dealerPosition = function(){
-    //Will Increamene teverytime when the game will reset
     this.logd("Chossing the dealer postions ");
     for (var i=0; i<this.maxPlayer; i++ ){
         var p = ( this.dealerPos + i ) % this.maxPlayer;
@@ -1327,8 +1345,11 @@ Game.prototype.dealerPosition = function(){
  */
 Game.prototype.rakeForGame = function(){
     this.rakeMoney = 0;
+    if(this.checkPlayerLeft() < 2){
+        //Not doing in this case but will have to change
+        return;
+    }
     if(this.round == 'deal'){
-        //No Rakes to Be calculated whent the all folded in Round Deal.
         return;
     }
     for(var i = 0; i <this.gamePots.length; i++ ){

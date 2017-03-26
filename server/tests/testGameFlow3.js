@@ -177,6 +177,8 @@ game.playerTurn(turnParamsRaise,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsFold,gameInstance);
 game = new Game(game);
+game.playerTurn(turnParamsFold,gameInstance);
+game = new Game(game);
 game.playerTurn(turnParamsRaise1,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsRaise2,gameInstance);
