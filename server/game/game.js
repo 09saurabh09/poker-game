@@ -149,7 +149,6 @@ Game.prototype.playerTurn = function(params, user){
             return;
         } 
         this.updateLastTurnTime();
-        this.updateExpCallValue();
     }
     else if(params.callType == "game"){
         var player = params.playerInfo || {};
@@ -284,7 +283,11 @@ Game.prototype.updateLastTurnTime = function(){
 Game.prototype.updateExpCallValue = function(){
     for(var i = 0; i < this.players.length; i++){
         if(this.players[i]){
-            this.players[i].expCallValue = this.players[i].getCallOrCheck();
+            if(this.players[i].idleForHand == false && this.players[i].hasDone == false){
+                this.players[i].expCallValue = this.players[i].getCallOrCheck();
+            } else {
+                this.players[i].expCallValue = 0;
+            }
         }
     }
 }
@@ -315,6 +318,7 @@ Game.prototype.updateGameInstance = function(){
         this.mininumunRaise();
         this.maximumRaise();
         this.nextCall();
+        this.updateExpCallValue();
     }
 }
 
@@ -470,9 +474,6 @@ Game.prototype.addPlayer = function(attr) {
     }
     
     if(this.currentTotalPlayer >= this.startWhenPlayerCount && this.round == 'idle'){
-        /*if(!debugGameFlow){
-            this.start();
-        }*/
         this.start();
     }
 
