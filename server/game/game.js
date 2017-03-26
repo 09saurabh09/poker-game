@@ -33,7 +33,7 @@ function Game(gameState) {
     this.actionTime = gameState.actionTime || 25;
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
     this.startNewGameAfter = gameState.startNewGameAfter || 2000;
-    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 3; 
+    this.startWhenPlayerCount = gameState.startWhenPlayerCount || 2; 
 
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
@@ -771,7 +771,7 @@ Game.prototype.nextRound = function() {
     } else if (this.round === 'river') {
         this.updatePotAndBet();
         this.showdown();
-        this.round = 'showdown'
+        //this.round = 'showdown'
     } else {
         this.start();
     }
@@ -1325,17 +1325,12 @@ Game.prototype.dealerPosition = function(){
  */
 Game.prototype.rakeForGame = function(){
     this.rakeMoney = 0;
-    if(this.checkPlayerLeft() <  2){
-        //Decide Whether the rake money has to be calculated or to be not calc.
-    }
-    else {
-        for(var i = 0; i <this.gamePots.length; i++ ){
-            if( this.gamePots[i].stakeHolders.length <= this.rakeY ){
-                this.gamePots[i].rakeMoney = ((this.gamePots[i].amount * this.rakeX) / 100).toFixed(2);
-            }
-            else{
-                this.gamePots[i].rakeMoney = ((this.gamePots[i].amount * this.rakeX) / 100).toFixed(2);
-            }
+    for(var i = 0; i <this.gamePots.length; i++ ){
+        if( this.gamePots[i].stakeHolders.length <= this.rakeY ){
+            this.gamePots[i].rakeMoney = ((this.gamePots[i].amount * this.rakeX) / 100).toFixed(2);
+        }
+        else{
+            this.gamePots[i].rakeMoney = ((this.gamePots[i].amount * this.rakeX) / 100).toFixed(2);
         }
     }
 }
