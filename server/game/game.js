@@ -29,6 +29,7 @@ function Game(gameState) {
     this.rakeX = gameState.rakeX;
     this.rakeY = gameState.rakeY;
     this.rakeZ = gameState.rakeZ;
+    this.rakeMax = gameState.rakeMax || 10 * gameState.bigBlind || 10000;
     this.gameType = gameState.gameType;  
     this.actionTime = gameState.actionTime || 25;
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
@@ -1355,9 +1356,12 @@ Game.prototype.rakeForGame = function(){
     for(var i = 0; i <this.gamePots.length; i++ ){
         if( this.gamePots[i].stakeHolders.length <= this.rakeY ){
             this.gamePots[i].rakeMoney = ((this.gamePots[i].amount * this.rakeX) / 100).toFixed(2);
-        }
-        else{
+        } else{
             this.gamePots[i].rakeMoney = ((this.gamePots[i].amount * this.rakeX) / 100).toFixed(2);
+        }
+
+        if(this.gamePots[i].rakeMoney > this.rakeMax){
+            this.gamePots[i].rakeMoney = this.rakeMax;
         }
     }
 }
