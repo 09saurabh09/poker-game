@@ -1191,12 +1191,14 @@ Game.prototype.mininumunRaise = function(){
 Game.prototype.maximumRaise = function(){
     if(this.gameType == "holdem"){
         this.maxRaise = this.getCurrentPlayer().chips;
-    }
-    else if(this.gameType == "omaha"){
+    } else if(this.gameType == "omaha"){
         if(this.lastRaise == 0){
-            this.maxRaise = this.currentPot + 2 * this.bigBlind;
-        }
-        else{
+            if(this.round == 'deal'){
+                this.maxRaise = this.currentPot + 2 * this.bigBlind;
+            } else {
+                this.maxRaise =  this.currenPot;
+            }
+        } else{
             this.maxRaise = this.currentPot + 2 * this.getHighestBet();
         }
 
@@ -1325,6 +1327,10 @@ Game.prototype.dealerPosition = function(){
  */
 Game.prototype.rakeForGame = function(){
     this.rakeMoney = 0;
+    if(this.round == 'deal'){
+        //No Rakes to Be calculated whent the all folded in Round Deal.
+        return;
+    }
     for(var i = 0; i <this.gamePots.length; i++ ){
         if( this.gamePots[i].stakeHolders.length <= this.rakeY ){
             this.gamePots[i].rakeMoney = ((this.gamePots[i].amount * this.rakeX) / 100).toFixed(2);
