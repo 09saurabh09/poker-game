@@ -951,10 +951,7 @@ Game.prototype.showdown = function() {
 
     this.currentGameState();
     this.callGameOver();
-    if( this.checkForGameRun() ){
-        this.logd("Need More Player to start the Game ");
-        setTimeout(this.startNewGame.bind(this), this.startNewGameAfter);
-    }
+    setTimeout(this.startNewGame.bind(this), this.startNewGameAfter);
 };
 
 
@@ -1040,8 +1037,11 @@ Game.prototype.startNewGame = function(){
     console.log("Staring new game...");
     var newGame = new Game(this);
     newGame.reset();
-    if(debugGameFlow)
-        gameService.startGame(newGame);
+    if( newGame.checkForGameRun() ){
+        this.logd("Need More Player to start the Game ");
+        if(debugGameFlow)
+            gameService.startGame(newGame);
+    }
 }
 
 
