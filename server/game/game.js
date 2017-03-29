@@ -109,7 +109,7 @@ Game.prototype.playerTurn = function(params, user){
     let response;
 
     if(this.round == 'showdown'){
-        console.log("Game Ended Can Do your turn this.round " + this.round);
+        console.log("Game Ended Cann't Do this player turn curren round is " + this.round);
         return;
     }
 
@@ -1156,6 +1156,7 @@ Game.prototype.getCurrentPlayer = function() {
     //return new Player(this.players[this.turnPos]);
     // this.players[this.turnPos] = new Player(this.players[this.turnPos]);
     // this.players[this.turnPos].game = this;
+    this.logd("getCurrentPlayer " + this.turnPos);
     return this.players[this.turnPos];
 };
 
@@ -1425,6 +1426,7 @@ Game.prototype.getRawObject = function() {
 Game.prototype.updateTimeBank = function(timeBankUsed) {
     //this.getCurrentPlayer().subtractTimeBank(timeBankUsed);
     //this.timeBank -= timeBankUsed;
+    this.currentGameState();
     console.log(`Player id ${this.getCurrentPlayer().id} and name ${this.getCurrentPlayer().name} with subtract time ${timeBankUsed} and curren time Bank ${this.getCurrentPlayer().timeBank}`);
     this.getCurrentPlayer().timeBank -= timeBankUsed;
 }
