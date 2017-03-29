@@ -13,7 +13,7 @@ module.exports = {
         let playerTimeBank = user.timeBank;
 
         console.log(`INFO ::: Adding player turn timer for user ${user.id}`);
-        GlobalConstant.playerTurnTimers[game.tableId] = momentTimer.timer(moment.duration(game.timerDuration + playerTimeBank, "seconds"), function () {
+        GlobalConstant.playerTurnTimers[game.tableId] = momentTimer.timer(moment.duration(game.actionTime + playerTimeBank, "seconds"), function () {
             console.log(`INFO ::: Started player turn timer for player ${user.id}`);
             let turnType = "timer";
             gameService.playerTurn({ user, game, turnType })
@@ -29,7 +29,7 @@ module.exports = {
             table.reload().then(function (tableReloaded) {
                 let game = tableReloaded.gameState;
                 game.players.forEach(function(player) {
-                    if(player.id == user.id) {
+                    if(player && (player.id == user.id)) {
                         player.timeBank += table.timeBank.timeGiven;
                     }
                 })

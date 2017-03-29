@@ -23,7 +23,7 @@ module.exports = {
             let players = currentGameState.players;
 
             players.forEach(function (player) {
-                if (moneyRequest[player.id]) {
+                if (player && moneyRequest[player.id]) {
                     syncRequired = true;
                     player.gameBalance += moneyRequest[player.id] || 0;
                     updateCurrentBalanceQuery += `UPDATE "Users" SET "currentBalance" = "currentBalance" - ${moneyRequest[player.id] || 0} WHERE id = ${player.id};`
@@ -69,7 +69,7 @@ module.exports = {
             currentPot: gameState.currentPot,
             players: [],
             lastTurnAt: gameState.lastTurnAt,
-            timerDuration: gameState.timerDuration
+            actionTime: gameState.actionTime
         };
 
         gameState.players = gameState.players || Array.apply(null, Array(gameState.maxPlayer));
@@ -300,7 +300,6 @@ module.exports = {
             // delete GlobalConstant.playerTurnTimers[game.tableId];
 
             game.playerTurn(params, user);
-            game.lastTurnAt = moment();
         }
         
         let newGameState = game.getRawObject();

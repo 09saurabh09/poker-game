@@ -40,7 +40,6 @@ function Game(gameState) {
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
     this.tableId = gameState.tableId;
-    this.timerDuration = gameState.timerDuration;
     this.lastTurnAt = gameState.lastTurnAt;
 
     this.debugMode = true || gameState.debugMode;
@@ -62,12 +61,11 @@ function Game(gameState) {
     this.gamePots = gameState.gamePots || [];                   // The Vairable to store all the game pots 
     this.lastRaise = gameState.lastRaise || 0;                  // Maintaing what was the last raise. 
     this.rakeEarning = gameState.rakeEarning || 0;              // Options for the rake earning per For Game
-    this.lastTurnTime = gameState.lastTurnTime || 0;
 
     if(this.players.length == 0){
         this.initPlayers();
     }
-};
+}
 
 
 
@@ -152,7 +150,7 @@ Game.prototype.playerTurn = function(params, user){
         if(this.round == "showdown") {
             return;
         } 
-        this.updateLastTurnTime();
+        this.updateLastTurnAt();
     }
     else if(params.callType == "game"){
         var player = params.playerInfo || {};
@@ -275,8 +273,8 @@ Game.prototype.playerTurn = function(params, user){
 /**
  * Update the Last turn time in moment
  */
-Game.prototype.updateLastTurnTime = function(){
-    this.lastTurnTime = moment();
+Game.prototype.updateLastTurnAt = function(){
+    this.lastTurnAt = moment();
 }
 
 
@@ -373,7 +371,7 @@ Game.prototype.currentGameState = function(){
     this.logd("## Game minRaise - " +this.minRaise);        
     this.logd("## Game maxRaise - " +this.maxRaise);        
     this.logd("## Game callValue - " +this.callValue);        
-    this.logd("## Game lastTurnTime - " +this.lastTurnTime);        
+    this.logd("## Game lastTurnAt - " +this.lastTurnAt);        
     this.logd("## Game currentPot - " +this.currentPot);           
     this.logd("## Game lastRaise - " +this.lastRaise);           
     this.logd("## Game turnPos - " +this.turnPos);           
@@ -502,7 +500,7 @@ Game.prototype.reset = function() {
     this.maxRaise = 0            
     this.callValue = 0;
     this.rakeEarning = 0;
-    this.lastTurnTime = 0;        
+    this.lastTurnAt = 0;        
 
     //this.currentGameId = gameState.currentGameId;
     this.rakeEarning = 0;
@@ -704,7 +702,7 @@ Game.prototype.start = function() {
 
     // begin game, start 'deal' Round
     console.log("Current Player " + this.getCurrentPlayer().id);
-    this.lastTurnTime = moment();
+    this.lastTurnAt = moment();
     this.updateGameInstance();
     this.currentGameState();
     this.logd('========== Round DEAL ==========');
