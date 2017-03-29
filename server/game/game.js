@@ -717,9 +717,9 @@ Game.prototype.start = function() {
  * Check which is the next Player int the row
  */
 Game.prototype.nextPlayer = function(pos){
-    for (var i=1; i<this.maxPlayer; i++ ){
+    for (var i = 1; i <= this.maxPlayer; i++ ){
         var p = ( pos + i ) % this.maxPlayer;
-        if(this.players[p] != null && this.players[p].idleForHand == false && this.players[p].hasSitOut == false && this.players[p].hasDone == false){
+        if(this.players[p] != null && this.players[p].idleForHand == false  && this.players[p].hasDone == false){
             return p;
         }
     }
