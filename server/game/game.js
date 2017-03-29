@@ -396,10 +396,11 @@ Game.prototype.currentGameState = function(){
                 + "  expCallValue- " + this.players[i].expCallValue
                 + "  lastAct-" + this.players[i].lastAction
                 + "  acted-"+this.players[i].hasActed 
-                + "  hasDone-" + this.players[i].hasDone 
+                + "  hasDone-" + this.players[i].hasDone
+                + "  showCards-" + this.players[i].showCards 
                 + "  idle-" + this.players[i].idleForHand 
                 + "  id-" + this.players[i].id
-                + "  timeBank" + this.players[i].timeBank
+                + "  timeBank-" + this.players[i].timeBank
                 + "  sitout-"+this.players[i].hasSitOut+","+ this.players[i].sitOutTime
                 + "  maintinChips-"+ this.players[i].isMaintainChips + "," + this.players[i].maintainChips);
         }
@@ -1321,7 +1322,7 @@ Game.prototype.showCard = function(){
     for(var i = 0 ;i< this.gamePots.length; i++ ){
         for(var j = 0 ; j < this.gamePots[i].winners.length; j++){
             for(var k = 0; k <this.players.length; k++){
-                if(this.players[k] && this.players[k].id == this.gamePots[i].winners[j]){
+                if(this.players[k] && this.players[k].id == this.gamePots[i].winners[j] && this.gamePots[i].winnerHand != "All Folded"){
                     this.players[k].showCards = true;
                 }
             }
