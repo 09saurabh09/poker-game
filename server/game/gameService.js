@@ -6,6 +6,7 @@ let GameHistoryModel = DB_MODELS.GameHistory;
 let eventConfig = require("../socket/eventConfig");
 let timer = require("../utils/timer");
 let pokerTableConfig = require("./pokerTableConfig");
+let moment = require('moment');
 
 module.exports = {
     /**
@@ -66,7 +67,9 @@ module.exports = {
             minAmount: gameState.minAmount,
             maxAmount: gameState.maxAmount,
             currentPot: gameState.currentPot,
-            players: []
+            players: [],
+            lastTurnAt: gameState.lastTurnAt,
+            timerDuration: gameState.timerDuration
         };
 
         gameState.players = gameState.players || Array.apply(null, Array(gameState.maxPlayer));
@@ -216,6 +219,7 @@ module.exports = {
 
                 if (!currentSockets.length) {
                     console.log(`INFO ::: No sockets found in room ${GlobalConstant.gameRoomPrefix + game.tableId}`);
+                    return;
                 }
 
                 // Emit game state to all players in room
@@ -288,14 +292,15 @@ module.exports = {
             game.playerTurn({callType: "player", call: "doBestCall"}, user);
         } else {
             // Stop timer for player
-            let duration = parseInt(GlobalConstant.timers[game.tableId].getDurationPassed()/ 1000);
+            let duration = parseInt(GlobalConstant.playerTurnTimers[game.tableId].getDurationPassed()/ 1000);
             let timeBankUsed = (duration - pokerTableConfig.timer.defaultDuration) > 0 ? (duration - pokerTableConfig.timer.defaultDuration): 0;
-            GlobalConstant.timers[game.tableId].stop();
+            GlobalConstant.playerTurnTimers[game.tableId].stop();
             console.log(`INFO ::: Time bank used by player: ${user.id} is: ${timeBankUsed}`);
             game.updateTimeBank(timeBankUsed);
-            // delete GlobalConstant.timers[game.tableId];
+            // delete GlobalConstant.playerTurnTimers[game.tableId];
 
             game.playerTurn(params, user);
+            game.lastTurnAt = moment();
         }
         
         let newGameState = game.getRawObject();

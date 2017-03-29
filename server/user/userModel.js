@@ -34,11 +34,11 @@ module.exports = function (sequelize, DataTypes) {
         },
         cardBackTheme: {
             type: DataTypes.STRING,
-            default: "royal"
+            defaultValue: "royal"
         },
         cardFrontTheme: {
             type: DataTypes.STRING,
-            default: "twoColor"
+            defaultValue: "twoColor"
         },
         buyInPreference: {
             type: DataTypes.BIGINT

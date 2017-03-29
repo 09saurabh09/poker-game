@@ -84,6 +84,10 @@ module.exports = function (sequelize, DataTypes) {
         timeBank: {
             type: DataTypes.JSONB,
             defaultValue: {}
+        },
+        timerDuration: {
+            type: DataTypes.INTEGER,
+            defaultValue: 20
         }
     }, {
             classMethods: {
@@ -123,7 +127,8 @@ module.exports = function (sequelize, DataTypes) {
                         "tableType": table.tableType,
                         "rakeX": table.rakeX,
                         "rakeY": table.rakeY,
-                        "rakeZ": table.rakeZ
+                        "rakeZ": table.rakeZ,
+                        "timerDuration": table.timerDuration
                     }
                     table.set('gameState', gameState);
                 }

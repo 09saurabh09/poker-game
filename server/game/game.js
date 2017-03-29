@@ -10,6 +10,7 @@ var Player = require('./player.js');
 var Deck = require('../utils/deck.js');
 var evaluator = require('../utils/evaluator.js');
 var moment = require("moment");
+const uuidV4 = require('uuid/v4');
 if(debugGameFlow)
     var gameService = require('./gameService.js');
 
@@ -39,6 +40,8 @@ function Game(gameState) {
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
     this.tableId = gameState.tableId;
+    this.timerDuration = gameState.timerDuration;
+    this.lastTurnAt = gameState.lastTurnAt;
 
     this.debugMode = true || gameState.debugMode;
 
@@ -155,11 +158,11 @@ Game.prototype.playerTurn = function(params, user){
         var player = params.playerInfo || {};
         player.id  = user.id;
         player.name = user.name;
-        player.sessionKey = user.sessionKey;
         switch(params.call){
             case "addPlayer":
                 this.logd("Add Player has been called for -------- " + user.id );
-                return this.addPlayer(player);
+                player.sessionKey = uuidV4();
+                this.addPlayer(player);
                 break;
 
             case "addToWaiting":

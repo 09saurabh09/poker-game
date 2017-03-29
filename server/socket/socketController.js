@@ -5,6 +5,7 @@ let gameService = require("../game/gameService");
 let userService = require("../user/userService");
 let gameConfig = require("../game/gameConfig");
 let eventConfig = require("../socket/eventConfig");
+let timer = require("../utils/timer");
 
 let PokerTable = DB_MODELS.PokerTable;
 let UserModel = DB_MODELS.User;
@@ -178,6 +179,9 @@ module.exports = {
                         // console.log(SOCKET_IO.sockets.adapter.rooms);
                         // console.log(SOCKET_IO.of(socket.nsp.name).adapter.rooms);
                         // gameService.startGame(game);
+
+                        // Add timer for awarding timeBank
+                        timer.playerJoinTimer(table, user, Game);
 
                         socket.join(GlobalConstant.gameRoomPrefix + table.id);
                         socket.join(GlobalConstant.chatRoomPrefix + table.id);

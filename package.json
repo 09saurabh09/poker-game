@@ -111,6 +111,7 @@
     "socket.io-client": "^1.7.2",
     "socket.io-redis": "^2.0.1",
     "svg-react-loader": "^0.3.7",
-    "text-transform-loader": "^1.1.1"
+    "text-transform-loader": "^1.1.1",
+    "uuid": "^3.0.1"
   }
 }
