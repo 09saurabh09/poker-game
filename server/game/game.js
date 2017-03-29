@@ -4,19 +4,19 @@
 "use strict";
 module.exports = Game;
 
-var debugGameFlow = true;
+let debugGameFlow = false;
 
-var Player = require('./player.js');
-var Deck = require('../utils/deck.js');
-var evaluator = require('../utils/evaluator.js');
-var moment = require("moment");
+let Player = require('./player.js');
+let Deck = require('../utils/deck.js');
+let evaluator = require('../utils/evaluator.js');
+let moment = require("moment");
 const uuidV4 = require('uuid/v4');
 if(debugGameFlow)
     var gameService = require('./gameService.js');
 
 
 /**
- * Constructor with the required Parameter and variables
+ * Constructor with the required Parameter and letiables
  */
 function Game(gameState) {
     // Game attributes
@@ -81,13 +81,13 @@ Game.prototype.logd = function(message) {
 
 
 /**
- *  var params = {
+ *  let params = {
         callType: "player"
         call : "fold",
         amount : 0
     }; 
 
-    var params = {
+    let params = {
         callType: "game"
         call : "addPlayer",
         playerInfo : {
@@ -106,7 +106,6 @@ Game.prototype.logd = function(message) {
 Game.prototype.playerTurn = function(params, user){
     let self = this;
     this.reloadAllPlayers();
-    let response;
 
     if(this.round == 'showdown'){
         console.log("Game Ended Can Do your turn this.round " + this.round);
@@ -154,14 +153,15 @@ Game.prototype.playerTurn = function(params, user){
         this.updateLastTurnAt();
     }
     else if(params.callType == "game"){
-        var player = params.playerInfo || {};
+        let player = params.playerInfo || {};
+        let pos;
         player.id  = user.id;
         player.name = user.name;
         switch(params.call){
             case "addPlayer":
                 this.logd("Add Player has been called for -------- " + user.id );
                 player.sessionKey = uuidV4();
-                response = this.addPlayer(player);
+                this.addPlayer(player);
                 break;
 
             case "addToWaiting":
@@ -171,7 +171,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "leaveGame":
                 this.logd("leaveGame has been called for -------- " + user.id );
-                var pos = self.findPlayerPos(user.id);
+                pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     this.logd("Player not present " + user.id);
                     break;
@@ -181,7 +181,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "playerDisconnected":
                 this.logd("playerDisconnected has been called for -------- " + user.id );
-                var pos = self.findPlayerPos(user.id);
+                pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     this.logd("Player not present " + user.id);
                     break;
@@ -191,7 +191,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "playerConnected":
                 this.logd("playerConnected has been called for -------- " + user.id );
-                var pos = self.findPlayerPos(user.id);
+                pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     this.logd("Player not present " + user.id);
                     break;
@@ -201,7 +201,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "sitOut":
                 this.logd("sitOut has been called for -------- " + user.id );
-                var pos = self.findPlayerPos(user.id);
+                pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     this.logd("Player not present " + user.id);
                     break;
@@ -211,7 +211,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "sitIn":
                 this.logd("sitIn has been called for -------- " + user.id );
-                var pos = self.findPlayerPos(user.id);
+                pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     this.logd("Player not present " + user.id);
                     break;
@@ -221,7 +221,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "setMaintChips":
                 this.logd("setMaintChips has been called for -------- " + user.id );
-                var pos = self.findPlayerPos(user.id);
+                pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     this.logd("Player not present " + user.id);
                     break;
@@ -231,7 +231,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "unSetMaintainChips":
                 this.logd("unSetMaintainChips has been called for -------- " + user.id );
-                var pos = self.findPlayerPos(user.id);
+                pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     this.logd("Player not present " + user.id);
                     break;
@@ -241,7 +241,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "turnOffAutoMuck":
                 this.logd("turnOffAutoMuck has been called for -------- " + user.id );
-                var pos = self.findPlayerPos(user.id);
+                pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     this.logd("Player not present " + user.id);
                     break;
@@ -251,7 +251,7 @@ Game.prototype.playerTurn = function(params, user){
 
             case "turnOnAutoMuck":
                 this.logd("turnOnAutoMuck has been called for -------- " + user.id );
-                var pos = self.findPlayerPos(user.id);
+                pos = self.findPlayerPos(user.id);
                 if(pos == -1){
                     this.logd("Player not present " + user.id);
                     break;
@@ -268,7 +268,6 @@ Game.prototype.playerTurn = function(params, user){
     }
     this.updateGameInstance();
     this.currentGameState();
-    return response;
 }
 
 
@@ -285,7 +284,7 @@ Game.prototype.updateLastTurnAt = function(){
  * Update the Expected Value of Every Value
  */
 Game.prototype.updateExpCallValue = function(){
-    for(var i = 0; i < this.players.length; i++){
+    for(let i = 0; i < this.players.length; i++){
         if(this.players[i]){
             if(this.players[i].idleForHand == false && this.players[i].hasDone == false){
                 this.players[i].expCallValue = this.players[i].getCallOrCheck();
@@ -302,8 +301,8 @@ Game.prototype.updateExpCallValue = function(){
  * Find Player pos return the seat number 0 index
  */
 Game.prototype.findPlayerPos = function(id){
-    var pos = -1;
-    for(var i = 0; i < this.players.length; i++ ){
+    let pos = -1;
+    for(let i = 0; i < this.players.length; i++ ){
         if(this.players[i] && this.players[i].id == id){
             pos = i;
             break;
@@ -332,7 +331,7 @@ Game.prototype.updateGameInstance = function(){
  * Intializing All the chair on the table with a null value
  */
 Game.prototype.initPlayers = function(){
-    for(var i = 0; i < this.maxPlayer; i++){
+    for(let i = 0; i < this.maxPlayer; i++){
         this.players.push(null);
     }
 };
@@ -343,9 +342,9 @@ Game.prototype.initPlayers = function(){
  * Intializing the Game Pot with the Share holder as all Players
  */
 Game.prototype.initGamePots = function(){
-    var mainPot = {};
-    var stakeHolder = [];
-    for(var i = 0; i < this.maxPlayer; i++){
+    let mainPot = {};
+    let stakeHolder = [];
+    for(let i = 0; i < this.maxPlayer; i++){
         if(this.players[i]){
             stakeHolder.push(this.players[i].id);
         }
@@ -384,7 +383,7 @@ Game.prototype.currentGameState = function(){
     this.logd("## Game Community Cards - " + JSON.stringify(this.communityCards));
     this.logd("## Game waitingPlayers - " + JSON.stringify(this.waitingPlayers));
     this.logd("## Game oldPlayers - " + JSON.stringify(this.oldPlayers));
-    for (var i=0;i<this.maxPlayer;i++){
+    for (let i=0;i<this.maxPlayer;i++){
         if(this.players[i]!=null){
             this.logd("## Seat-" + (i+1) 
                 + "  has player " + this.players[i].name 
@@ -416,7 +415,7 @@ Game.prototype.currentGameState = function(){
  * If a table is full add Player to the waiting List
  */
 Game.prototype.addToWaiting = function(attr){
-    var waitingPlayer = {
+    let waitingPlayer = {
         id : attr.id,
         name : attr.name
     };
@@ -432,9 +431,9 @@ Game.prototype.addToWaiting = function(attr){
  */
 Game.prototype.addPlayer = function(attr) {
     let playerAdded = false;
-    var newPlayer = new Player(attr);
+    let newPlayer = new Player(attr);
     // this.logd(JSON.stringify(newPlayer));
-    for(var i = 0; i < this.players.length; i++){
+    for(let i = 0; i < this.players.length; i++){
         if(this.players[i] && this.players[i].id == newPlayer.id){
             this.logd("Player Aready Added");
             return playerAdded;
@@ -508,7 +507,7 @@ Game.prototype.reset = function() {
     //this.currentGameId = gameState.currentGameId;
     this.rakeEarning = 0;
 
-    for (var i = 0; i < this.players.length; i++) {
+    for (let i = 0; i < this.players.length; i++) {
         if(this.players[i])
             this.players[i].reset();
     }
@@ -527,7 +526,7 @@ Game.prototype.reset = function() {
  * To Check who are all the players got connected.
  */
 Game.prototype.checkPlayersConnected = function(){
-    for(var i = 0; i < this.players.length; i++){
+    for(let i = 0; i < this.players.length; i++){
         if(this.players[i] && this.players[i].connectionStatus == false){
             this.players[i].hasSitOut = true;
             this.players[i].connectionStatus = true;
@@ -541,7 +540,7 @@ Game.prototype.checkPlayersConnected = function(){
  * Check the sitout Status of all the Players
  */
 Game.prototype.checkPlayersSitout = function(){
-    for(var i = 0; i< this.players.length; i++){
+    for(let i = 0; i< this.players.length; i++){
         if(this.players[i]){
             if( this.players[i].idleForHand ){
                 if(this.players[i].hasSitOut == false){
@@ -552,7 +551,7 @@ Game.prototype.checkPlayersSitout = function(){
                 }
             }
             if(this.players[i].hasSitOut){
-                var sitOutDuration = moment() - this.players[i].sitOutTime;
+                let sitOutDuration = moment() - this.players[i].sitOutTime;
                 if(sitOutDuration / (1000 * 60) >= this.maxSitOutTime ){
                     this.removeFromGame(i);
                 }
@@ -581,7 +580,7 @@ Game.prototype.checkWaitingPlayers = function(){
  * Check whether its a valid Old Players of not
  */
 Game.prototype.validOldPlayer = function(params){
-    for(var i = 0; i<this.oldPlayers.length; i++){
+    for(let i = 0; i<this.oldPlayers.length; i++){
         if(this.oldPlayers[i].id == params.id){
             if(params.chips < this.oldPlayers[i].money){
                 return false;
@@ -597,8 +596,8 @@ Game.prototype.validOldPlayer = function(params){
  * Update the List of old Players
  */
 Game.prototype.updateOldPlayerList = function(){
-    for(var i = 0; i < oldPlayers.length; i++){
-        var sitOutDuration = moment() - this.oldPlayers[i].leaveTime;
+    for(let i = 0; i < this.oldPlayers.length; i++){
+        let sitOutDuration = moment() - this.oldPlayers[i].leaveTime;
         if(sitOutDuration / (1000*60) >= this.maxSitOutTime ){
             this.oldPlayers.splice(i,1);
             i--;
@@ -612,13 +611,13 @@ Game.prototype.updateOldPlayerList = function(){
  * Remove the Person Fromt he game
  */
 Game.prototype.removeFromGame = function(pos){
-    var player = {};
+    let player = {};
     player.id = this.players[pos].id;
     player.leaveTime = moment();
     player.money = this.players[pos].chips;
     this.oldPlayers.push(player); 
-    this.players[i].leaveGame();
-    this.players[i]=null;
+    this.players[pos].leaveGame();
+    this.players[pos] = null;
     this.currentTotalPlayer--;
 }
 
@@ -631,8 +630,8 @@ Game.prototype.checkForGameRun = function(){
     if(this.currentTotalPlayer < this.startWhenPlayerCount){
         return false;
     }
-    var cnt = 0;
-    for(var i = 0; i < this.maxPlayer; i++){
+    let cnt = 0;
+    for(let i = 0; i < this.maxPlayer; i++){
         if(this.players[i] && this.players[i].idleForHand == false)
             cnt++;
     }
@@ -647,10 +646,10 @@ Game.prototype.checkForGameRun = function(){
  * Function to Draw Card For each Players
  */
 Game.prototype.getPlayersCard = function(noOfCards){
-    for (var i=0; i<this.players.length; i++) {
+    for (let i=0; i<this.players.length; i++) {
         if(this.players[i] && this.players[i].idleForHand == false){
-            for (var j = 0; j < noOfCards; j++ ){
-                var c = this.deck.drawCard();
+            for (let j = 0; j < noOfCards; j++ ){
+                let c = this.deck.drawCard();
                 this.players[i].cards.push(c);
             }
             this.logd('Player ' + this.players[i].id + ' gets card : ' + JSON.stringify(this.players[i].cards));
@@ -685,8 +684,8 @@ Game.prototype.start = function() {
     
     //Setting the value for smal Blind and big blind.
     this.logd('Player ' + this.players[this.dealerPos].name + ' is the dealer');
-    var smallBlindPos = this.nextPlayer(this.dealerPos);
-    var bigBlindPos =  this.nextPlayer(smallBlindPos);
+    let smallBlindPos = this.nextPlayer(this.dealerPos);
+    let bigBlindPos =  this.nextPlayer(smallBlindPos);
 
     // small and big pays blind
     this.players[smallBlindPos].addBet(1/2 * this.bigBlind);
@@ -717,8 +716,8 @@ Game.prototype.start = function() {
  * Check which is the next Player int the row
  */
 Game.prototype.nextPlayer = function(pos){
-    for (var i=1; i<this.maxPlayer; i++ ){
-        var p = ( pos + i ) % this.maxPlayer;
+    for (let i=1; i<this.maxPlayer; i++ ){
+        let p = ( pos + i ) % this.maxPlayer;
         if(this.players[p] != null && this.players[p].idleForHand == false && this.players[p].hasSitOut == false && this.players[p].hasDone == false){
             return p;
         }
@@ -742,11 +741,11 @@ Game.prototype.incrementPlayerTurn = function() {
  * @returns {boolean}
  */
 Game.prototype.isEndRound = function() {
-    var endOfRound = true;
+    let endOfRound = true;
     //For each player, check
-    for(var i=0; i<this.players.length; i++) {
+    for(let i=0; i<this.players.length; i++) {
         if(this.players[i] && !this.players[i].idleForHand){
-            var plyr = this.players[i];
+            let plyr = this.players[i];
             if (!plyr.hasActed && !plyr.hasDone) {
                 endOfRound = false;
             }
@@ -813,7 +812,7 @@ Game.prototype.updatePotAndBet = function(){
  * Function to set Value for Bet For Round to 0.
  */
 Game.prototype.unsetBetForRound = function(){
-    for(var i =0 ; i < this.players.length; i++){
+    for(let i =0 ; i < this.players.length; i++){
         if(this.players[i]){
             this.players[i].betForRound = 0;
         }
@@ -898,13 +897,14 @@ Game.prototype.river = function() {
 Game.prototype.showdown = function() {
     this.logd('====================== SHOWDOWN ======================');
     this.round = 'showdown';
+    let ranks;
 
     if(this.checkPlayerLeft()  <  2){
         if(this.checkPlayerLeft() == 0){
             this.logd("All Have Folded or left Game No one won");
         }
         else{
-            for(var i = 0; i <this.players.length; i++ ){
+            for(let i = 0; i <this.players.length; i++ ){
                 if(this.players[i] && this.players[i].hasDone == false && this.players[i].idleForHand == false){
                     this.updatePotBeforeShowdown(this.players[i].id);
                     if(this.players[i].autoMuck==true){
@@ -922,22 +922,22 @@ Game.prototype.showdown = function() {
         this.logd('====================== Results ======================');
 
         if(this.gameType == "holdem"){
-            var evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
-            for(var i = 0; i < evalHands.length; i++){
+            let evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
+            for(let i = 0; i < evalHands.length; i++){
                 this.logd("Player  " + evalHands[i].playerInfo + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
             }
-            var ranks = evaluator.resultsAfterRank(evalHands);
-            for(var i = 0; i < ranks.length; i++ ){
+            ranks = evaluator.resultsAfterRank(evalHands);
+            for(let i = 0; i < ranks.length; i++ ){
                 this.logd("*********" + JSON.stringify(ranks[i]) + '\n');
             }
         }
         else if(this.gameType == "omaha"){
-            var evalHands = evaluator.sortByRankOmaha(this.communityCards, this.players);
-            for(var i = 0; i < evalHands.length; i++){
+            let evalHands = evaluator.sortByRankOmaha(this.communityCards, this.players);
+            for(let i = 0; i < evalHands.length; i++){
                 this.logd("Player  " + evalHands[i].playerInfo + " has rank " + evalHands[i].hand.value + " card type " + evalHands[i].hand.handName);
             }
-            var ranks = evaluator.resultsAfterRank(evalHands);
-            for(var i = 0; i < ranks.length; i++ ){
+            ranks = evaluator.resultsAfterRank(evalHands);
+            for(let i = 0; i < ranks.length; i++ ){
                 this.logd("*********" + JSON.stringify(ranks[i]) + '\n');
             }
         }
@@ -971,7 +971,7 @@ Game.prototype.showdown = function() {
         }
  */
 Game.prototype.callGameOver = function(){
-    var gameOverParams = {};
+    let gameOverParams = {};
     gameOverParams.gameState = this;
     gameOverParams.rakeEarning = this.rakeEarning;
     gameOverParams.earnings = this.gameEarnings();
@@ -985,21 +985,21 @@ Game.prototype.callGameOver = function(){
  */
 Game.prototype.gameEarnings = function(){
     this.logd("calculating the earnings");
-    var earnings = []
-    for(var i = 0; i < this.players.length; i++){
+    let earnings = []
+    for(let i = 0; i < this.players.length; i++){
         if(this.players[i] && this.players[i].idleForHand == false){
-            var p = {}
+            let p = {}
             p.id = this.players[i].id;
             p.amount =  this.players[i].bet * (-1);
             earnings.push(p);
         }
     }
-    for(var i =0; i < this.gamePots.length; i++ ){
+    for(let i =0; i < this.gamePots.length; i++ ){
         if(this.gamePots[i].winners.length == 1){
             this.rakeEarning = parseFloat(  this.rakeEarning || 0 ) + parseFloat( this.gamePots[i].rakeMoney || 0 );
-            for(var j = 0; j < this.players.length; j++){
+            for(let j = 0; j < this.players.length; j++){
                 if(this.players[j] && this.players[j].id == this.gamePots[i].winners[0]){
-                    for(var k = 0; k < earnings.length; k++ ){
+                    for(let k = 0; k < earnings.length; k++ ){
                         if(earnings[k].id == this.players[j].id){
                             earnings[k].amount += (this.gamePots[i].amount -  (this.gamePots[i].rakeMoney || 0) );
                         }
@@ -1008,11 +1008,11 @@ Game.prototype.gameEarnings = function(){
             }
         }
         else{
-            var noOfWinners = this.gamePots[i].winners.length;
-            var amountPerWinner = this.gamePots[i].amount / noOfWinners;
-            for(var j = 0; j < this.players.length; j++){
+            let noOfWinners = this.gamePots[i].winners.length;
+            let amountPerWinner = this.gamePots[i].amount / noOfWinners;
+            for(let j = 0; j < this.players.length; j++){
                 if(this.players[j] && this.gamePots[i].winners.indexOf(this.players[j].id) != -1){
-                   for(var k = 0; k < earnings.length; k++ ){
+                   for(let k = 0; k < earnings.length; k++ ){
                         if(earnings[k].id == this.players[j].id){
                             earnings[k].amount += amountPerWinner;
                         }
@@ -1035,7 +1035,7 @@ Game.prototype.gameEarnings = function(){
  */
 Game.prototype.startNewGame = function(){
     console.log("Staring new game...");
-    var newGame = new Game(this);
+    let newGame = new Game(this);
     newGame.reset();
     if(debugGameFlow)
         gameService.startGame(newGame);
@@ -1048,8 +1048,8 @@ Game.prototype.startNewGame = function(){
  * @returns {number} highestBet
  */
 Game.prototype.getHighestBet = function() {
-    var highestBet = -999;
-    for(var i=0; i<this.players.length; i++) {
+    let highestBet = -999;
+    for(let i=0; i<this.players.length; i++) {
         if (this.players[i] && highestBet < this.players[i].bet) {
             highestBet = this.players[i].bet;
         }
@@ -1064,7 +1064,7 @@ Game.prototype.getHighestBet = function() {
  */
 Game.prototype.gatherBets = function() {
     this.totalPot = 0;
-    for(var i=0; i<this.players.length; i++) {
+    for(let i=0; i<this.players.length; i++) {
         if(this.players[i]){
             this.players[i].totalBet = this.players[i].bet;
             this.totalPot += this.players[i].totalBet;
@@ -1080,27 +1080,27 @@ Game.prototype.gatherBets = function() {
  * Maintaing the GamePots after Each Round
  */
 Game.prototype.managePots = function(){
-    var extraPot = [];
+    let extraPot = [];
     this.gamePots = [];
     extraPot.push(0);
-    var differentPot = {}; 
-    for(var i = 0; i <this.players.length; i++){
+    let differentPot = {}; 
+    for(let i = 0; i <this.players.length; i++){
         if( this.players[i] ){
             if( this.players[i].lastAction != "fold" && this.players[i].totalBet > 0 )
                 differentPot[this.players[i].totalBet] = 1;
         }
     }
-    for(var i in differentPot){
+    for(let i in differentPot){
         extraPot.push(i);
     }
     extraPot = extraPot.sort();
 
-    for(var i = 1; i < extraPot.length; i++){
-        var sidePot = {};
-        var stakeHolder = [];
-        var potContribution = extraPot[i] - extraPot[i-1];
+    for(let i = 1; i < extraPot.length; i++){
+        let sidePot = {};
+        let stakeHolder = [];
+        let potContribution = extraPot[i] - extraPot[i-1];
         sidePot.amount = 0;
-        for(var j = 0; j < this.players.length ; j++ ){
+        for(let j = 0; j < this.players.length ; j++ ){
             if(this.players[j] && this.players[j].totalBet >= potContribution && this.players[j].lastAction != "fold"){
                 sidePot.amount += potContribution;
                 this.players[j].totalBet -= potContribution;
@@ -1129,13 +1129,13 @@ Game.prototype.managePots = function(){
  */
 Game.prototype.updatePotBeforeShowdown = function(winnerid){
     this.gamePots = [];
-    var mainPot = {};
+    let mainPot = {};
     mainPot.amount = this.currentPot;
     mainPot.winners = [];
     mainPot.winners.push(winnerid);
     mainPot.stakeHolders = [];
     mainPot.rakeMoney = 0;
-    for(var i = 0; i < this.players.length; i++ ){
+    for(let i = 0; i < this.players.length; i++ ){
         if(this.players[i] && this.players[i].bet > 0 ){
             mainPot.stakeHolders.push(this.players[i].id);
         }
@@ -1162,7 +1162,7 @@ Game.prototype.getCurrentPlayer = function() {
  * Sets all players' hasActed to false
  */
 Game.prototype.requestPlayerAction = function() {
-    for (var i=0; i<this.players.length; i++) {
+    for (let i=0; i<this.players.length; i++) {
         if(this.players[i]){
             if (!this.players[i].hasDone) {
                 this.players[i].hasActed = false;
@@ -1240,9 +1240,9 @@ Game.prototype.maximumRaise = function(){
  */
 Game.prototype.winnersPerPot = function (ranks){
     if(this.checkPlayerLeft() < 2 ){
-        for(var i= 0; i< this.players.length; i++){
+        for(let i= 0; i< this.players.length; i++){
             if(this.players[i] && this.players[i].idleForHand ==  false && this.players[i].hasDone == false){
-                for(var j= 0; j < this.gamePots.length; j++){
+                for(let j= 0; j < this.gamePots.length; j++){
                     this.gamePots[j].winners = [];
                     this.gamePots[j].winnerHand = "All Folded";
                     this.gamePots[j].winners.push ( this.players[i].id ); 
@@ -1251,12 +1251,12 @@ Game.prototype.winnersPerPot = function (ranks){
         }
     }
     else{
-        for(var i = 0; i < this.gamePots.length; i++ ){
-            var winners = [];
-            var winnerRank = 10000;
-            for(var j = 0; j < this.gamePots[i].stakeHolders.length; j++){
-                for(var k = 0; k < ranks.length; k++){
-                    for(var l = 0; l < ranks[k].length; l++){
+        for(let i = 0; i < this.gamePots.length; i++ ){
+            let winners = [];
+            let winnerRank = 10000;
+            for(let j = 0; j < this.gamePots[i].stakeHolders.length; j++){
+                for(let k = 0; k < ranks.length; k++){
+                    for(let l = 0; l < ranks[k].length; l++){
                         if(ranks[k][l].playerInfo == this.gamePots[i].stakeHolders[j]){
                             if(k < winnerRank){
                                 winnerRank = k;
@@ -1265,8 +1265,8 @@ Game.prototype.winnersPerPot = function (ranks){
                     }
                 }
             }
-            for(var j = 0; j < this.gamePots[i].stakeHolders.length; j++){
-                for(var l = 0; l < ranks[winnerRank].length; l++){
+            for(let j = 0; j < this.gamePots[i].stakeHolders.length; j++){
+                for(let l = 0; l < ranks[winnerRank].length; l++){
                     if(ranks[winnerRank][l].playerInfo == this.gamePots[i].stakeHolders[j] ){
                         winners.push(ranks[winnerRank][l].playerInfo);
                         this.gamePots[i].winnerHand = ranks[winnerRank][l].hand.handNameFull;
@@ -1285,19 +1285,19 @@ Game.prototype.winnersPerPot = function (ranks){
  */
 Game.prototype.handOverPot = function(){
     this.logd("Handing over the pot to the winners");
-    for(var i =0; i < this.gamePots.length; i++ ){
+    for(let i =0; i < this.gamePots.length; i++ ){
         if(this.gamePots[i].winners.length == 1){
             this.rakeEarning += (this.gamePots[i].rakeMoney || 0);
-            for(var j = 0; j < this.players.length; j++){
+            for(let j = 0; j < this.players.length; j++){
                 if(this.players[j] && this.players[j].id == this.gamePots[i].winners[0]){
                     this.players[j].addChips(this.gamePots[i].amount -  ( this.gamePots[i].rakeMoney || 0) );
                 }
             }
         }
         else{
-            var noOfWinners = this.gamePots[i].winners.length;
-            var amountPerWinner = this.gamePots[i].amount / noOfWinners;
-            for(var j = 0; j < this.players.length; j++){
+            let noOfWinners = this.gamePots[i].winners.length;
+            let amountPerWinner = this.gamePots[i].amount / noOfWinners;
+            for(let j = 0; j < this.players.length; j++){
                 if(this.players[j] && this.gamePots[i].winners.indexOf(this.players[j].id) != -1){
                     this.players[j].addChips(amountPerWinner);
                     noOfWinners--;
@@ -1316,9 +1316,9 @@ Game.prototype.handOverPot = function(){
  * Show off the Card
  */
 Game.prototype.showCard = function(){
-    for(var i = 0 ;i< this.gamePots.length; i++ ){
-        for(var j = 0 ; j < this.gamePots[i].winners.length; j++){
-            for(var k = 0; k <this.players.length; k++){
+    for(let i = 0 ;i< this.gamePots.length; i++ ){
+        for(let j = 0 ; j < this.gamePots[i].winners.length; j++){
+            for(let k = 0; k <this.players.length; k++){
                 if(this.players[k] && this.players[k].id == this.gamePots[i].winners[j]){
                     this.players[k].showCards = true;
                 }
@@ -1335,8 +1335,8 @@ Game.prototype.showCard = function(){
  */
 Game.prototype.dealerPosition = function(){
     this.logd("Chossing the dealer postions ");
-    for (var i=0; i<this.maxPlayer; i++ ){
-        var p = ( this.dealerPos + i ) % this.maxPlayer;
+    for (let i=0; i<this.maxPlayer; i++ ){
+        let p = ( this.dealerPos + i ) % this.maxPlayer;
         if(this.players[p] != null){
             this.dealerPos = p;
             break;
@@ -1358,7 +1358,7 @@ Game.prototype.rakeForGame = function(){
     if(this.round == 'deal'){
         return;
     }
-    for(var i = 0; i <this.gamePots.length; i++ ){
+    for(let i = 0; i <this.gamePots.length; i++ ){
         if( this.gamePots[i].stakeHolders.length <= this.rakeY ){
             this.gamePots[i].rakeMoney = ((this.gamePots[i].amount * this.rakeX) / 100).toFixed(2);
         } else{
@@ -1377,8 +1377,8 @@ Game.prototype.rakeForGame = function(){
  * Check if Only one Player left then end the Game.
  */
 Game.prototype.checkPlayerLeft = function(){
-    var totalPlaying = 0;
-    for(var i = 0; i <this.players.length; i++ ){
+    let totalPlaying = 0;
+    for(let i = 0; i <this.players.length; i++ ){
         if(this.players[i] && this.players[i].hasDone == false && this.players[i].idleForHand == false){
             totalPlaying++;
         }
@@ -1393,7 +1393,7 @@ Game.prototype.checkPlayerLeft = function(){
  * Intialiase all players
  */
 Game.prototype.reloadAllPlayers = function(){
-    for(var i = 0; i<this.players.length; i++){
+    for(let i = 0; i<this.players.length; i++){
         if(this.players[i]){
             this.players[i] = new Player(this.players[i]);
             this.players[i].game = this;
