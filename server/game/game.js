@@ -49,8 +49,8 @@ function Game(gameState) {
     this.waitingPlayers = gameState.waitingPlayers || [];       // Array of all the players who will be there in the waiting list
     this.oldPlayers = gameState.oldPlayers || [];               // Array of all the players who all have lastly Played the game.  
     this.round = gameState.round || 'idle';                     // current round in a game ['idle', 'deal', 'flop' , 'turn', 'river']
-    this.dealerPos = gameState.dealerPos || 0;                  // to determine the dealer position for each game, incremented by 1 for each end game
-    this.turnPos = gameState.turnPos || 0;                      // to determine whose turn it is in a playing game
+    this.dealerPos = gameState.dealerPos || -1;                  // to determine the dealer position for each game, incremented by 1 for each end game
+    this.turnPos = gameState.turnPos || -1;                      // to determine whose turn it is in a playing game
     this.totalPot = gameState.totalPot || 0;                    // accumulated chips in center of the table after each Game
     this.currentPot = gameState.currentPot || 0;                // Current Pot at any point of time. 
     this.minRaise = gameState.minRaise || 0;                    // Minimum raise to be have
@@ -502,7 +502,8 @@ Game.prototype.reset = function() {
     this.maxRaise = 0            
     this.callValue = 0;
     this.rakeEarning = 0;
-    this.lastTurnTime = 0;        
+    this.lastTurnTime = 0;
+    this.turnPos = -1;        
 
     //this.currentGameId = gameState.currentGameId;
     this.rakeEarning = 0;
