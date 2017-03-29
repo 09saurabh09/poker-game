@@ -950,8 +950,10 @@ Game.prototype.showdown = function() {
 
     this.currentGameState();
     this.callGameOver();
-    //this.reset();
-    setTimeout(this.startNewGame.bind(this), this.startNewGameAfter);
+    if( this.checkForGameRun() ){
+        this.logd("Need More Player to start the Game ");
+        setTimeout(this.startNewGame.bind(this), this.startNewGameAfter);
+    }
 };
 
 
