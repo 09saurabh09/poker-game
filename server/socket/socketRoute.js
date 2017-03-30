@@ -80,9 +80,9 @@ gameAuthorizedIO.on('connection', function (socket) {
         // socketController.testQ(params, socket);
     });
 
-    socket.on('disconnect', function (socket) {
+    socket.on('disconnect', function () {
         console.log(`INFO ::: Player disconnected with id: ${socket.id}`);
-        // socketController.playerDisconnected(socket.user);
+        socketController.playerDisconnected(socket.user);
     });
 });
 
