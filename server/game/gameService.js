@@ -280,7 +280,7 @@ module.exports = {
     isGameStarted: function (gameState) {
         let startGame;
         let parentType = gameState.parentType;
-        if ((parentType == "cashGame") && gameState.currentTotalPlayer == 3) {
+        if ((parentType == "cashGame") && gameState.currentTotalPlayer == gameState.startWhenPlayerCount) {
             startGame = true;
         }
         return startGame;
@@ -288,6 +288,10 @@ module.exports = {
 
     playerTurn: function ({params, user, game, turnType}) {
         let self = this;
+        if(game.round == "showdown") {
+            console.log(`INFO ::: can't make move game finished`);
+            return;
+        }
         if(turnType == "timer") {
             game.playerTurn({callType: "player", call: "doBestCall"}, user);
         } else {

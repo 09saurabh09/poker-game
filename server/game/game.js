@@ -4,7 +4,7 @@
 "use strict";
 module.exports = Game;
 
-let debugGameFlow = false;
+let debugGameFlow = true;
 
 let Player = require('./player.js');
 let Deck = require('../utils/deck.js');
@@ -108,7 +108,7 @@ Game.prototype.playerTurn = function(params, user){
     this.reloadAllPlayers();
 
     if(this.round == 'showdown'){
-        console.log("Game Ended Can Do your turn this.round " + this.round);
+        console.log("Game Ended Cann't Do this player turn curren round is " + this.round);
         return;
     }
 
@@ -395,10 +395,11 @@ Game.prototype.currentGameState = function(){
                 + "  expCallValue- " + this.players[i].expCallValue
                 + "  lastAct-" + this.players[i].lastAction
                 + "  acted-"+this.players[i].hasActed 
-                + "  hasDone-" + this.players[i].hasDone 
+                + "  hasDone-" + this.players[i].hasDone
+                + "  showCards-" + this.players[i].showCards 
                 + "  idle-" + this.players[i].idleForHand 
                 + "  id-" + this.players[i].id
-                + "  timeBank" + this.players[i].timeBank
+                + "  timeBank-" + this.players[i].timeBank
                 + "  sitout-"+this.players[i].hasSitOut+","+ this.players[i].sitOutTime
                 + "  maintinChips-"+ this.players[i].isMaintainChips + "," + this.players[i].maintainChips);
         }
@@ -716,9 +717,9 @@ Game.prototype.start = function() {
  * Check which is the next Player int the row
  */
 Game.prototype.nextPlayer = function(pos){
-    for (let i=1; i<this.maxPlayer; i++ ){
+    for (let i = 1; i <= this.maxPlayer; i++ ){
         let p = ( pos + i ) % this.maxPlayer;
-        if(this.players[p] != null && this.players[p].idleForHand == false && this.players[p].hasSitOut == false && this.players[p].hasDone == false){
+        if(this.players[p] != null && this.players[p].idleForHand == false  && this.players[p].hasDone == false){
             return p;
         }
     }
@@ -950,7 +951,6 @@ Game.prototype.showdown = function() {
 
     this.currentGameState();
     this.callGameOver();
-    //this.reset();
     setTimeout(this.startNewGame.bind(this), this.startNewGameAfter);
 };
 
@@ -1037,8 +1037,11 @@ Game.prototype.startNewGame = function(){
     console.log("Staring new game...");
     let newGame = new Game(this);
     newGame.reset();
-    if(debugGameFlow)
-        gameService.startGame(newGame);
+    if( newGame.checkForGameRun() ){
+        this.logd("Need More Player to start the Game ");
+        if(debugGameFlow)
+            gameService.startGame(newGame);
+    }
 }
 
 
@@ -1153,6 +1156,7 @@ Game.prototype.getCurrentPlayer = function() {
     //return new Player(this.players[this.turnPos]);
     // this.players[this.turnPos] = new Player(this.players[this.turnPos]);
     // this.players[this.turnPos].game = this;
+    this.logd("getCurrentPlayer " + this.turnPos);
     return this.players[this.turnPos];
 };
 
@@ -1319,7 +1323,7 @@ Game.prototype.showCard = function(){
     for(let i = 0 ;i< this.gamePots.length; i++ ){
         for(let j = 0 ; j < this.gamePots[i].winners.length; j++){
             for(let k = 0; k <this.players.length; k++){
-                if(this.players[k] && this.players[k].id == this.gamePots[i].winners[j]){
+                if(this.players[k] && this.players[k].id == this.gamePots[i].winners[j] && this.gamePots[i].winnerHand != "All Folded"){
                     this.players[k].showCards = true;
                 }
             }
@@ -1422,6 +1426,7 @@ Game.prototype.getRawObject = function() {
 Game.prototype.updateTimeBank = function(timeBankUsed) {
     //this.getCurrentPlayer().subtractTimeBank(timeBankUsed);
     //this.timeBank -= timeBankUsed;
+    this.currentGameState();
     console.log(`Player id ${this.getCurrentPlayer().id} and name ${this.getCurrentPlayer().name} with subtract time ${timeBankUsed} and curren time Bank ${this.getCurrentPlayer().timeBank}`);
     this.getCurrentPlayer().timeBank -= timeBankUsed;
 }

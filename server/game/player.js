@@ -5,7 +5,7 @@
 "use strict";
 
 let moment = require("moment");
-let debugGameFlow = false;
+let debugGameFlow = true;
 
 if(debugGameFlow)
     var gameService = require("./gameService");
