@@ -4,15 +4,15 @@
  
 "use strict";
 
-var moment = require("moment");
-var debugGameFlow = true;
+let moment = require("moment");
+let debugGameFlow = true;
 
 if(debugGameFlow)
     var gameService = require("./gameService");
 
 module.exports = Player;
 
-var debug = true;
+let debug = true;
 function logd(message) {
     if (debug) {
         console.log(message);
@@ -91,7 +91,7 @@ Player.prototype.allin = function() {
 Player.prototype.callOrCheck = function() {
     this.hasActed = true;
 
-    var diff = this.game.getHighestBet() - this.bet;
+    let diff = this.game.getHighestBet() - this.bet;
 
     if(diff >= this.chips){
         this.allin();
@@ -114,7 +114,7 @@ Player.prototype.callOrCheck = function() {
  * Get the Value of call for the player
  */
 Player.prototype.getCallOrCheck = function(){
-    var diff = this.game.getHighestBet() - this.bet;
+    let diff = this.game.getHighestBet() - this.bet;
     return diff;
 };
 
@@ -145,7 +145,7 @@ Player.prototype.doBestCall = function(){
 Player.prototype.raise = function(amount) {
     this.lastAction = "raise";
 
-    var diff = amount - this.bet;
+    let diff = amount - this.bet;
 
     this.game.updateLastRaise(amount - this.game.getHighestBet());
 
@@ -234,7 +234,7 @@ Player.prototype.sitIn = function(){
  * When Player will leave Game
  */
 Player.prototype.leaveGame = function(){
-    var params = {
+    let params = {
         id:17,
         chips: 500 
     }
@@ -260,7 +260,7 @@ Player.prototype.addChips = function(amount){
  * Maintaining the chips stack after every game
  */
 Player.prototype.maintainChipsStack = function(){
-    var stackDifference = this.maintainChips - this.chips;
+    let stackDifference = this.maintainChips - this.chips;
     if( stackDifference > 0 ){
         this.addChips(stackDifference); 
     }
