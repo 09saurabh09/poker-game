@@ -1060,6 +1060,8 @@ Game.prototype.startNewGame = function(){
             gameService.startGame(this);
     } else{
         this.reset();
+        if(debugGameFlow)
+            gameService.resetGame(this);
     }
 }
 
@@ -1074,6 +1076,20 @@ Game.prototype.getHighestBet = function() {
     for(let i=0; i<this.players.length; i++) {
         if (this.players[i] && highestBet < this.players[i].bet) {
             highestBet = this.players[i].bet;
+        }
+    }
+    return highestBet;
+};
+
+
+/**
+ * Calculating the highestBet for Round.
+ */
+Game.prototype.getHighestBetForRound = function() {
+    let highestBet = -999;
+    for(let i=0; i<this.players.length; i++) {
+        if (this.players[i] && highestBet < this.players[i].betForRound) {
+            highestBet = this.players[i].betForRound;
         }
     }
     return highestBet;
@@ -1225,7 +1241,7 @@ Game.prototype.mininumunRaise = function(){
         }
     }
     else{
-       this.minRaise = this.lastRaise + this.getHighestBet();
+       this.minRaise = this.lastRaise + this.getHighestBetForRound();
     }
     return this.minRaise;
 }
@@ -1246,7 +1262,7 @@ Game.prototype.maximumRaise = function(){
                 this.maxRaise =  this.currenPot;
             }
         } else{
-            this.maxRaise = this.currentPot + 2 * this.getHighestBet();
+            this.maxRaise = this.currentPot + 2 * this.getHighestBetForRound();
         }
 
         if(this.getCurrentPlayer().chips  <  this.maxRaise){
