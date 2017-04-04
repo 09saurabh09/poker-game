@@ -196,7 +196,7 @@ module.exports = {
 
                         socket.join(GlobalConstant.gameRoomPrefix + table.id);
                         socket.join(GlobalConstant.chatRoomPrefix + table.id);
-                        if (gameService.isGameStarted(game)) {
+                        if (game.checkForGameRun()) {
                             gameService.startGame(game);
                         } else {
                             SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + table.id).emit(eventConfig.playerJoined, commonGameState);
