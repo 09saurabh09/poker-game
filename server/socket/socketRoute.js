@@ -16,6 +16,8 @@ let jwt = require("jsonwebtoken");
 let socketController = require("./socketController");
 let eventConfig = require("../socket/eventConfig");
 
+let UserModel = DB_MODELS.User;
+
 // Namespace for authorized events
 let gameAuthorizedIO = io.of('/poker-game-authorized');
 
@@ -29,8 +31,22 @@ gameAuthorizedIO.use(function (socket, next) {
             console.log(`ERROR ::: Unable to authorize socket, error: ${err.message}, stack: ${err.stack}`);
             return next(new Error('not authorized'));
         } else {
-            socket.user = user;
-            return next();
+            UserModel.findOne({
+                where: {
+                    id: user.id
+                },
+                attributes: { exclude: ['password'] }
+            }).then(function (user) {
+                if (user) {
+                    socket.user = user;
+                    next();
+                } else {
+                    return next(new Error('not authorized'));
+                }
+            }).catch(function (err) {
+                console.log(`ERROR ::: Unable to authenticate user, error: ${err.message}, stack: ${err.stack}`);
+                return next(new Error('not authorized'));
+            })
         }
     });
 });
