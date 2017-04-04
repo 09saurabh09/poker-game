@@ -1080,6 +1080,20 @@ Game.prototype.getHighestBet = function() {
 };
 
 
+/**
+ * Calculating the highestBet for Round.
+ */
+Game.prototype.getHighestBetForRound = function() {
+    let highestBet = -999;
+    for(let i=0; i<this.players.length; i++) {
+        if (this.players[i] && highestBet < this.players[i].betForRound) {
+            highestBet = this.players[i].betForRound;
+        }
+    }
+    return highestBet;
+};
+
+
 
 /**
  * Collect all bets from players to the board's pot
@@ -1225,7 +1239,7 @@ Game.prototype.mininumunRaise = function(){
         }
     }
     else{
-       this.minRaise = this.lastRaise + this.getHighestBet();
+       this.minRaise = this.lastRaise + this.getHighestBetForRound();
     }
     return this.minRaise;
 }
@@ -1246,7 +1260,7 @@ Game.prototype.maximumRaise = function(){
                 this.maxRaise =  this.currenPot;
             }
         } else{
-            this.maxRaise = this.currentPot + 2 * this.getHighestBet();
+            this.maxRaise = this.currentPot + 2 * this.getHighestBetForRound();
         }
 
         if(this.getCurrentPlayer().chips  <  this.maxRaise){
