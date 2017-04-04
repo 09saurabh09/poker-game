@@ -105,6 +105,7 @@ Game.prototype.logd = function(message) {
  */
 Game.prototype.playerTurn = function(params, user){
     let self = this;
+    let response;
     this.reloadAllPlayers();
 
     if(this.round == 'showdown'){
@@ -161,7 +162,7 @@ Game.prototype.playerTurn = function(params, user){
             case "addPlayer":
                 this.logd("Add Player has been called for -------- " + user.id );
                 player.sessionKey = uuidV4();
-                this.addPlayer(player);
+                response = this.addPlayer(player);
                 break;
 
             case "addToWaiting":
@@ -268,6 +269,8 @@ Game.prototype.playerTurn = function(params, user){
     }
     this.updateGameInstance();
     this.currentGameState();
+
+    return response;
 }
 
 

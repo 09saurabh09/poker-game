@@ -26,6 +26,7 @@ function logd(message) {
 function Player(options) {
     this.id = options.id;
     this.name = options.name;
+    this.userName = options.userName,
     this.chips = options.chips;
     this.isMaintainChips = options.isMaintainChips; // Thyis should be intialised with the game boolean value
     this.maintainChips = options.chips;             // The value to which we need to maintain stack
