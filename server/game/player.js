@@ -147,7 +147,7 @@ Player.prototype.doBestCall = function(){
 Player.prototype.raise = function(amount) {
     this.lastAction = "raise";
 
-    let diff = amount - this.bet;
+    let diff = amount - this.betForRound;
 
     this.game.updateLastRaise(amount - this.betForRound ) ;
 
