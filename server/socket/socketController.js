@@ -84,8 +84,19 @@ module.exports = {
                                 console.log(`SUCCESS ::: Player with id ${currentUser.id}, disconnected on table id: ${pokerTable.id}`);
                             })
                             .catch(function (err) {
-                                console.log(`ERROR ::: Player with id ${currentUser.id}, can't be restored on table id: ${pokerTable.id}, error: ${err.message}, stack: ${err.stack}`);
+                                console.log(`ERROR ::: Player with id ${currentUser.id}, can't be disconnected on table id: ${pokerTable.id}, error: ${err.message}, stack: ${err.stack}`);
                             })
+                        
+                        // Handle disconnection timer
+
+                        // let jobId = GlobalConstant.playerTurnTimerPrefix + game.tableId;
+                        // POKER_QUEUE.playerTurnTimer.getJob(jobId).then(function (job) {
+                        //     if (job) {
+                        //         job.remove().then(function () {
+                        //             console.log(`INFO ::: On disconnection successfully removed job with id: ${job.jobId}`);
+                        //         })
+                        //     }
+                        // });
                     })
                 })
         }).catch(function (err) {
@@ -103,11 +114,11 @@ module.exports = {
             }
         }).then(function (table) {
             let currentGameState = table.gameState;
-            if (currentGameState.players[currentGameState.turnPos] && currentGameState.players[currentGameState.turnPos].id == socket.user.id &&
+            if (gameService.isPlayerTurn(currentGameState, socket.user) &&
                 gameConfig.allowedActions.playerTurn.indexOf(params.call) > -1) {
                 let game = new Game(table.gameState);
                 params.tableInstance = table;
-                gameService.playerTurn({params, user, game})
+                gameService.playerTurn({ params, user, game })
                 return null;
             } else {
                 console.log(`ERROR ::: Validation failed, not a turn for player id ${socket.user.id} for table: ${tableId}`)

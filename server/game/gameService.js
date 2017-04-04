@@ -233,7 +233,7 @@ module.exports = {
 
                 POKER_QUEUE.gameStartCreateUserGames.add(game, GlobalConstant.bullQueueDefaultJobOptions)
                     .then(function (job) {
-                        console.log(`SUCCESS ::: gameStartCreateUserGames job has been successfully queued with id: ${job.data.id}`);
+                        console.log(`SUCCESS ::: gameStartCreateUserGames job has been successfully queued with id: ${job.jobId}`);
                     })
                     .catch(function (err) {
                         console.log(`ERROR ::: Unable to enqueue gameStartCreateUserGames job, error: ${err.message}`);
@@ -286,26 +286,23 @@ module.exports = {
         return startGame;
     },
 
-    playerTurn: function ({params, user, game, turnType}) {
+    playerTurn: function ({ params, user, game, turnType }) {
         let self = this;
-        if(game.round == "showdown") {
+        if (game.round == "showdown") {
             console.log(`INFO ::: can't make move game finished`);
             return;
         }
-        if(turnType == "timer") {
-            game.playerTurn({callType: "player", call: "doBestCall"}, user);
+
+        if (turnType == "timer") {
+            game.playerTurn({ callType: "player", call: "doBestCall" }, user);
         } else {
-            // Stop timer for player
-            let duration = parseInt(GlobalConstant.playerTurnTimers[game.tableId].getDurationPassed()/ 1000);
-            let timeBankUsed = (duration - pokerTableConfig.timer.defaultDuration) > 0 ? (duration - pokerTableConfig.timer.defaultDuration): 0;
-            GlobalConstant.playerTurnTimers[game.tableId].stop();
+            let duration = parseInt((Date.now() - game.lastTurnAt) / 1000);
+            let timeBankUsed = (duration - game.actionTime) > 0 ? (duration - game.actionTime) : 0;
             console.log(`INFO ::: Time bank used by player: ${user.id} is: ${timeBankUsed}`);
             game.updateTimeBank(timeBankUsed);
-            // delete GlobalConstant.playerTurnTimers[game.tableId];
-
             game.playerTurn(params, user);
         }
-        
+
         let newGameState = game.getRawObject();
         return DB_MODELS.sequelize.transaction(function (t) {
             return GameHistoryModel.create({
@@ -321,9 +318,15 @@ module.exports = {
 
                 // Add timer for next turn
                 timer.playerTurnTimer(self, game);
+                return;
+
             }).catch(function (err) {
                 console.log(`ERROR ::: Unable to make player turn for user: ${user.id}, error: ${err.message}, stack: ${err.stack}`);
             });
         })
+    },
+
+    isPlayerTurn: function(gameState, user) {
+        return gameState.players[gameState.turnPos] && gameState.players[gameState.turnPos].id == user.id;
     }
 }

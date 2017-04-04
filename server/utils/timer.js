@@ -9,16 +9,34 @@ let GameHistoryModel = DB_MODELS.GameHistory;
 module.exports = {
     playerTurnTimer: function (gameService, game) {
         let user = game.getCurrentPlayer();
-        // let pos = game.findPlayerPos(user.id);
         let playerTimeBank = user.timeBank;
 
-        console.log(`INFO ::: Adding player turn timer for user ${user.id}`);
-        GlobalConstant.playerTurnTimers[game.tableId] = momentTimer.timer(moment.duration(game.actionTime + playerTimeBank, "seconds"), function () {
-            console.log(`INFO ::: Started player turn timer for player ${user.id}`);
-            let turnType = "timer";
-            gameService.playerTurn({ user, game, turnType })
-        });
-        console.log(`Timer added for player ${user.id}`);
+        let delay = (game.actionTime + playerTimeBank) * 1000;
+        console.log(`INFO ::: Adding player turn timer for user ${user.id} with delay of ${delay}`);
+
+        let jobId = GlobalConstant.playerTurnTimerPrefix + game.tableId;
+
+        POKER_QUEUE.playerTurnTimer.getJob(jobId).then(function (job) {
+            return new PROMISE(function (resolve) {
+                if (job) {
+                    job.remove().then(function () {
+                        console.log(`INFO ::: successfully removed job with id: ${job.jobId}`);
+                        resolve();
+                    })
+                } else {
+                    resolve();
+                }
+            }).then(function () {
+                let opts = _.assign({ delay, removeOnComplete: true, jobId });
+                POKER_QUEUE.playerTurnTimer.add({ game: game.getRawObject()}, opts)
+                    .then(function (job) {
+                        console.log(`SUCCESS ::: playerTurnTimer job has been successfully queued with id: ${job.jobId}`);
+                    })
+                    .catch(function (err) {
+                        console.log(`ERROR ::: Unable to enqueue playerTurnTimer job, error: ${err.message}`);
+                    })
+            })
+        })
     },
 
     playerJoinTimer: function (table, user, Game) {
@@ -28,8 +46,8 @@ module.exports = {
             console.log(`INFO ::: Started table join timer for player ${user.id}`);
             table.reload().then(function (tableReloaded) {
                 let game = tableReloaded.gameState;
-                game.players.forEach(function(player) {
-                    if(player && (player.id == user.id)) {
+                game.players.forEach(function (player) {
+                    if (player && (player.id == user.id)) {
                         player.timeBank += table.timeBank.timeGiven;
                     }
                 })
