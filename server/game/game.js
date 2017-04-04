@@ -391,6 +391,7 @@ Game.prototype.currentGameState = function(){
                 + "  bet-" + this.players[i].bet 
                 + "  totalBet-" + this.players[i].totalBet
                 + "  betForRound-" + this.players[i].betForRound
+                + "  betForLastRound-" + this.players[i].betForLastRound
                 + "  cards- " + JSON.stringify(this.players[i].cards)
                 + "  expCallValue- " + this.players[i].expCallValue
                 + "  lastAct-" + this.players[i].lastAction
@@ -668,6 +669,10 @@ Game.prototype.start = function() {
     if( !this.checkForGameRun() ){
         this.logd("Need More Player to start the Game ");
         return;
+    } else {
+        this.logd("Need More Player to start the Game ");
+        if(debugGameFlow)
+            gameService.startGame(this);
     }
     this.logd('========== STARTING GAME ==========');
     
@@ -798,6 +803,18 @@ Game.prototype.checkAfterEachRound = function(){
 }
 
 
+/**
+ * Updating Bet for Last Round
+ */
+Game.prototype.updateBetForLastRound = function(){
+    for(let i = 0; i < this.players.length; i++){
+        if(this.players[i] && !this.players[i].idleForHand){
+            this.players[i].betForLastRound = this.players[i].betForRound;
+        }
+    }
+}
+
+
 
 /**
  *
@@ -805,6 +822,7 @@ Game.prototype.checkAfterEachRound = function(){
 Game.prototype.updatePotAndBet = function(){
     this.gatherBets();
     this.managePots();
+    this.updateBetForLastRound();    
     this.unsetBetForRound();
 }
 
@@ -1037,11 +1055,6 @@ Game.prototype.startNewGame = function(){
     console.log("Staring new game...");
     let newGame = new Game(this);
     newGame.reset();
-    if( newGame.checkForGameRun() ){
-        this.logd("Need More Player to start the Game ");
-        if(debugGameFlow)
-            gameService.startGame(newGame);
-    }
 }
 
 

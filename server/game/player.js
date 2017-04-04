@@ -38,6 +38,7 @@ function Player(options) {
     this.bet = options.bet || 0;
     this.totalBet = options.totalBet || 0;
     this.betForRound = options.betForRound || 0;
+    this.betForLastRound = options.betForLastRound || 0;
     this.showCards = options.showCards || false;
 
     this.lastAction =options.lastAction || "";
