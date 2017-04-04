@@ -44,13 +44,14 @@ GlobalConstant.chatRoomPrefix = "pokerChatRoom";
 GlobalConstant.gameRoomPrefix = "pokerGameRoom";
 GlobalConstant.playerTurnTimers = {};
 GlobalConstant.tableJoinTimers = {};
+GlobalConstant.playerTurnTimerPrefix = "playerTurn:";
 
 global.POKER_QUEUE = {};
 
 GlobalConstant.bullQueueRedisConnectionOptions = {
     // host: DB_CREDENTIALS.REDIS_HOST,
     // port: DB_CREDENTIALS.REDIS_PORT,
-    keyPrefix: 'bullPokerQueue',
+    // keyPrefix: 'bullPokerQueue',
     retryStrategy: function (options) {
         if (options.error && options.error.code === 'ECONNREFUSED') {
             // End reconnecting on a specific error and flush all commands with a individual error
@@ -77,9 +78,10 @@ GlobalConstant.bullQueueDefaultJobOptions = {
     }
 }
 
-POKER_QUEUE.gameStateUpdated = Queue('gameStateUpdated', DB_CREDENTIALS.REDIS_URL, GlobalConstant.bullQueueRedisConnectionOptions); 
+// POKER_QUEUE.gameStateUpdated = Queue('gameStateUpdated', DB_CREDENTIALS.REDIS_URL, GlobalConstant.bullQueueRedisConnectionOptions); 
 POKER_QUEUE.gameOverUpdateGame = Queue('gameOverUpdateGame', DB_CREDENTIALS.REDIS_URL, GlobalConstant.bullQueueRedisConnectionOptions); 
 POKER_QUEUE.gameStartCreateUserGames = Queue('gameStartCreateUserGames', DB_CREDENTIALS.REDIS_URL, GlobalConstant.bullQueueRedisConnectionOptions);
+POKER_QUEUE.playerTurnTimer = Queue('playerTurnTimer', DB_CREDENTIALS.REDIS_URL, GlobalConstant.bullQueueRedisConnectionOptions);
 
 // global.GAME_QUEUE = kue.createQueue({
 //     prefix: 'pokerQueue',
@@ -107,3 +109,5 @@ POKER_QUEUE.gameStartCreateUserGames = Queue('gameStartCreateUserGames', DB_CRED
 //         }
 //     }
 // });
+
+require('../queue/bullQueueWorker');

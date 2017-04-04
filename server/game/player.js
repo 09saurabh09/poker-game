@@ -49,8 +49,8 @@ function Player(options) {
     this.sitOutTime = options.sitOutTime || 0;                // This will be a time stamp
     this.idleForHand = options.idleForHand || false;           // Used by Game Flow if a person join in between game
     this.connectionStatus = options.connectionStatus || true;       // This is for checking whether the player is connected or not
-    this.disconnectionTIme = options.disconnectionTIme || 0;         // TIme since the person has been Disconnected
-    this.autoMuck = options.disconnectionTIme || true;               // Default True for the every Player 
+    this.disconnectedAt = options.disconnectedAt || 0;         // TIme since the person has been Disconnected
+    this.autoMuck = options.disconnectedAt || true;               // Default True for the every Player 
     this.timeBank = options.timeBank || 0;                          //To store the TimeBank for a player
     this.expCallValue = options.expCallValue || 0;              //Expected Call Value
 }
@@ -300,7 +300,7 @@ Player.prototype.unSetMaintainChips = function(){
  */
 Player.prototype.playerDisconnected = function(){
     this.connectionStatus = false;
-    this.disconnectionTIme =moment();
+    this.disconnectedAt = Date.now();
 }
 
 
@@ -310,7 +310,7 @@ Player.prototype.playerDisconnected = function(){
  */
 Player.prototype.playerConnected = function(){
     this.connectionStatus = true;
-    this.disconnectionTIme = 0;
+    this.disconnectedAt = 0;
 }
 
 
