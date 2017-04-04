@@ -207,6 +207,7 @@ Player.prototype.addBet = function(amount) {
 
 
 Player.prototype.moveNext = function(){
+    this.sitIn();
     this.game.incrementPlayerTurn();
     this.game.checkForNextRound();
 }
