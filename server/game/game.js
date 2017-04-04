@@ -672,10 +672,6 @@ Game.prototype.start = function() {
     if( !this.checkForGameRun() ){
         this.logd("Need More Player to start the Game ");
         return;
-    } else {
-        this.logd("Need More Player to start the Game ");
-        if(debugGameFlow)
-            gameService.startGame(this);
     }
     this.logd('========== STARTING GAME ==========');
     
@@ -1058,6 +1054,13 @@ Game.prototype.startNewGame = function(){
     console.log("Staring new game...");
     let newGame = new Game(this);
     newGame.reset();
+    if( this.checkForGameRun() ) {
+        this.logd("Need More Player to start the Game ");
+        if(debugGameFlow)
+            gameService.startGame(this);
+    } else{
+        this.reset();
+    }
 }
 
 
