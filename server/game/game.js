@@ -1060,6 +1060,8 @@ Game.prototype.startNewGame = function(){
             gameService.startGame(this);
     } else{
         this.reset();
+        if(debugGameFlow)
+            gameService.resetGame(this);
     }
 }
 
