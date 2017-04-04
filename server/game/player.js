@@ -149,7 +149,7 @@ Player.prototype.raise = function(amount) {
 
     let diff = amount - this.bet;
 
-    this.game.updateLastRaise(amount - this.game.getHighestBet());
+    this.game.updateLastRaise(amount - this.betForRound ) ;
 
     if(diff >= this.chips){
         this.allin();
