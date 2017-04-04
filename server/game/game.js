@@ -278,7 +278,7 @@ Game.prototype.playerTurn = function(params, user){
  * Update the Last turn time in moment
  */
 Game.prototype.updateLastTurnAt = function(){
-    this.lastTurnAt = moment();
+    this.lastTurnAt = Date.now();
 }
 
 
@@ -713,7 +713,7 @@ Game.prototype.start = function() {
 
     // begin game, start 'deal' Round
     console.log("Current Player " + this.getCurrentPlayer().id);
-    this.lastTurnAt = moment();
+    this.updateLastTurnAt();
     this.updateGameInstance();
     this.currentGameState();
     this.logd('========== Round DEAL ==========');
