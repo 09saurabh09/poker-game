@@ -327,7 +327,36 @@ module.exports = {
         })
     },
 
-    isPlayerTurn: function(gameState, user) {
+    isPlayerTurn: function (gameState, user) {
         return gameState.players[gameState.turnPos] && gameState.players[gameState.turnPos].id == user.id;
+    },
+
+    resetGame: function (game) {
+        let self = this;
+        let pokerTable;
+        return DB_MODELS.sequelize.transaction(function (t) {
+            // chain all your queries here. make sure you return them.
+            return PokerTableModel.findOne({ where: { id: game.tableId } }, { transaction: t })
+                .then(function (table) {
+                    pokerTable = table;
+                    return GameHistoryModel.create({
+                        gameState: game.getRawObject(),
+                        pokerTableId: pokerTable.id,
+                        GameId: game.currentGameId
+                    }, { transaction: t })
+                    // table.set("gameState", _.assign(game.getRawObject(), { currentGameId: gameInstance.id }));
+                    // return table.save({ transaction: t })
+                });
+        }).then(function () {
+            // Emit game state to all players in room
+            let commonGameState = self.getCommonGameState(game);
+
+            SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.turnCompleted, commonGameState);
+            SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.turnCompleted, commonGameState);
+
+
+        }).catch(function (err) {
+            console.log(`ERROR ::: Unable to reset game, error: ${err.message}, stack: ${err.stack}`);
+        })
     }
 }
