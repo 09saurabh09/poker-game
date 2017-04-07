@@ -3,6 +3,7 @@
 let gameModel = DB_MODELS.Game;
 let PokerTableModel = DB_MODELS.PokerTable;
 let GameHistoryModel = DB_MODELS.GameHistory;
+let UserModel = DB_MODELS.User;
 let eventConfig = require("../socket/eventConfig");
 let timer = require("../utils/timer");
 let pokerTableConfig = require("./pokerTableConfig");
@@ -271,7 +272,12 @@ module.exports = {
     // }
 
     leaveGame: function (params) {
-
+        let query = `UPDATE "Users" SET "currentBalance" = "currentBalance" + ${params.chips} WHERE id = ${params.id};`;
+        DB_MODELS.sequelize.query(query).then(function () {
+            console.log(`SUCCESS ::: ${params.chips} added to user ${params.id}`);
+        }).catch(function (err) {
+            console.log(`ERROR ::: Error update chips for user ${params.id}`);
+        })
     },
 
     getGameStateForUser: function (gameState, currentUser) {
