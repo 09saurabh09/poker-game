@@ -41,6 +41,7 @@ function Player(options) {
     this.betForRound = options.betForRound || 0;
     this.betForLastRound = options.betForLastRound || 0;
     this.showCards = options.showCards || false;
+    this.disconnectionCount = options.disconnectionCount || 0;
 
     this.lastAction =options.lastAction || "";
     this.hasActed = options.hasActed || false;              // acted for one round (call/check/raise)
@@ -302,6 +303,7 @@ Player.prototype.unSetMaintainChips = function(){
 Player.prototype.playerDisconnected = function(){
     this.connectionStatus = false;
     this.disconnectedAt = Date.now();
+    this.disconnectionCount++;
 }
 
 
