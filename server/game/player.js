@@ -173,6 +173,7 @@ Player.prototype.reset = function() {
     this.bet = 0;
     this.totalBet = 0;
     this.betForRound = 0;
+    this.disconnectionCount = 0;
 
     this.lastAction = "";
     this.hasActed = false;
