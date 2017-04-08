@@ -520,11 +520,22 @@ Game.prototype.reset = function() {
     this.checkPlayersConnected();
     this.checkPlayersSitout();
     this.checkWaitingPlayers();
-
+    this.kickPlayerWithNoChips();
     this.start();
     //this.initGamePots();
 };
 
+
+/**
+ * Check to Kick Player with no Money
+ */
+Game.prototype.kickPlayerWithNoChips = function(){
+    for(let i = 0; i <this.players.length; i++ ){
+        if(this.players[i] && this.players[i].chips <= this.bigBlind){
+            this.removeFromGame(i);            
+        }
+    }
+}
 
 
 /**
