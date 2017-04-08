@@ -366,23 +366,17 @@ module.exports = {
         })
     },
 
-    // params = [
-    //     {
-    //         id: 11,
-    //         chips: 100
-    //     }
-    // ]
-
-    settleBuyIn: function (params, game) {
+    settleBuyIn: function (game) {
         let self= this;
         return new PROMISE(function (resolve) {
             async.each(game.players, function (player, done) {
-                if (player.requestAmount > 0) {
+                if (player && player.requestAmount > 0) {
                     return DB_MODELS.sequelize.transaction(function (t) {
                         // chain all your queries here. make sure you return them.
                         let query = `UPDATE "Users" SET "currentBalance" = "currentBalance" - ${player.requestAmount} WHERE id = ${params.id};`;
                         return DB_MODELS.sequelize.query(query).then(function () {
                             player.chips += player.requestAmount;
+                            player.requestAmount = 0;
                             return GameHistoryModel.create({
                                 gameState: game.getRawObject(),
                                 pokerTableId: game.tableId,
