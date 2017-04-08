@@ -59,8 +59,12 @@ function Player(options) {
 /**
  * Folds the game
  */
-Player.prototype.fold = function() {
+Player.prototype.fold = function(timerCall) {
     logd('Player ' + this.name + ' FOLD');
+
+    if(!timerCall){
+        this.hasSitOut = false;
+    }
 
     this.lastAction = "fold";
     this.hasDone = true;
@@ -77,6 +81,8 @@ Player.prototype.allin = function() {
 
     this.lastAction = "allin";
     this.hasDone = true;
+    this.hasSitOut = false;
+    
 
     this.addBet(this.chips);
     this.moveNext();
@@ -90,8 +96,12 @@ Player.prototype.allin = function() {
  * With the highest bet in the table
  * If highest bet is 0, will do nothing
  */
-Player.prototype.callOrCheck = function() {
+Player.prototype.callOrCheck = function(timerCall) {
     this.hasActed = true;
+
+    if(!timerCall){
+        this.hasSitOut = false;
+    }
 
     let diff = this.game.getHighestBet() - this.bet;
 
@@ -129,10 +139,11 @@ Player.prototype.getCallOrCheck = function(){
 Player.prototype.doBestCall = function(){
     this.sitOut();
     this.timeBank = 0;
+    let timerCall = true;
     if(this.getCallOrCheck() == 0){
-        this.callOrCheck();
+        this.callOrCheck(timerCall);
     } else{
-        this.fold();
+        this.fold(timerCall);
     }
 }
 
@@ -151,6 +162,7 @@ Player.prototype.raise = function(amount) {
 
     this.game.updateLastRaise(amount - this.betForRound ) ;
 
+    this.hasSitOut = false;
     if(diff >= this.chips){
         this.allin();
     } else {

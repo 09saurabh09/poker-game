@@ -121,7 +121,7 @@ Game.prototype.playerTurn = function(params, user){
         switch(params.call){
             case "fold":
                 this.logd("Fold has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.getCurrentPlayer().fold();
+                this.getCurrentPlayer().fold(false);
                 break;
             case "allin":
                 this.logd("allIn has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
@@ -129,7 +129,7 @@ Game.prototype.playerTurn = function(params, user){
                 break;
             case "callOrCheck":
                 this.logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.getCurrentPlayer().callOrCheck();
+                this.getCurrentPlayer().callOrCheck(false);
                 break;
             case "raise":
                 if( params.amount < this.mininumunRaise() || params.amount > this.maximumRaise()){
