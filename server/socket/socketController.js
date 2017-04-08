@@ -86,7 +86,7 @@ module.exports = {
                             .catch(function (err) {
                                 console.log(`ERROR ::: Player with id ${currentUser.id}, can't be disconnected on table id: ${pokerTable.id}, error: ${err.message}, stack: ${err.stack}`);
                             })
-                        
+
                         // Handle disconnection timer
 
                         // let jobId = GlobalConstant.playerTurnTimerPrefix + game.tableId;
@@ -328,6 +328,46 @@ module.exports = {
         } else {
             console.log(`ERROR ::: Not a valid game preference option, ${JSON.stringify(params)} for user: ${socket.user.id}`);
         }
+    },
 
+    buyIn: function (params, socket) {
+        let tableId = params.tableId;
+        return DB_MODELS.sequelize.transaction(function (t) {
+            // chain all your queries here. make sure you return them.
+            return UserModel.findOne({
+                where: {
+                    id: socket.user.id
+                }
+            }, { transaction: t }).then(function (user) {
+                if (user && user.currentBalance >= params.chips) {
+                    return PokerTable.findOne({
+                        where: {
+                            id: tableId
+                        }
+                    }, { transaction: t }).then(function (table) {
+                        let game = new Game(table.gameState);
+                        let playerPos = game.findPlayerPos(socket.user.id);
+                        if (playerPos > -1) {
+                            game.players[playerPos].updatePlayerPreferences(params);
+                        }
+                        // table.set("gameState", game.getRawObject());
+                        let newGameState = game.getRawObject();
+                        return GameHistoryModel.create({
+                            gameState: newGameState,
+                            pokerTableId: table.id,
+                            GameId: newGameState.currentGameId
+                        }, { transaction: t })
+                        // return table.save({ transaction: t })
+                    }).then(function (result) {
+                        console.log(`SUCCESS ::: Game preferences updated for table ${tableId} by user ${socket.user.id}`);
+                    })
+                } else {
+                    console.log(`ERROR ::: Buy in not possible, as account balance is low`);
+                    return
+                }
+            }).catch(function (err) {
+                console.log(`ERROR ::: Unable to update game preference on table with id ${tableId} by user ${socket.user.id}, error: ${err.message}, stack: ${err.stack}`);
+            })
+        });
     }
 }
