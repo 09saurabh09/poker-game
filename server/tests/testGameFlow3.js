@@ -17,7 +17,7 @@ var gameParams = {
     rakeY: 5,
     rakeZ: 2,
     debugMode: true,
-    gameType: "holdem",
+    gameType: "holdem"
 };
 
 var playerParams1 = {
@@ -112,9 +112,7 @@ game.playerTurn(playerParams5, userParams5);
 // game.start();
 
 
-var gameInstance = {
-    dealerPos:4
-};
+
 var gameInstance = null;
 
 var turnParamsCall = {

@@ -4,7 +4,7 @@
 "use strict";
 module.exports = Game;
 
-let debugGameFlow = true;
+let debugGameFlow = false;
 
 let Player = require('./player.js');
 let Deck = require('../utils/deck.js');
@@ -928,8 +928,8 @@ Game.prototype.showdown = function() {
     this.round = 'showdown';
     let ranks;
 
-    if(this.checkPlayerLeft()  <  2){
-        if(this.checkPlayerLeft() == 0){
+    if(this.checkStakeHoldersLeft()  <  2){
+        if(this.checkStakeHoldersLeft() == 0){
             this.logd("All Have Folded or left Game No one won");
         }
         else{
@@ -949,6 +949,12 @@ Game.prototype.showdown = function() {
     else{
         //Sorting all the players card accordingly
         this.logd('====================== Results ======================');
+
+        if(this.checkPlayerLeft  < 2){
+            for(let i = this.communityCards.length; i < 5; i++){
+                this.communityCards(this.deck.drawCard());
+            }
+        }
 
         if(this.gameType == "holdem"){
             let evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
@@ -1436,6 +1442,19 @@ Game.prototype.checkPlayerLeft = function(){
     return totalPlaying;
 }
 
+
+/**
+ * Check the Number of StakeHolders
+ */
+Game.prototype.checkStakeHoldersLeft = function(){
+    let totalStakeHolders = 0;
+    for(let i = 0; i <this.players.length; i++ ){
+        if(this.players[i] && this.players[i].idleForHand == false && (this.players[i].hasDone == false || this.players[i].lastAction == 'allin') ){
+            totalStakeHolders++;
+        }
+    }
+    return totalStakeHolders;
+}
 
 
 
