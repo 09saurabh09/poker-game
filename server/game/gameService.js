@@ -366,7 +366,7 @@ module.exports = {
     },
 
     settleBuyIn: function (game) {
-        let self= this;
+        let self = this;
         return new PROMISE(function (resolve) {
             async.each(game.players, function (player, done) {
                 if (player && player.requestAmount > 0) {
@@ -382,10 +382,10 @@ module.exports = {
                                 GameId: game.currentGameId
                             }, { transaction: t })
                         });
-                    }).then(function(gameHistory) {
+                    }).then(function (gameHistory) {
                         console.log(`SUCCESS ::: INR ${player.requestAmount} is added on table ${game.tableId} for player ${player.id}`);
                         done();
-                    }).catch(function(err) {
+                    }).catch(function (err) {
                         console.log(`ERROR ::: Can not add INR ${player.requestAmount} on table ${game.tableId} for player ${player.id} error: ${err.message}, stack: ${err.stack}`);
                         done();
                     })
@@ -398,7 +398,7 @@ module.exports = {
         })
     },
 
-    getDisconnectedPayload: function({table, player}) {
+    getDisconnectedPayload: function ({ table, player }) {
         return {
             tableId: table.id,
             disconnectedAt: Date.now(),
@@ -407,10 +407,34 @@ module.exports = {
         }
     },
 
-    getConnectedPayload: function({table, player}) {
+    getConnectedPayload: function ({ table, player }) {
         return {
             tableId: table.id,
             playerId: player.id
         }
+    },
+
+    playerTurnCompleted: function (game) {
+        let newGameState = game.getRawObject();
+        return DB_MODELS.sequelize.transaction(function (t) {
+            return GameHistoryModel.create({
+                gameState: newGameState,
+                pokerTableId: game.tableId,
+                GameId: newGameState.currentGameId
+            }, { transaction: t }).then(function (gameHistory) {
+                console.log(`SUCCESS Game history created for game: ${newGameState.currentGameId}`);
+                let commonGameState = self.getCommonGameState(game);
+
+                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + game.tableId).emit(eventConfig.turnCompleted, commonGameState);
+                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + game.tableId).emit(eventConfig.turnCompleted, commonGameState);
+
+                // Add timer for next turn
+                timer.playerTurnTimer(game);
+                return;
+
+            }).catch(function (err) {
+                console.log(`ERROR ::: Unable to make player turn, error: ${err.message}, stack: ${err.stack}`);
+            });
+        })
     }
 }
