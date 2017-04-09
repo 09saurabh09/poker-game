@@ -70,7 +70,8 @@ module.exports = {
             currentPot: gameState.currentPot,
             players: [],
             lastTurnAt: gameState.lastTurnAt,
-            actionTime: gameState.actionTime
+            actionTime: gameState.actionTime,
+            timestamp: Date.now()
         };
 
         gameState.players = gameState.players || Array.apply(null, Array(gameState.maxPlayer));
