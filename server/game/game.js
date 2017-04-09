@@ -995,6 +995,11 @@ Game.prototype.updatePlayerChips = function(){
     for(let i = 0; i < this.players.length; i++ ){
         if(this.players[i] && this.players[i].isMaintainChips && this.players[i].requestAmount == 0){
             this.players[i].requestAmount = this.players[i].maintainChips;
+            if(this.players[i].maintainChips > this.players[i].chips){
+                this.players[i].requestAmount = this.players[i].maintainChips - this.players[i].chips;
+            } else {
+                this.players[i].requestAmount = 0;
+            }
         }
     }
 }
