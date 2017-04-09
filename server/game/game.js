@@ -968,9 +968,22 @@ Game.prototype.showdown = function() {
 
     this.currentGameState();
     this.callGameOver();
+    this.updatePlayerChips();
     setTimeout(this.startNewGame.bind(this), this.startNewGameAfter);
 };
 
+
+
+/**
+ * Changes Player Params before new Game
+ */
+Game.prototype.updatePlayerChips = function(){
+    for(let i = 0; i < this.players.length; i++ ){
+        if(this.players[i] && this.players[i].isMaintainChips && this.players[i].requestAmount == 0){
+            this.players[i].requestAmount = this.players[i].maintainChips;
+        }
+    }
+}
 
 
 /**
