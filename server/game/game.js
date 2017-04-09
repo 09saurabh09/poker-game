@@ -1080,7 +1080,7 @@ Game.prototype.startNewGame = function(){
         if( game.checkForGameRun() ) {
             let newGame = new Game(game);
             newGame.reset();
-            this.logd("Need More Player to start the Game ");
+            game.logd("Need More Player to start the Game ");
             if(debugGameFlow)
                 gameService.startGame(newGame);
         } else {
