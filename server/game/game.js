@@ -227,6 +227,9 @@ Game.prototype.playerTurn = function(params, user){
                     break;
                 }
                 this.players[pos].sitIn();
+                if(this.checkForGameRun()){
+                    gameService.startGame(this);
+                }
                 break;
 
             case "setMaintChips":

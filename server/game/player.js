@@ -232,6 +232,7 @@ Player.prototype.sitOut = function(){
  */
 Player.prototype.sitIn = function(){
     this.hasSitOut = false;
+    this.idleForHand = false;
     this.sitOutTime = 0;
 }
 
