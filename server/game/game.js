@@ -1078,7 +1078,7 @@ Game.prototype.startNewGame = function(){
     gameService.settleBuyIn(this).then(function(game) {
         game.reloadAllPlayers();
         if( game.checkForGameRun() ) {
-            let newGame = new Game(this);
+            let newGame = new Game(game);
             newGame.reset();
             this.logd("Need More Player to start the Game ");
             if(debugGameFlow)
