@@ -49,7 +49,16 @@ function Game(gameState) {
     this.oldPlayers = gameState.oldPlayers || [];               // Array of all the players who all have lastly Played the game.  
     this.round = gameState.round || 'idle';                     // current round in a game ['idle', 'deal', 'flop' , 'turn', 'river']
     this.dealerPos = gameState.dealerPos || -1;                  // to determine the dealer position for each game, incremented by 1 for each end game
-    this.turnPos = gameState.turnPos || -1;                      // to determine whose turn it is in a playing game
+    if(gameState.turnPos === undefined ){
+        this.turnPos = -1;
+    } else{
+        this.turnPos = gameState.turnPos;
+    }
+    if(gameState.dealerPos === undefined ){
+        this.dealerPos = -1;
+    } else{
+        this.dealerPos = gameState.turnPos;
+    }
     this.totalPot = gameState.totalPot || 0;                    // accumulated chips in center of the table after each Game
     this.currentPot = gameState.currentPot || 0;                // Current Pot at any point of time. 
     this.minRaise = gameState.minRaise || 0;                    // Minimum raise to be have
