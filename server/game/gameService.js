@@ -232,7 +232,7 @@ module.exports = {
                 SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.turnCompleted, commonGameState);
 
                 // Add timer for next player
-                timer.playerTurnTimer(self, game);
+                timer.playerTurnTimer(game);
 
                 POKER_QUEUE.gameStartCreateUserGames.add(game, GlobalConstant.bullQueueDefaultJobOptions)
                     .then(function (job) {
@@ -304,10 +304,8 @@ module.exports = {
         if (turnType == "timer") {
             game.playerTurn({ callType: "player", call: "doBestCall" }, user);
         } else {
-            let duration = parseInt((Date.now() - game.lastTurnAt) / 1000);
-            let timeBankUsed = (duration - game.actionTime) > 0 ? (duration - game.actionTime) : 0;
-            console.log(`INFO ::: Time bank used by player: ${user.id} is: ${timeBankUsed}`);
-            game.updateTimeBank(timeBankUsed);
+
+            game.updateTimeBank();
             game.playerTurn(params, user);
         }
 
@@ -325,7 +323,7 @@ module.exports = {
                 SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + game.tableId).emit(eventConfig.turnCompleted, commonGameState);
 
                 // Add timer for next turn
-                timer.playerTurnTimer(self, game);
+                timer.playerTurnTimer(game);
                 return;
 
             }).catch(function (err) {
