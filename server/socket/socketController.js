@@ -342,7 +342,7 @@ module.exports = {
                     id: socket.user.id
                 }
             }, { transaction: t }).then(function (user) {
-                if (user && user.currentBalance >= params.chips) {
+                if (user && user.currentBalance >= params.playerInfo.chips) {
                     return PokerTable.findOne({
                         where: {
                             id: tableId
@@ -351,7 +351,7 @@ module.exports = {
                         let game = new Game(table.gameState);
                         let playerPos = game.findPlayerPos(socket.user.id);
                         if (playerPos > -1) {
-                            game.players[playerPos].updatePlayerPreferences(params);
+                            game.players[playerPos].updatePlayerPreferences(params.playerInfo);
                         }
                         // table.set("gameState", game.getRawObject());
                         let newGameState = game.getRawObject();
