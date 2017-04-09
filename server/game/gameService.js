@@ -415,6 +415,7 @@ module.exports = {
     },
 
     playerTurnCompleted: function (game) {
+        let self = this;
         let newGameState = game.getRawObject();
         return DB_MODELS.sequelize.transaction(function (t) {
             return GameHistoryModel.create({
