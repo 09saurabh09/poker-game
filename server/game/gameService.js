@@ -373,7 +373,7 @@ module.exports = {
                 if (player && player.requestAmount > 0) {
                     return DB_MODELS.sequelize.transaction(function (t) {
                         // chain all your queries here. make sure you return them.
-                        let query = `UPDATE "Users" SET "currentBalance" = "currentBalance" - ${player.requestAmount} WHERE id = ${params.id};`;
+                        let query = `UPDATE "Users" SET "currentBalance" = "currentBalance" - ${player.requestAmount} WHERE id = ${player.id};`;
                         return DB_MODELS.sequelize.query(query).then(function () {
                             player.chips += player.requestAmount;
                             player.requestAmount = 0;
