@@ -216,7 +216,7 @@ Game.prototype.playerTurn = function(params, user){
                     this.logd("Player not present " + user.id);
                     break;
                 }
-                this.players[pos].sitOut();
+                this.players[pos].doBestCall();
                 break;
 
             case "sitIn":
@@ -227,7 +227,8 @@ Game.prototype.playerTurn = function(params, user){
                     break;
                 }
                 this.players[pos].sitIn();
-                if(this.checkForGameRun()){
+                if(this.checkForGameRun() && this.round == 'idle'){
+                    this.reset();
                     gameService.startGame(this);
                 }
                 break;
