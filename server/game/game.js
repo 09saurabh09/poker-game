@@ -1462,9 +1462,12 @@ Game.prototype.getRawObject = function() {
 /**
  * Update Time Bank
  */
-Game.prototype.updateTimeBank = function(timeBankUsed) {
+Game.prototype.updateTimeBank = function() {
     //this.getCurrentPlayer().subtractTimeBank(timeBankUsed);
     //this.timeBank -= timeBankUsed;
+    let self = this;
+    let duration = parseInt((Date.now() - self.lastTurnAt) / 1000);
+    let timeBankUsed = (duration - self.actionTime) > 0 ? (duration - self.actionTime) : 0;
     this.currentGameState();
     console.log(`Player id ${this.getCurrentPlayer().id} and name ${this.getCurrentPlayer().name} with subtract time ${timeBankUsed} and curren time Bank ${this.getCurrentPlayer().timeBank}`);
     this.getCurrentPlayer().timeBank -= timeBankUsed;

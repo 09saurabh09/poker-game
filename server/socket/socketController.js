@@ -31,6 +31,7 @@ module.exports = {
                         let game = new Game(pokerTable.gameState);
                         game.playerTurn(params, currentUser);
                         let newGameState = game.getRawObject();
+                        timer.connectTimer({gameService, game, currentUser});
                         GameHistoryModel.create({
                             gameState: newGameState,
                             pokerTableId: pokerTable.id,
@@ -74,7 +75,12 @@ module.exports = {
                         game.playerTurn(params, currentUser);
                         // pokerTable.set("gameState", game.getRawObject());
                         // pokerTable.save()
+                    
+                        if (gameService.isPlayerTurn(game, currentUser)) {
+                            game.updateTimeBank();
+                        }
                         let newGameState = game.getRawObject();
+                        timer.disconnectTimer({gameService, game:newGameState, currentUser});
                         GameHistoryModel.create({
                             gameState: newGameState,
                             pokerTableId: pokerTable.id,
@@ -87,16 +93,6 @@ module.exports = {
                                 console.log(`ERROR ::: Player with id ${currentUser.id}, can't be disconnected on table id: ${pokerTable.id}, error: ${err.message}, stack: ${err.stack}`);
                             })
 
-                        // Handle disconnection timer
-
-                        // let jobId = GlobalConstant.playerTurnTimerPrefix + game.tableId;
-                        // POKER_QUEUE.playerTurnTimer.getJob(jobId).then(function (job) {
-                        //     if (job) {
-                        //         job.remove().then(function () {
-                        //             console.log(`INFO ::: On disconnection successfully removed job with id: ${job.jobId}`);
-                        //         })
-                        //     }
-                        // });
                     })
                 })
         }).catch(function (err) {
