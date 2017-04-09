@@ -57,7 +57,7 @@ function Game(gameState) {
     if(gameState.dealerPos === undefined ){
         this.dealerPos = -1;
     } else{
-        this.dealerPos = gameState.turnPos;
+        this.dealerPos = gameState.dealerPos;
     }
     this.totalPot = gameState.totalPot || 0;                    // accumulated chips in center of the table after each Game
     this.currentPot = gameState.currentPot || 0;                // Current Pot at any point of time. 
