@@ -1052,17 +1052,21 @@ Game.prototype.gameEarnings = function(){
  */
 Game.prototype.startNewGame = function(){
     console.log("Staring new game...");
-    let newGame = new Game(this);
-    newGame.reset();
-    if( this.checkForGameRun() ) {
-        this.logd("Need More Player to start the Game ");
-        if(debugGameFlow)
-            gameService.startGame(newGame);
-    } else {
-        this.reset();
-        if(debugGameFlow)
-            gameService.resetGame(this);
-    }
+
+    gameService.settleBuyIn(this).then(function(game) {
+        game.reloadAllPlayers();
+        if( game.checkForGameRun() ) {
+            let newGame = new Game(this);
+            newGame.reset();
+            this.logd("Need More Player to start the Game ");
+            if(debugGameFlow)
+                gameService.startGame(newGame);
+        } else {
+            game.reset();
+            if(debugGameFlow)
+                gameService.resetGame(game);
+        }
+    })
 }
 
 
