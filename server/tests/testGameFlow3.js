@@ -155,7 +155,7 @@ var turnParamsStack = {
 
 var turnParamsFold = {
     callType:"player",
-    call:"doBestCall",
+    call:"allin",
     amount:20,
     playerId:""
 };
@@ -178,8 +178,8 @@ game = new Game(game);
 game.playerTurn(turnParamsRaise1,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsRaise2,gameInstance);
-// game = new Game(game);
-// game.playerTurn(turnParamsFold,gameInstance);
+game = new Game(game);
+game.playerTurn(turnParamsFold,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);

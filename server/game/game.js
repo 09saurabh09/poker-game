@@ -950,9 +950,9 @@ Game.prototype.showdown = function() {
         //Sorting all the players card accordingly
         this.logd('====================== Results ======================');
 
-        if(this.checkPlayerLeft  < 2){
-            for(let i = this.communityCards.length; i < 5; i++){
-                this.communityCards(this.deck.drawCard());
+        if(this.checkPlayerLeft()  < 2){
+            for(let i = this.communityCards.length; i <= 5; i++){
+                this.communityCards.push(this.deck.drawCard());
             }
         }
 
@@ -1295,7 +1295,7 @@ Game.prototype.maximumRaise = function(){
  * Deciding Winner for every Pot and Transfering Money to Wineer
  */
 Game.prototype.winnersPerPot = function (ranks){
-    if(this.checkPlayerLeft() < 2 ){
+    if(this.checkStakeHoldersLeft() < 2 ){
         for(let i= 0; i< this.players.length; i++){
             if(this.players[i] && this.players[i].idleForHand ==  false && this.players[i].hasDone == false){
                 for(let j= 0; j < this.gamePots.length; j++){
