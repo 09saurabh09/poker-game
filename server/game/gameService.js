@@ -396,5 +396,21 @@ module.exports = {
                 resolve(game);
             })
         })
+    },
+
+    getDisconnectedPayload: function({table, player}) {
+        return {
+            tableId: table.id,
+            disconnectedAt: Date.now(),
+            playerId: player.id,
+            timer: 120
+        }
+    },
+
+    getConnectedPayload: function({table, player}) {
+        return {
+            tableId: table.id,
+            playerId: player.id
+        }
     }
 }

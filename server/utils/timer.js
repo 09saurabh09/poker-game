@@ -81,7 +81,7 @@ module.exports = {
                     let opts = { delay, removeOnComplete: true, jobId: newJobId };
                     return POKER_QUEUE.playerTurnTimer.add({ game: game.getRawObject() }, opts)
                         .then(function (job) {
-                            console.log(`SUCCESS ::: playerTurnTimer job has been successfully queued with id: ${job.jobId}`);
+                            console.log(`SUCCESS ::: playerTurnTimer job while disconnect has been successfully queued with id: ${job.jobId}`);
                         })
                 }).catch(function (err) {
                     console.log(`ERROR ::: error in adding disconnectTimer err: ${err.message}, stack: ${err.stack}`);

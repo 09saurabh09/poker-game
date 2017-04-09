@@ -42,6 +42,10 @@ module.exports = {
                             .then(function (gameHistory) {
                                 socket.join(GlobalConstant.gameRoomPrefix + pokerTable.id);
                                 socket.join(GlobalConstant.chatRoomPrefix + pokerTable.id);
+
+                                let payload = gameService.getConnectedPayload({table: pokerTable, player: currentUser});
+                                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.playerConnected, payload);
+                                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.playerConnected, payload);
                                 // console.log(SOCKET_IO.nsps["/poker-game-authorized"].sockets);
                                 // console.log(SOCKET_IO.nsps["/poker-game-authorized"].adapter.rooms, SOCKET_IO.nsps["/poker-game-unauthorized"].adapter.rooms)
                                 console.log(`SUCCESS ::: Player with id ${currentUser.id}, restored on table id: ${pokerTable.id}`);
@@ -87,6 +91,9 @@ module.exports = {
                             GameId: newGameState.currentGameId
                         })
                             .then(function (gameHistory) {
+                                let payload = gameService.getDisconnectedPayload({table: pokerTable, player: currentUser});
+                                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.playerDisconnected, payload);
+                                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.playerDisconnected, payload);
                                 console.log(`SUCCESS ::: Player with id ${currentUser.id}, disconnected on table id: ${pokerTable.id}`);
                             })
                             .catch(function (err) {
