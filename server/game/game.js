@@ -217,6 +217,7 @@ Game.prototype.playerTurn = function(params, user){
                     break;
                 }
                 this.players[pos].doBestCall();
+                gameService.playerTurnCompleted(this);
                 break;
 
             case "sitIn":
