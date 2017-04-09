@@ -91,7 +91,7 @@ module.exports = {
         }
     },
 
-    connectTimer: function (gameService, game, currentUser) {
+    connectTimer: function ({gameService, game, currentUser}) {
         let self = this;
         if (gameService.isPlayerTurn(game, currentUser)) {
             // Remove existing player turn job

@@ -29,7 +29,7 @@ module.exports = {
                     pokerTables.forEach(function (pokerTable) {
                         // console.log(pokerTable.id);
                         let game = new Game(pokerTable.gameState);
-                        game.playerTurn(params, currentUser);
+                        // game.playerTurn(params, currentUser);
                         let newGameState = game.getRawObject();
                         timer.connectTimer({gameService, game, currentUser});
                         GameHistoryModel.create({
@@ -76,7 +76,7 @@ module.exports = {
                     pokerTables.forEach(function (pokerTable) {
                         // console.log(pokerTable.id);
                         let game = new Game(pokerTable.gameState);
-                        game.playerTurn(params, currentUser);
+                        // game.playerTurn(params, currentUser);
                         // pokerTable.set("gameState", game.getRawObject());
                         // pokerTable.save()
                     
