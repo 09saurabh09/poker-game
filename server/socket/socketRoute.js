@@ -53,7 +53,7 @@ gameAuthorizedIO.use(function (socket, next) {
 
 gameAuthorizedIO.on('connection', function (socket) {
     console.log("Player connected to authorized channel");
-    // socketController.playerConnected(socket, socket.user);
+    socketController.playerConnected(socket, socket.user);
 
     // Socket event for player turn
     socket.on('player-turn', function (params) {
@@ -103,7 +103,7 @@ gameAuthorizedIO.on('connection', function (socket) {
 
     socket.on('disconnect', function () {
         console.log(`INFO ::: Player disconnected with id: ${socket.id}`);
-        // socketController.playerDisconnected(socket.user);
+        socketController.playerDisconnected(socket.user);
     });
 });
 

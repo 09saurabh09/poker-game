@@ -77,8 +77,8 @@ module.exports = {
             if (game.getCurrentPlayer().disconnectionCount < 3) {
                 POKER_QUEUE.playerTurnTimer.removeJob(jobId).then(function () {
                     let delay = 120 * 1000;
-                    let newJobId = GlobalConstant.disconnectionTimerPrefix + game.tableId;
-                    let opts = { delay, removeOnComplete: true, jobId: newJobId };
+                    // let newJobId = GlobalConstant.disconnectionTimerPrefix + game.tableId;
+                    let opts = { delay, removeOnComplete: true, jobId};
                     return POKER_QUEUE.playerTurnTimer.add({ game: game.getRawObject() }, opts)
                         .then(function (job) {
                             console.log(`SUCCESS ::: playerTurnTimer job while disconnect has been successfully queued with id: ${job.jobId}`);
@@ -95,7 +95,7 @@ module.exports = {
         let self = this;
         if (gameService.isPlayerTurn(game, currentUser)) {
             // Remove existing player turn job
-            let jobId = GlobalConstant.disconnectionTimerPrefix + game.tableId;
+            let jobId = GlobalConstant.playerTurnTimerPrefix + game.tableId;
             POKER_QUEUE.playerTurnTimer.removeJob(jobId).then(function () {
                 self.playerTurnTimer(game);
             }).catch(function (err) {

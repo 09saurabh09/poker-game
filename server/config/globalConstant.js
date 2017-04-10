@@ -9,6 +9,8 @@ require('dotenv').config({ path: `${__dirname}/environments/${env.NODE_ENV}.env`
 let Promise = require("bluebird");
 let lodash = require("lodash");
 let async = require("async");
+const redis = require('redis');
+
 // let kue = require("kue");
 // let Queue = require("bull");
 let Queue = require('../queue/bullQueueManager');
@@ -37,7 +39,9 @@ global.async = async;
 
 // Do not change the position
 let io = require('../socket/socketRoute');
+const client = redis.createClient(DB_CREDENTIALS.REDIS_URL);
 global.SOCKET_IO = io;
+global.REDIS_CLIENT = client;
 
 global.GlobalConstant = {};
 GlobalConstant.tokenSecret = env.TOKEN_SECRET;

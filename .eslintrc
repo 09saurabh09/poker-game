@@ -31,6 +31,7 @@
         "_": true,
         "async": true,
         "SOCKET_IO": true,
-        "POKER_QUEUE": true
+        "POKER_QUEUE": true,
+        "REDIS_CLIENT": true
     }
 }

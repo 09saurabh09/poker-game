@@ -351,6 +351,7 @@ module.exports = {
                         let game = new Game(table.gameState);
                         let playerPos = game.findPlayerPos(socket.user.id);
                         if (playerPos > -1) {
+                            game.reloadAllPlayers();
                             game.players[playerPos].updatePlayerPreferences(params.playerInfo);
                         }
                         // table.set("gameState", game.getRawObject());

@@ -27,7 +27,8 @@ var server = http.createServer(app);
 // var io = require('socket.io')(server);
 SOCKET_IO.attach(server);
 // SOCKET_IO.adapter(redis({ host: DB_CREDENTIALS.REDIS_HOST, port: DB_CREDENTIALS.REDIS_PORT }));
-SOCKET_IO.adapter(redis(DB_CREDENTIALS.REDIS_URL));
+let adapter = redis(DB_CREDENTIALS.REDIS_URL)
+SOCKET_IO.adapter(adapter);
 
 /**
  * Listen on provided port, on all network interfaces.
