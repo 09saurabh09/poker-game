@@ -818,9 +818,9 @@ Game.prototype.nextRound = function() {
  * Checks After Each Round
  */
 Game.prototype.checkAfterEachRound = function(){
-    if(this.checkPlayerLeft()  <  2){
-        this.showdown();
-    }
+    // if(this.checkPlayerLeft()  <  2){
+    //     this.showdown();
+    // }
     this.lastRaise = 0;
     this.turnPos = this.nextPlayer(this.dealerPos);
     this.currentGameState();
@@ -869,16 +869,15 @@ Game.prototype.unsetBetForRound = function(){
  * If yes, starts the next round
  */
 Game.prototype.checkForNextRound = function() {
-    if(this.checkPlayerLeft() < 2){
-        this.showdown();
-    }
-    else{
-        if (this.isEndRound()) {
-            this.logd('begin next round');
-            this.nextRound();
+    if (this.isEndRound()) {
+        if(this.checkPlayerLeft() < 2){
+            console.log("Going to showdown");
+            this.showdown();
         } else {
-            this.logd('cannot begin next round');
+            this.nextRound();                
         }
+    } else {
+        this.logd('cannot begin next round');
     }   
 };
 
