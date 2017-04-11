@@ -9,8 +9,11 @@ require('dotenv').config({ path: `${__dirname}/environments/${env.NODE_ENV}.env`
 let Promise = require("bluebird");
 let lodash = require("lodash");
 let async = require("async");
+const redis = require('redis');
+
 // let kue = require("kue");
-let Queue = require("bull");
+// let Queue = require("bull");
+let Queue = require('../queue/bullQueueManager');
 
 // Set DB credentials
 global.DB_CREDENTIALS = {};
@@ -36,7 +39,9 @@ global.async = async;
 
 // Do not change the position
 let io = require('../socket/socketRoute');
+const client = redis.createClient(DB_CREDENTIALS.REDIS_URL);
 global.SOCKET_IO = io;
+global.REDIS_CLIENT = client;
 
 global.GlobalConstant = {};
 GlobalConstant.tokenSecret = env.TOKEN_SECRET;
@@ -45,6 +50,7 @@ GlobalConstant.gameRoomPrefix = "pokerGameRoom";
 GlobalConstant.playerTurnTimers = {};
 GlobalConstant.tableJoinTimers = {};
 GlobalConstant.playerTurnTimerPrefix = "playerTurn:";
+GlobalConstant.disconnectionTimerPrefix = "disconnect:";
 
 global.POKER_QUEUE = {};
 
@@ -77,12 +83,10 @@ GlobalConstant.bullQueueDefaultJobOptions = {
         delay: 10000
     }
 }
-
 // POKER_QUEUE.gameStateUpdated = Queue('gameStateUpdated', DB_CREDENTIALS.REDIS_URL, GlobalConstant.bullQueueRedisConnectionOptions); 
-POKER_QUEUE.gameOverUpdateGame = Queue('gameOverUpdateGame', DB_CREDENTIALS.REDIS_URL, GlobalConstant.bullQueueRedisConnectionOptions); 
-POKER_QUEUE.gameStartCreateUserGames = Queue('gameStartCreateUserGames', DB_CREDENTIALS.REDIS_URL, GlobalConstant.bullQueueRedisConnectionOptions);
-POKER_QUEUE.playerTurnTimer = Queue('playerTurnTimer', DB_CREDENTIALS.REDIS_URL, GlobalConstant.bullQueueRedisConnectionOptions);
-
+POKER_QUEUE.gameOverUpdateGame = Queue('gameOverUpdateGame'); 
+POKER_QUEUE.gameStartCreateUserGames = Queue('gameStartCreateUserGames');
+POKER_QUEUE.playerTurnTimer = Queue('playerTurnTimer');
 // global.GAME_QUEUE = kue.createQueue({
 //     prefix: 'pokerQueue',
 //     jobEvents: false,

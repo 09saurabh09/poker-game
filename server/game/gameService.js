@@ -70,7 +70,8 @@ module.exports = {
             currentPot: gameState.currentPot,
             players: [],
             lastTurnAt: gameState.lastTurnAt,
-            actionTime: gameState.actionTime
+            actionTime: gameState.actionTime,
+            timestamp: Date.now()
         };
 
         gameState.players = gameState.players || Array.apply(null, Array(gameState.maxPlayer));
@@ -231,7 +232,7 @@ module.exports = {
                 SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.turnCompleted, commonGameState);
 
                 // Add timer for next player
-                timer.playerTurnTimer(self, game);
+                timer.playerTurnTimer(game);
 
                 POKER_QUEUE.gameStartCreateUserGames.add(game, GlobalConstant.bullQueueDefaultJobOptions)
                     .then(function (job) {
@@ -303,10 +304,8 @@ module.exports = {
         if (turnType == "timer") {
             game.playerTurn({ callType: "player", call: "doBestCall" }, user);
         } else {
-            let duration = parseInt((Date.now() - game.lastTurnAt) / 1000);
-            let timeBankUsed = (duration - game.actionTime) > 0 ? (duration - game.actionTime) : 0;
-            console.log(`INFO ::: Time bank used by player: ${user.id} is: ${timeBankUsed}`);
-            game.updateTimeBank(timeBankUsed);
+
+            game.updateTimeBank();
             game.playerTurn(params, user);
         }
 
@@ -324,7 +323,7 @@ module.exports = {
                 SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + game.tableId).emit(eventConfig.turnCompleted, commonGameState);
 
                 // Add timer for next turn
-                timer.playerTurnTimer(self, game);
+                timer.playerTurnTimer(game);
                 return;
 
             }).catch(function (err) {
@@ -363,6 +362,80 @@ module.exports = {
 
         }).catch(function (err) {
             console.log(`ERROR ::: Unable to reset game, error: ${err.message}, stack: ${err.stack}`);
+        })
+    },
+
+    settleBuyIn: function (game) {
+        let self = this;
+        return new PROMISE(function (resolve) {
+            async.each(game.players, function (player, done) {
+                if (player && player.requestAmount > 0) {
+                    return DB_MODELS.sequelize.transaction(function (t) {
+                        // chain all your queries here. make sure you return them.
+                        let query = `UPDATE "Users" SET "currentBalance" = "currentBalance" - ${player.requestAmount} WHERE id = ${player.id};`;
+                        return DB_MODELS.sequelize.query(query).then(function () {
+                            player.chips += player.requestAmount;
+                            player.requestAmount = 0;
+                            return GameHistoryModel.create({
+                                gameState: game.getRawObject(),
+                                pokerTableId: game.tableId,
+                                GameId: game.currentGameId
+                            }, { transaction: t })
+                        });
+                    }).then(function (gameHistory) {
+                        console.log(`SUCCESS ::: INR ${player.requestAmount} is added on table ${game.tableId} for player ${player.id}`);
+                        done();
+                    }).catch(function (err) {
+                        console.log(`ERROR ::: Can not add INR ${player.requestAmount} on table ${game.tableId} for player ${player.id} error: ${err.message}, stack: ${err.stack}`);
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            }, function () {
+                resolve(game);
+            })
+        })
+    },
+
+    getDisconnectedPayload: function ({ table, player }) {
+        return {
+            tableId: table.id,
+            disconnectedAt: Date.now(),
+            playerId: player.id,
+            timer: 120
+        }
+    },
+
+    getConnectedPayload: function ({ table, player }) {
+        return {
+            tableId: table.id,
+            playerId: player.id
+        }
+    },
+
+    playerTurnCompleted: function (game) {
+        let self = this;
+        let newGameState = game.getRawObject();
+        return DB_MODELS.sequelize.transaction(function (t) {
+            return GameHistoryModel.create({
+                gameState: newGameState,
+                pokerTableId: game.tableId,
+                GameId: newGameState.currentGameId
+            }, { transaction: t }).then(function (gameHistory) {
+                console.log(`SUCCESS Game history created for game: ${newGameState.currentGameId}`);
+                let commonGameState = self.getCommonGameState(game);
+
+                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + game.tableId).emit(eventConfig.turnCompleted, commonGameState);
+                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + game.tableId).emit(eventConfig.turnCompleted, commonGameState);
+
+                // Add timer for next turn
+                timer.playerTurnTimer(game);
+                return;
+
+            }).catch(function (err) {
+                console.log(`ERROR ::: Unable to make player turn, error: ${err.message}, stack: ${err.stack}`);
+            });
         })
     }
 }

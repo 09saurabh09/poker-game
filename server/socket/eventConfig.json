@@ -3,5 +3,7 @@
     "playerJoined": "player-joined",
     "chatMessage": "chat-message",
     "gameStarted": "game-started",
-    "roundCompleted": "round-completed"
+    "roundCompleted": "round-completed",
+    "playerDisconnected": "player-disconnected",
+    "playerConnected": "player-connected"
 }

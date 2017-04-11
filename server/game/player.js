@@ -41,6 +41,8 @@ function Player(options) {
     this.betForRound = options.betForRound || 0;
     this.betForLastRound = options.betForLastRound || 0;
     this.showCards = options.showCards || false;
+    this.requestAmount = options.requestAmount || 0;
+    this.disconnectionCount = options.disconnectionCount || 0;
 
     this.lastAction =options.lastAction || "";
     this.hasActed = options.hasActed || false;              // acted for one round (call/check/raise)
@@ -50,7 +52,7 @@ function Player(options) {
     this.idleForHand = options.idleForHand || false;           // Used by Game Flow if a person join in between game
     this.connectionStatus = options.connectionStatus || true;       // This is for checking whether the player is connected or not
     this.disconnectedAt = options.disconnectedAt || 0;         // TIme since the person has been Disconnected
-    this.autoMuck = options.disconnectedAt || true;               // Default True for the every Player 
+    this.autoMuck = options.autoMuck || true;               // Default True for the every Player 
     this.timeBank = options.timeBank || 0;                          //To store the TimeBank for a player
     this.expCallValue = options.expCallValue || 0;              //Expected Call Value
 }
@@ -184,6 +186,7 @@ Player.prototype.reset = function() {
     this.bet = 0;
     this.totalBet = 0;
     this.betForRound = 0;
+    this.disconnectionCount = 0;
 
     this.lastAction = "";
     this.hasActed = false;
@@ -241,6 +244,7 @@ Player.prototype.sitOut = function(){
  */
 Player.prototype.sitIn = function(){
     this.hasSitOut = false;
+    this.idleForHand = false;
     this.sitOutTime = 0;
 }
 
@@ -314,6 +318,7 @@ Player.prototype.unSetMaintainChips = function(){
 Player.prototype.playerDisconnected = function(){
     this.connectionStatus = false;
     this.disconnectedAt = Date.now();
+    this.disconnectionCount++;
 }
 
 
@@ -350,4 +355,11 @@ Player.prototype.subtractTimeBank = function(timeBankUsed){
  */
 Player.prototype.turnOnAutoMuck = function(){
     this.autoMuck = true;
+}
+
+Player.prototype.updatePlayerPreferences = function(params){
+    this.requestAmount += params.chips;
+    this.isMaintainChips = params.isMaintainChips || this.isMaintainChips;
+    this.autoPost = params.autoPost || this.autoPost;
+    this.straddle = params.straddle || this.straddle;
 }

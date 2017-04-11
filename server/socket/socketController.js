@@ -29,8 +29,9 @@ module.exports = {
                     pokerTables.forEach(function (pokerTable) {
                         // console.log(pokerTable.id);
                         let game = new Game(pokerTable.gameState);
-                        game.playerTurn(params, currentUser);
+                        // game.playerTurn(params, currentUser);
                         let newGameState = game.getRawObject();
+                        timer.connectTimer({gameService, game, currentUser});
                         GameHistoryModel.create({
                             gameState: newGameState,
                             pokerTableId: pokerTable.id,
@@ -41,6 +42,10 @@ module.exports = {
                             .then(function (gameHistory) {
                                 socket.join(GlobalConstant.gameRoomPrefix + pokerTable.id);
                                 socket.join(GlobalConstant.chatRoomPrefix + pokerTable.id);
+
+                                let payload = gameService.getConnectedPayload({table: pokerTable, player: currentUser});
+                                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.playerConnected, payload);
+                                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.playerConnected, payload);
                                 // console.log(SOCKET_IO.nsps["/poker-game-authorized"].sockets);
                                 // console.log(SOCKET_IO.nsps["/poker-game-authorized"].adapter.rooms, SOCKET_IO.nsps["/poker-game-unauthorized"].adapter.rooms)
                                 console.log(`SUCCESS ::: Player with id ${currentUser.id}, restored on table id: ${pokerTable.id}`);
@@ -71,32 +76,30 @@ module.exports = {
                     pokerTables.forEach(function (pokerTable) {
                         // console.log(pokerTable.id);
                         let game = new Game(pokerTable.gameState);
-                        game.playerTurn(params, currentUser);
+                        // game.playerTurn(params, currentUser);
                         // pokerTable.set("gameState", game.getRawObject());
                         // pokerTable.save()
+                    
+                        if (gameService.isPlayerTurn(game, currentUser)) {
+                            game.updateTimeBank();
+                        }
                         let newGameState = game.getRawObject();
+                        timer.disconnectTimer({gameService, game:newGameState, currentUser});
                         GameHistoryModel.create({
                             gameState: newGameState,
                             pokerTableId: pokerTable.id,
                             GameId: newGameState.currentGameId
                         })
                             .then(function (gameHistory) {
+                                let payload = gameService.getDisconnectedPayload({table: pokerTable, player: currentUser});
+                                SOCKET_IO.of("/poker-game-authorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.playerDisconnected, payload);
+                                SOCKET_IO.of("/poker-game-unauthorized").in(GlobalConstant.gameRoomPrefix + pokerTable.id).emit(eventConfig.playerDisconnected, payload);
                                 console.log(`SUCCESS ::: Player with id ${currentUser.id}, disconnected on table id: ${pokerTable.id}`);
                             })
                             .catch(function (err) {
                                 console.log(`ERROR ::: Player with id ${currentUser.id}, can't be disconnected on table id: ${pokerTable.id}, error: ${err.message}, stack: ${err.stack}`);
                             })
-                        
-                        // Handle disconnection timer
 
-                        // let jobId = GlobalConstant.playerTurnTimerPrefix + game.tableId;
-                        // POKER_QUEUE.playerTurnTimer.getJob(jobId).then(function (job) {
-                        //     if (job) {
-                        //         job.remove().then(function () {
-                        //             console.log(`INFO ::: On disconnection successfully removed job with id: ${job.jobId}`);
-                        //         })
-                        //     }
-                        // });
                     })
                 })
         }).catch(function (err) {
@@ -328,6 +331,47 @@ module.exports = {
         } else {
             console.log(`ERROR ::: Not a valid game preference option, ${JSON.stringify(params)} for user: ${socket.user.id}`);
         }
+    },
 
+    buyIn: function (params, socket) {
+        let tableId = params.tableId;
+        return DB_MODELS.sequelize.transaction(function (t) {
+            // chain all your queries here. make sure you return them.
+            return UserModel.findOne({
+                where: {
+                    id: socket.user.id
+                }
+            }, { transaction: t }).then(function (user) {
+                if (user && user.currentBalance >= params.playerInfo.chips) {
+                    return PokerTable.findOne({
+                        where: {
+                            id: tableId
+                        }
+                    }, { transaction: t }).then(function (table) {
+                        let game = new Game(table.gameState);
+                        let playerPos = game.findPlayerPos(socket.user.id);
+                        if (playerPos > -1) {
+                            game.reloadAllPlayers();
+                            game.players[playerPos].updatePlayerPreferences(params.playerInfo);
+                        }
+                        // table.set("gameState", game.getRawObject());
+                        let newGameState = game.getRawObject();
+                        return GameHistoryModel.create({
+                            gameState: newGameState,
+                            pokerTableId: table.id,
+                            GameId: newGameState.currentGameId
+                        }, { transaction: t })
+                        // return table.save({ transaction: t })
+                    }).then(function (result) {
+                        console.log(`SUCCESS ::: Game preferences updated for table ${tableId} by user ${socket.user.id}`);
+                    })
+                } else {
+                    console.log(`ERROR ::: Buy in not possible, as account balance is low`);
+                    return
+                }
+            }).catch(function (err) {
+                console.log(`ERROR ::: Unable to update game preference on table with id ${tableId} by user ${socket.user.id}, error: ${err.message}, stack: ${err.stack}`);
+            })
+        });
     }
 }

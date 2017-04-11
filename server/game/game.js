@@ -49,7 +49,16 @@ function Game(gameState) {
     this.oldPlayers = gameState.oldPlayers || [];               // Array of all the players who all have lastly Played the game.  
     this.round = gameState.round || 'idle';                     // current round in a game ['idle', 'deal', 'flop' , 'turn', 'river']
     this.dealerPos = gameState.dealerPos || -1;                  // to determine the dealer position for each game, incremented by 1 for each end game
-    this.turnPos = gameState.turnPos || -1;                      // to determine whose turn it is in a playing game
+    if(gameState.turnPos === undefined ){
+        this.turnPos = -1;
+    } else{
+        this.turnPos = gameState.turnPos;
+    }
+    if(gameState.dealerPos === undefined ){
+        this.dealerPos = -1;
+    } else{
+        this.dealerPos = gameState.dealerPos;
+    }
     this.totalPot = gameState.totalPot || 0;                    // accumulated chips in center of the table after each Game
     this.currentPot = gameState.currentPot || 0;                // Current Pot at any point of time. 
     this.minRaise = gameState.minRaise || 0;                    // Minimum raise to be have
@@ -207,7 +216,8 @@ Game.prototype.playerTurn = function(params, user){
                     this.logd("Player not present " + user.id);
                     break;
                 }
-                this.players[pos].sitOut();
+                this.players[pos].doBestCall();
+                gameService.playerTurnCompleted(this);
                 break;
 
             case "sitIn":
@@ -218,6 +228,10 @@ Game.prototype.playerTurn = function(params, user){
                     break;
                 }
                 this.players[pos].sitIn();
+                if(this.checkForGameRun() && this.round == 'idle'){
+                    this.reset();
+                    gameService.startGame(this);
+                }
                 break;
 
             case "setMaintChips":
@@ -985,9 +999,27 @@ Game.prototype.showdown = function() {
 
     this.currentGameState();
     this.callGameOver();
+    this.updatePlayerChips();
     setTimeout(this.startNewGame.bind(this), this.startNewGameAfter);
 };
 
+
+
+/**
+ * Changes Player Params before new Game
+ */
+Game.prototype.updatePlayerChips = function(){
+    for(let i = 0; i < this.players.length; i++ ){
+        if(this.players[i] && this.players[i].isMaintainChips && this.players[i].requestAmount == 0){
+            this.players[i].requestAmount = this.players[i].maintainChips;
+            if(this.players[i].maintainChips > this.players[i].chips){
+                this.players[i].requestAmount = this.players[i].maintainChips - this.players[i].chips;
+            } else {
+                this.players[i].requestAmount = 0;
+            }
+        }
+    }
+}
 
 
 /**
@@ -1069,17 +1101,21 @@ Game.prototype.gameEarnings = function(){
  */
 Game.prototype.startNewGame = function(){
     console.log("Staring new game...");
-    let newGame = new Game(this);
-    newGame.reset();
-    if( this.checkForGameRun() ) {
-        this.logd("Need More Player to start the Game ");
-        if(debugGameFlow)
-            gameService.startGame(newGame);
-    } else {
-        this.reset();
-        if(debugGameFlow)
-            gameService.resetGame(this);
-    }
+
+    gameService.settleBuyIn(this).then(function(game) {
+        game.reloadAllPlayers();
+        if( game.checkForGameRun() ) {
+            let newGame = new Game(game);
+            newGame.reset();
+            game.logd("Need More Player to start the Game ");
+            if(debugGameFlow)
+                gameService.startGame(newGame);
+        } else {
+            game.reset();
+            if(debugGameFlow)
+                gameService.resetGame(game);
+        }
+    })
 }
 
 
@@ -1488,9 +1524,12 @@ Game.prototype.getRawObject = function() {
 /**
  * Update Time Bank
  */
-Game.prototype.updateTimeBank = function(timeBankUsed) {
+Game.prototype.updateTimeBank = function() {
     //this.getCurrentPlayer().subtractTimeBank(timeBankUsed);
     //this.timeBank -= timeBankUsed;
+    let self = this;
+    let duration = parseInt((Date.now() - self.lastTurnAt) / 1000);
+    let timeBankUsed = (duration - self.actionTime) > 0 ? (duration - self.actionTime) : 0;
     this.currentGameState();
     console.log(`Player id ${this.getCurrentPlayer().id} and name ${this.getCurrentPlayer().name} with subtract time ${timeBankUsed} and curren time Bank ${this.getCurrentPlayer().timeBank}`);
     this.getCurrentPlayer().timeBank -= timeBankUsed;

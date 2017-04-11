@@ -81,6 +81,11 @@ gameAuthorizedIO.on('connection', function (socket) {
         socketController.updateGamePreference(params, socket);
     });
 
+    socket.on('table-buy-in', function (params) {
+        params = typeof (params) == "string" ? JSON.parse(params) : params;
+        socketController.buyIn(params, socket);
+    });
+
     socket.on('chat-message', function (params) {
         params = typeof (params) == "string" ? JSON.parse(params) : params;
         let tableId = params.tableId;

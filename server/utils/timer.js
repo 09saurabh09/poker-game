@@ -7,7 +7,7 @@ let pokerTableConfig = require('../game/pokerTableConfig');
 let GameHistoryModel = DB_MODELS.GameHistory;
 
 module.exports = {
-    playerTurnTimer: function (gameService, game) {
+    playerTurnTimer: function (game) {
         let user = game.getCurrentPlayer();
         let playerTimeBank = user.timeBank;
 
@@ -27,8 +27,8 @@ module.exports = {
                     resolve();
                 }
             }).then(function () {
-                let opts = _.assign({ delay, removeOnComplete: true, jobId });
-                POKER_QUEUE.playerTurnTimer.add({ game: game.getRawObject()}, opts)
+                let opts = { delay, removeOnComplete: true, jobId };
+                POKER_QUEUE.playerTurnTimer.add({ game: game.getRawObject() }, opts)
                     .then(function (job) {
                         console.log(`SUCCESS ::: playerTurnTimer job has been successfully queued with id: ${job.jobId}`);
                     })
@@ -68,5 +68,39 @@ module.exports = {
 
         });
         console.log(`Timer added for player ${user.id}`);
+    },
+
+    disconnectTimer: function ({ gameService, game, currentUser }) {
+        if (gameService.isPlayerTurn(game, currentUser)) {
+            // Remove existing player turn job
+            let jobId = GlobalConstant.playerTurnTimerPrefix + game.tableId;
+            if (game.getCurrentPlayer().disconnectionCount < 3) {
+                POKER_QUEUE.playerTurnTimer.removeJob(jobId).then(function () {
+                    let delay = 120 * 1000;
+                    // let newJobId = GlobalConstant.disconnectionTimerPrefix + game.tableId;
+                    let opts = { delay, removeOnComplete: true, jobId};
+                    return POKER_QUEUE.playerTurnTimer.add({ game: game.getRawObject() }, opts)
+                        .then(function (job) {
+                            console.log(`SUCCESS ::: playerTurnTimer job while disconnect has been successfully queued with id: ${job.jobId}`);
+                        })
+                }).catch(function (err) {
+                    console.log(`ERROR ::: error in adding disconnectTimer err: ${err.message}, stack: ${err.stack}`);
+                })
+            }
+
+        }
+    },
+
+    connectTimer: function ({gameService, game, currentUser}) {
+        let self = this;
+        if (gameService.isPlayerTurn(game, currentUser)) {
+            // Remove existing player turn job
+            let jobId = GlobalConstant.playerTurnTimerPrefix + game.tableId;
+            POKER_QUEUE.playerTurnTimer.removeJob(jobId).then(function () {
+                self.playerTurnTimer(game);
+            }).catch(function (err) {
+                console.log(`ERROR ::: error in adding connectTimer err: ${err.message}, stack: ${err.stack}`);
+            });
+        }
     }
 }
