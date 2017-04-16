@@ -781,7 +781,7 @@ Game.prototype.isEndRound = function() {
             }
         }
     }
-    if(this.checkPlayerLeft() == 1 && endOfRound){
+    if(endOfRound && this.checkPlayerLeft() > 0){
         endOfRound = !this.checkForLastPlayerTurn();
     }
     
@@ -876,8 +876,10 @@ Game.prototype.checkForNextRound = function() {
     if (this.isEndRound()) {
         if(this.checkPlayerLeft() < 2){
             console.log("Going to showdown");
+            this.updatePotAndBet();
             this.showdown();
         } else {
+            console.log("Starting New Round");
             this.nextRound();                
         }
     } else {
