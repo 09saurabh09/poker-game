@@ -13,8 +13,7 @@ let glob      = require("glob");
 //    var sequelize = new Sequelize(config.database, config.username, config.password, config);
 //}
 
-var sequelize = new Sequelize(DB_CREDENTIALS.DB_NAME, DB_CREDENTIALS.DB_USERNAME, DB_CREDENTIALS.DB_PASSWORD, {
-    host: DB_CREDENTIALS.DB_HOST,
+var sequelize = new Sequelize(DB_CREDENTIALS.DATABASE_URL, {
     dialect: 'postgres',
     logging: console.log,
     pool: {
@@ -64,6 +63,8 @@ Object.keys(db).forEach(function(modelName) {
         db[modelName].associate(db);
     }
 });
+
+console.log(`INFO ::: Model names: \n ${Object.keys(db).join("\n")}`);
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

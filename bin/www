@@ -9,6 +9,7 @@ var debug = require('debug')('poker:server');
 var http = require('http');
 var redis = require('socket.io-redis');
 var database = require('../server/config/database');
+// var io = require('../server/socket/socketRoute');
 /**
  * Get port from environment and store in Express.
  */
@@ -23,8 +24,11 @@ app.set('port', port);
 var server = http.createServer(app);
 
 // Add socket io
-var io = require('socket.io')(server);
-io.adapter(redis({ host: DB_CREDENTIALS.REDIS_HOST, port: DB_CREDENTIALS.REDIS_PORT }));
+// var io = require('socket.io')(server);
+SOCKET_IO.attach(server);
+// SOCKET_IO.adapter(redis({ host: DB_CREDENTIALS.REDIS_HOST, port: DB_CREDENTIALS.REDIS_PORT }));
+let adapter = redis(DB_CREDENTIALS.REDIS_URL)
+SOCKET_IO.adapter(adapter);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -35,7 +39,7 @@ database.sequelize.sync().then(function() {
      * Listen on provided port, on all network interfaces.
      */
     server.listen(port, function() {
-        console.log("Server started");
+        console.log("Server started " + server.address().port);
         debug('Express server listening on port ' + server.address().port);
     });
     server.on('error', onError);
@@ -101,5 +105,3 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
-
-require('../server/config/socketEvents')(io);
