@@ -4,7 +4,7 @@
 "use strict";
 module.exports = Game;
 
-let debugGameFlow = false;
+let debugGameFlow = true;
 
 let Player = require('./player.js');
 let Deck = require('../utils/deck.js');
@@ -781,6 +781,10 @@ Game.prototype.isEndRound = function() {
             }
         }
     }
+    if(this.checkPlayerLeft() == 1 && endOfRound){
+        endOfRound = !this.checkForLastPlayerTurn();
+    }
+    
     return endOfRound;
 };
 
@@ -1475,6 +1479,25 @@ Game.prototype.checkPlayerLeft = function(){
         }
     }
     return totalPlaying;
+}
+
+
+
+/**
+ * Check For the Last Player whether he should have his turn or not.
+ */
+Game.prototype.checkForLastPlayerTurn = function(){
+    for(let i = 0; i < this.players.length; i++){
+        if(this.players[i] && this.players[i].hasDone == false && this.players[i].betForRound == this.getHighestBetForRound()){
+            return false;
+        }
+    }
+    for(let i = 0; i < this.players.length; i++ ){
+        if(this.players[i] && this.players[i].lastAction == 'allin' && this.players[i].betForRound > 0){
+            return true;
+        }
+    }
+    return false;
 }
 
 

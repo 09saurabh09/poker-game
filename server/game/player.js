@@ -5,7 +5,7 @@
 "use strict";
 
 let moment = require("moment");
-let debugGameFlow = false;
+let debugGameFlow = true;
 
 if(debugGameFlow)
     var gameService = require("./gameService");
@@ -59,7 +59,8 @@ function Player(options) {
 
 
 /**
- * Folds the game
+ * Folds the player for the game if its the 
+ * non timer call then make the player sitout = false;
  */
 Player.prototype.fold = function(timerCall) {
     logd('Player ' + this.name + ' FOLD');
@@ -76,7 +77,7 @@ Player.prototype.fold = function(timerCall) {
 
 
 /**
- * Puts all your chips to your bet
+ * Puts all your chips to your bet  
  */
 Player.prototype.allin = function() {
     logd('Player ' + this.name + ' ALL-IN : ' + this.chips);
@@ -85,7 +86,6 @@ Player.prototype.allin = function() {
     this.hasDone = true;
     this.hasSitOut = false;
     
-
     this.addBet(this.chips);
     this.moveNext();
 };
@@ -99,8 +99,6 @@ Player.prototype.allin = function() {
  * If highest bet is 0, will do nothing
  */
 Player.prototype.callOrCheck = function(timerCall) {
-    this.hasActed = true;
-
     if(!timerCall){
         this.hasSitOut = false;
     }
@@ -110,6 +108,7 @@ Player.prototype.callOrCheck = function(timerCall) {
     if(diff >= this.chips){
         this.allin();
     } else {
+        this.hasActed = true;        
         this.addBet(diff);
         if (diff > 0) {
             this.lastAction = "call";
