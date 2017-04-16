@@ -1305,7 +1305,7 @@ Game.prototype.mininumunRaise = function(){
  */
 Game.prototype.maximumRaise = function(){
     if(this.gameType == "holdem"){
-        this.maxRaise = this.getCurrentPlayer().chips;
+        this.maxRaise = this.getCurrentPlayer().chips + this.getCurrentPlayer().betForRound;
     } else if(this.gameType == "omaha"){
         if(this.lastRaise == 0){
             if(this.round == 'deal'){
