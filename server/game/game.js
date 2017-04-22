@@ -167,6 +167,7 @@ Game.prototype.playerTurn = function(params, user){
         let pos;
         player.id  = user.id;
         player.name = user.name;
+        player.userName = user.userName;
         switch(params.call){
             case "addPlayer":
                 this.logd("Add Player has been called for -------- " + user.id );
