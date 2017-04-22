@@ -59,10 +59,15 @@ function Player(options) {
 
 
 /**
- * Folds the game
+ * Folds the player for the game if its the 
+ * non timer call then make the player sitout = false;
  */
-Player.prototype.fold = function() {
+Player.prototype.fold = function(timerCall) {
     logd('Player ' + this.name + ' FOLD');
+
+    if(!timerCall){
+        this.hasSitOut = false;
+    }
 
     this.lastAction = "fold";
     this.hasDone = true;
@@ -72,14 +77,15 @@ Player.prototype.fold = function() {
 
 
 /**
- * Puts all your chips to your bet
+ * Puts all your chips to your bet  
  */
 Player.prototype.allin = function() {
     logd('Player ' + this.name + ' ALL-IN : ' + this.chips);
 
     this.lastAction = "allin";
     this.hasDone = true;
-
+    this.hasSitOut = false;
+    
     this.addBet(this.chips);
     this.moveNext();
 };
@@ -92,14 +98,17 @@ Player.prototype.allin = function() {
  * With the highest bet in the table
  * If highest bet is 0, will do nothing
  */
-Player.prototype.callOrCheck = function() {
-    this.hasActed = true;
+Player.prototype.callOrCheck = function(timerCall) {
+    if(!timerCall){
+        this.hasSitOut = false;
+    }
 
     let diff = this.game.getHighestBet() - this.bet;
 
     if(diff >= this.chips){
         this.allin();
     } else {
+        this.hasActed = true;        
         this.addBet(diff);
         if (diff > 0) {
             this.lastAction = "call";
@@ -131,10 +140,11 @@ Player.prototype.getCallOrCheck = function(){
 Player.prototype.doBestCall = function(){
     this.sitOut();
     this.timeBank = 0;
+    let timerCall = true;
     if(this.getCallOrCheck() == 0){
-        this.callOrCheck();
+        this.callOrCheck(timerCall);
     } else{
-        this.fold();
+        this.fold(timerCall);
     }
 }
 
@@ -153,6 +163,7 @@ Player.prototype.raise = function(amount) {
 
     this.game.updateLastRaise(amount - this.betForRound ) ;
 
+    this.hasSitOut = false;
     if(diff >= this.chips){
         this.allin();
     } else {
@@ -209,8 +220,9 @@ Player.prototype.addBet = function(amount) {
 
 
 
-Player.prototype.moveNext = function(){
+Player.prototype.moveNext = function(action){
     //this.sitIn();
+    this.game.gameLastAction = this.lastAction;
     this.game.incrementPlayerTurn();
     this.game.checkForNextRound();
 }

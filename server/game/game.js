@@ -70,6 +70,7 @@ function Game(gameState) {
     this.gamePots = gameState.gamePots || [];                   // The Vairable to store all the game pots 
     this.lastRaise = gameState.lastRaise || 0;                  // Maintaing what was the last raise. 
     this.rakeEarning = gameState.rakeEarning || 0;              // Options for the rake earning per For Game
+    this.gameLastAction = gameState.gameLastAction || 0;        // Last Action On Game Level.
 
     if(this.players.length == 0){
         this.initPlayers();
@@ -130,7 +131,7 @@ Game.prototype.playerTurn = function(params, user){
         switch(params.call){
             case "fold":
                 this.logd("Fold has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.getCurrentPlayer().fold();
+                this.getCurrentPlayer().fold(false);
                 break;
             case "allin":
                 this.logd("allIn has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
@@ -138,7 +139,7 @@ Game.prototype.playerTurn = function(params, user){
                 break;
             case "callOrCheck":
                 this.logd("callOrCheck has been called for -------- " + this.getCurrentPlayer().id + " " + this.getCurrentPlayer().name);
-                this.getCurrentPlayer().callOrCheck();
+                this.getCurrentPlayer().callOrCheck(false);
                 break;
             case "raise":
                 if( params.amount < this.mininumunRaise() || params.amount > this.maximumRaise()){
@@ -390,10 +391,11 @@ Game.prototype.currentGameState = function(){
     this.logd("## Game minRaise - " +this.minRaise);        
     this.logd("## Game maxRaise - " +this.maxRaise);        
     this.logd("## Game callValue - " +this.callValue);        
-    this.logd("## Game lastTurnAt - " +this.lastTurnAt);        
+    this.logd("## Game lastTurnAt - " +this.lastTurnAt);       
+    this.logd("## Game gameLastAction - " +this.gameLastAction);       
     this.logd("## Game currentPot - " +this.currentPot);           
     this.logd("## Game lastRaise - " +this.lastRaise);           
-    this.logd("## Game turnPos - " +this.turnPos);           
+    this.logd("## Game turnPos - " +this.turnPos);
     this.logd("## Game totalpot - " +this.totalPot);
     this.logd("## Game rakeEarning - " +this.rakeEarning);
     this.logd("## Game gamePots - " + JSON.stringify(this.gamePots));   
@@ -535,11 +537,22 @@ Game.prototype.reset = function() {
     this.checkPlayersConnected();
     this.checkPlayersSitout();
     this.checkWaitingPlayers();
-
+    this.kickPlayerWithNoChips();
     this.start();
     //this.initGamePots();
 };
 
+
+/**
+ * Check to Kick Player with no Money
+ */
+Game.prototype.kickPlayerWithNoChips = function(){
+    for(let i = 0; i <this.players.length; i++ ){
+        if(this.players[i] && this.players[i].chips <= this.bigBlind){
+            this.removeFromGame(i);            
+        }
+    }
+}
 
 
 /**
@@ -771,6 +784,13 @@ Game.prototype.isEndRound = function() {
             }
         }
     }
+    if(this.checkPlayerLeft() == 1){
+        if(this.gameLastAction == 'allin'){
+            endOfRound = false;
+        } else {
+            endOfRound = true;
+        }
+    }
     return endOfRound;
 };
 
@@ -808,9 +828,9 @@ Game.prototype.nextRound = function() {
  * Checks After Each Round
  */
 Game.prototype.checkAfterEachRound = function(){
-    if(this.checkPlayerLeft()  <  2){
-        this.showdown();
-    }
+    // if(this.checkPlayerLeft()  <  2){
+    //     this.showdown();
+    // }
     this.lastRaise = 0;
     this.turnPos = this.nextPlayer(this.dealerPos);
     this.currentGameState();
@@ -859,16 +879,17 @@ Game.prototype.unsetBetForRound = function(){
  * If yes, starts the next round
  */
 Game.prototype.checkForNextRound = function() {
-    if(this.checkPlayerLeft() < 2){
-        this.showdown();
-    }
-    else{
-        if (this.isEndRound()) {
-            this.logd('begin next round');
-            this.nextRound();
+    if (this.isEndRound()) {
+        if(this.checkPlayerLeft() < 2){
+            console.log("Going to showdown");
+            this.updatePotAndBet();
+            this.showdown();
         } else {
-            this.logd('cannot begin next round');
+            console.log("Starting New Round");
+            this.nextRound();                
         }
+    } else {
+        this.logd('cannot begin next round');
     }   
 };
 
@@ -932,8 +953,8 @@ Game.prototype.showdown = function() {
     this.round = 'showdown';
     let ranks;
 
-    if(this.checkPlayerLeft()  <  2){
-        if(this.checkPlayerLeft() == 0){
+    if(this.checkStakeHoldersLeft()  <  2){
+        if(this.checkStakeHoldersLeft() == 0){
             this.logd("All Have Folded or left Game No one won");
         }
         else{
@@ -953,6 +974,12 @@ Game.prototype.showdown = function() {
     else{
         //Sorting all the players card accordingly
         this.logd('====================== Results ======================');
+
+        if(this.checkPlayerLeft()  < 2){
+            for(let i = this.communityCards.length; i < 5; i++){
+                this.communityCards.push(this.deck.drawCard());
+            }
+        }
 
         if(this.gameType == "holdem"){
             let evalHands = evaluator.sortByRankHoldem(this.communityCards, this.players);
@@ -1290,7 +1317,7 @@ Game.prototype.mininumunRaise = function(){
  */
 Game.prototype.maximumRaise = function(){
     if(this.gameType == "holdem"){
-        this.maxRaise = this.getCurrentPlayer().chips;
+        this.maxRaise = this.getCurrentPlayer().chips + this.getCurrentPlayer().betForRound;
     } else if(this.gameType == "omaha"){
         if(this.lastRaise == 0){
             if(this.round == 'deal'){
@@ -1315,7 +1342,7 @@ Game.prototype.maximumRaise = function(){
  * Deciding Winner for every Pot and Transfering Money to Wineer
  */
 Game.prototype.winnersPerPot = function (ranks){
-    if(this.checkPlayerLeft() < 2 ){
+    if(this.checkStakeHoldersLeft() < 2 ){
         for(let i= 0; i< this.players.length; i++){
             if(this.players[i] && this.players[i].idleForHand ==  false && this.players[i].hasDone == false){
                 for(let j= 0; j < this.gamePots.length; j++){
@@ -1450,7 +1477,7 @@ Game.prototype.rakeForGame = function(){
 
 
 /**
- * Check if Only one Player left then end the Game.
+ * Check the number of player left at the end of the game.
  */
 Game.prototype.checkPlayerLeft = function(){
     let totalPlaying = 0;
@@ -1462,6 +1489,51 @@ Game.prototype.checkPlayerLeft = function(){
     return totalPlaying;
 }
 
+/**
+ * Check if all folded except one.
+ */
+Game.prototype.checkUnFoldedPlayers = function(){
+    let totalPlaying = 0;
+    for(let i = 0; i <this.players.length; i++ ){
+        if(this.players[i] && this.players[i].hasDone == false && this.players[i].idleForHand == false ){
+            totalPlaying++;
+        }
+    }
+    return totalPlaying;
+}
+
+
+
+/**
+ * Check For the Last Player whether he should have his turn or not.
+ */
+Game.prototype.checkForLastPlayerTurn = function(){
+    for(let i = 0; i < this.players.length; i++){
+        if(this.players[i] && this.players[i].idleForHand == false && this.players[i].hasDone == false && this.players[i].betForRound == this.getHighestBetForRound()){
+            return false;
+        }
+    }
+    for(let i = 0; i < this.players.length; i++ ){
+        if(this.players[i] && this.players[i].idleForHand == false && this.players[i].lastAction == 'allin' && this.players[i].betForRound > 0){
+            return true;
+        }
+    }
+    return false;
+}
+
+
+/**
+ * Check the Number of StakeHolders
+ */
+Game.prototype.checkStakeHoldersLeft = function(){
+    let totalStakeHolders = 0;
+    for(let i = 0; i <this.players.length; i++ ){
+        if(this.players[i] && this.players[i].idleForHand == false && (this.players[i].hasDone == false || this.players[i].lastAction == 'allin') ){
+            totalStakeHolders++;
+        }
+    }
+    return totalStakeHolders;
+}
 
 
 

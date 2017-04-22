@@ -17,7 +17,7 @@ var gameParams = {
     rakeY: 5,
     rakeZ: 2,
     debugMode: true,
-    gameType: "holdem",
+    gameType: "holdem"
 };
 
 var playerParams1 = {
@@ -112,9 +112,7 @@ game.playerTurn(playerParams5, userParams5);
 // game.start();
 
 
-var gameInstance = {
-    dealerPos:4
-};
+
 var gameInstance = null;
 
 var turnParamsCall = {
@@ -157,7 +155,7 @@ var turnParamsStack = {
 
 var turnParamsFold = {
     callType:"player",
-    call:"doBestCall",
+    call:"allin",
     amount:20,
     playerId:""
 };
@@ -172,20 +170,22 @@ game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsStack,gameInstance);
-game = new Game(game);
-game.playerTurn(turnParamsRaise,gameInstance);
 // game = new Game(game);
-// game.playerTurn(turnParamsFold,gameInstance);
+// game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
-game.playerTurn(turnParamsRaise1,gameInstance);
-game = new Game(game);
-game.playerTurn(turnParamsRaise2,gameInstance);
-// game = new Game(game);
-// game.playerTurn(turnParamsFold,gameInstance);
+game.playerTurn(turnParamsFold,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
-game.playerTurn(turnParamsCall,gameInstance);
+game.playerTurn(turnParamsFold,gameInstance);
+// game = new Game(game);
+// game.playerTurn(turnParamsRaise,gameInstance);
+// // game = new Game(game);
+// // game.playerTurn(turnParamsFold,gameInstance);
+// game = new Game(game);
+// game.playerTurn(turnParamsRaise1,gameInstance);
+// game = new Game(game);
+// game.playerTurn(turnParamsRaise2,gameInstance);
 game = new Game(game);
 game.playerTurn(turnParamsCall,gameInstance);
 game = new Game(game);
