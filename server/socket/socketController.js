@@ -335,6 +335,7 @@ module.exports = {
 
     buyIn: function (params, socket) {
         let tableId = params.tableId;
+        console.log(`INFO ::: Buy request has been raised on table ${tableId} for ${params.playerInfo && params.playerInfo.chips} by user ${socket.user.id}`);
         return DB_MODELS.sequelize.transaction(function (t) {
             // chain all your queries here. make sure you return them.
             return UserModel.findOne({

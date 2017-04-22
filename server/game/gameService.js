@@ -71,7 +71,8 @@ module.exports = {
             players: [],
             lastTurnAt: gameState.lastTurnAt,
             actionTime: gameState.actionTime,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            oldPlayers: gameState.oldPlayers
         };
 
         gameState.players = gameState.players || Array.apply(null, Array(gameState.maxPlayer));
@@ -369,7 +370,8 @@ module.exports = {
         let self = this;
         return new PROMISE(function (resolve) {
             async.each(game.players, function (player, done) {
-                if (player && player.requestAmount > 0) {
+                let moneyRequested = player && player.requestAmount;
+                if (player && moneyRequested > 0) {
                     return DB_MODELS.sequelize.transaction(function (t) {
                         // chain all your queries here. make sure you return them.
                         let query = `UPDATE "Users" SET "currentBalance" = "currentBalance" - ${player.requestAmount} WHERE id = ${player.id};`;
@@ -383,10 +385,10 @@ module.exports = {
                             }, { transaction: t })
                         });
                     }).then(function (gameHistory) {
-                        console.log(`SUCCESS ::: INR ${player.requestAmount} is added on table ${game.tableId} for player ${player.id}`);
+                        console.log(`SUCCESS ::: ${moneyRequested} is added on table ${game.tableId} for player ${player.id}`);
                         done();
                     }).catch(function (err) {
-                        console.log(`ERROR ::: Can not add INR ${player.requestAmount} on table ${game.tableId} for player ${player.id} error: ${err.message}, stack: ${err.stack}`);
+                        console.log(`ERROR ::: Can not add ${moneyRequested} on table ${game.tableId} for player ${player.id} error: ${err.message}, stack: ${err.stack}`);
                         done();
                     })
                 } else {
