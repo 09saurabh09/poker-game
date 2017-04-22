@@ -36,6 +36,7 @@ function Game(gameState) {
     this.parentType = gameState.parentType;                       //The type of Game it is holdem or omaha.
     this.startNewGameAfter = gameState.startNewGameAfter || 2000;
     this.startWhenPlayerCount = gameState.startWhenPlayerCount || 2; 
+    this.timeBank = gameState.timeBank || 0;
 
     // attributes needed post game
     this.currentGameId = gameState.currentGameId;
@@ -1123,10 +1124,24 @@ Game.prototype.startNewGame = function(){
                 gameService.startGame(newGame);
         } else {
             game.reset();
+            game.resetTimeBank();
             if(debugGameFlow)
                 gameService.resetGame(game);
         }
     })
+}
+
+
+
+/**
+ * Reset Time Bank For Every Players
+ */
+Game.prototype.resetTimeBank = function(){
+    for(let i = 0; i < this.players.length; i++ ){
+        if(this.players[i]){
+            this.players[i].timeBank = this.timeBank;
+        }
+    }
 }
 
 
