@@ -10,6 +10,8 @@ let Promise = require("bluebird");
 let lodash = require("lodash");
 let async = require("async");
 const redis = require('redis');
+let glob = require('glob');
+var path      = require("path");
 
 // let kue = require("kue");
 // let Queue = require("bull");
@@ -115,3 +117,8 @@ POKER_QUEUE.playerTurnTimer = Queue('playerTurnTimer');
 // });
 
 require('../queue/bullQueueWorker');
+
+// LOAD ALL CRONS
+glob.sync('server/cron/*' ).forEach( function( file ) {
+    require(path.resolve( file ));
+});

@@ -24,7 +24,8 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING
         },
         state: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING,
+            defaultValue: "idle"
         },
         moneyType: {
             type: DataTypes.STRING,

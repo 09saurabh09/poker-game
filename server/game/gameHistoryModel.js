@@ -34,6 +34,12 @@ module.exports = function (sequelize, DataTypes) {
                         gameState: gameHistory.gameState
                     }
 
+                    if (gameHistory.gameState.round == "idle") {
+                        updateObject.state = "idle";
+                    } else {
+                        updateObject.state = "running";
+                    }
+
                     return PokerTableModel.update(updateObject, { where: { id: pokerTableId, updatedAt: { "$lte": gameHistory.createdAt } }, transaction: options.transaction })
                 }
             }
