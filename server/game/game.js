@@ -70,6 +70,7 @@ function Game(gameState) {
     this.gamePots = gameState.gamePots || [];                   // The Vairable to store all the game pots 
     this.lastRaise = gameState.lastRaise || 0;                  // Maintaing what was the last raise. 
     this.rakeEarning = gameState.rakeEarning || 0;              // Options for the rake earning per For Game
+    this.gameLastAction = gameState.gameLastAction || 0;        // Last Action On Game Level.
 
     if(this.players.length == 0){
         this.initPlayers();
@@ -390,10 +391,11 @@ Game.prototype.currentGameState = function(){
     this.logd("## Game minRaise - " +this.minRaise);        
     this.logd("## Game maxRaise - " +this.maxRaise);        
     this.logd("## Game callValue - " +this.callValue);        
-    this.logd("## Game lastTurnAt - " +this.lastTurnAt);        
+    this.logd("## Game lastTurnAt - " +this.lastTurnAt);       
+    this.logd("## Game gameLastAction - " +this.gameLastAction);       
     this.logd("## Game currentPot - " +this.currentPot);           
     this.logd("## Game lastRaise - " +this.lastRaise);           
-    this.logd("## Game turnPos - " +this.turnPos);           
+    this.logd("## Game turnPos - " +this.turnPos);
     this.logd("## Game totalpot - " +this.totalPot);
     this.logd("## Game rakeEarning - " +this.rakeEarning);
     this.logd("## Game gamePots - " + JSON.stringify(this.gamePots));   
@@ -782,10 +784,13 @@ Game.prototype.isEndRound = function() {
             }
         }
     }
-    if(endOfRound && this.checkPlayerLeft() > 0){
-        endOfRound = !this.checkForLastPlayerTurn();
+    if(this.checkPlayerLeft() == 1){
+        if(this.gameLastAction == 'allin'){
+            endOfRound = false;
+        } else {
+            endOfRound = true;
+        }
     }
-    
     return endOfRound;
 };
 
@@ -971,7 +976,7 @@ Game.prototype.showdown = function() {
         this.logd('====================== Results ======================');
 
         if(this.checkPlayerLeft()  < 2){
-            for(let i = this.communityCards.length; i <= 5; i++){
+            for(let i = this.communityCards.length; i < 5; i++){
                 this.communityCards.push(this.deck.drawCard());
             }
         }
@@ -1472,12 +1477,25 @@ Game.prototype.rakeForGame = function(){
 
 
 /**
- * Check if Only one Player left then end the Game.
+ * Check the number of player left at the end of the game.
  */
 Game.prototype.checkPlayerLeft = function(){
     let totalPlaying = 0;
     for(let i = 0; i <this.players.length; i++ ){
         if(this.players[i] && this.players[i].hasDone == false && this.players[i].idleForHand == false){
+            totalPlaying++;
+        }
+    }
+    return totalPlaying;
+}
+
+/**
+ * Check if all folded except one.
+ */
+Game.prototype.checkUnFoldedPlayers = function(){
+    let totalPlaying = 0;
+    for(let i = 0; i <this.players.length; i++ ){
+        if(this.players[i] && this.players[i].hasDone == false && this.players[i].idleForHand == false ){
             totalPlaying++;
         }
     }
@@ -1491,12 +1509,12 @@ Game.prototype.checkPlayerLeft = function(){
  */
 Game.prototype.checkForLastPlayerTurn = function(){
     for(let i = 0; i < this.players.length; i++){
-        if(this.players[i] && this.players[i].hasDone == false && this.players[i].betForRound == this.getHighestBetForRound()){
+        if(this.players[i] && this.players[i].idleForHand == false && this.players[i].hasDone == false && this.players[i].betForRound == this.getHighestBetForRound()){
             return false;
         }
     }
     for(let i = 0; i < this.players.length; i++ ){
-        if(this.players[i] && this.players[i].lastAction == 'allin' && this.players[i].betForRound > 0){
+        if(this.players[i] && this.players[i].idleForHand == false && this.players[i].lastAction == 'allin' && this.players[i].betForRound > 0){
             return true;
         }
     }
