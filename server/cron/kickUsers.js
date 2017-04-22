@@ -5,6 +5,7 @@ let moment = require('moment');
 
 let PokerTable = DB_MODELS.PokerTable;
 let GameHistoryModel = DB_MODELS.GameHistory;
+let UserPokerTable = DB_MODELS.UserPokerTable;
 
 console.log("INFO ::: setting up cron for kicking users from table");
 
@@ -14,7 +15,7 @@ cron.schedule('* */2 * * *', function () {
     PokerTable.findAll({
         where: {
             state: "idle"
-        }, 
+        },
         raw: true
     }).then(function (tables) {
         tables.forEach(function (table) {
@@ -32,7 +33,14 @@ cron.schedule('* */2 * * *', function () {
                                 gameState: game.getRawObject(),
                                 pokerTableId: table.id,
                                 GameId: game.currentGameId
-                            }, { transaction: t })
+                            }, { transaction: t }).then(function (gameHistory) {
+                                return UserPokerTable.destroy({
+                                    where: {
+                                        PokerTableId: table.id,
+                                        UserId: player.id
+                                    }
+                                }, { transaction: t });
+                            });
                         }).then(function () {
                             console.log(`SUCCESS ::: Player ${player.id} has been kicked from table ${table.id}`);
                         })
